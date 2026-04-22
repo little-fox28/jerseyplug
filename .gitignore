@@ -1,0 +1,50 @@
+# ==========================================
+# 1. DEPENDENCIES
+# ==========================================
+node_modules/
+vendor/
+.pnpm-store/
+
+# ==========================================
+# 2. BUILD & PRODUCTION
+# ==========================================
+dist/
+dist-ssr/
+build/
+out/
+.next/
+
+# ==========================================
+# 3. CACHE & TOOLS
+# ==========================================
+.eslintcache
+.stylelintcache
+.parcel-cache
+.turbo/
+.vite/
+*.tsbuildinfo
+coverage/
+
+# ==========================================
+# 4. ENVIRONMENT FILES
+# ==========================================
+.env
+.env.local
+.env.development.local
+.env.production.local
+.env.test.local
+
+# ==========================================
+# 5. TESTING
+# ==========================================
+/test-results/
+/playwright-report/
+/blob-report/
+
+# ==========================================
+# 6. IDE & OS
+# ==========================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

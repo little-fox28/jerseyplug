@@ -1,50 +1,40 @@
-# ==========================================
-# 1. DEPENDENCIES
-# ==========================================
+# --- Common ---
 node_modules/
-vendor/
-.pnpm-store/
-
-# ==========================================
-# 2. BUILD & PRODUCTION
-# ==========================================
-dist/
-dist-ssr/
-build/
-out/
-.next/
-
-# ==========================================
-# 3. CACHE & TOOLS
-# ==========================================
-.eslintcache
-.stylelintcache
-.parcel-cache
-.turbo/
-.vite/
-*.tsbuildinfo
-coverage/
-
-# ==========================================
-# 4. ENVIRONMENT FILES
-# ==========================================
-.env
-.env.local
-.env.development.local
-.env.production.local
-.env.test.local
-
-# ==========================================
-# 5. TESTING
-# ==========================================
-/test-results/
-/playwright-report/
-/blob-report/
-
-# ==========================================
-# 6. IDE & OS
-# ==========================================
-.vscode/
-.idea/
 .DS_Store
 Thumbs.db
+*.log
+
+# --- Frontend (React/Vite) ---
+frontend/dist/
+frontend/dist-ssr/
+frontend/build/
+frontend/out/
+frontend/.next/
+frontend/.eslintcache
+frontend/.stylelintcache
+frontend/.parcel-cache
+frontend/.turbo/
+frontend/.vite/
+frontend/*.tsbuildinfo
+frontend/coverage/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.production.local
+frontend/.env.test.local
+frontend/test-results/
+frontend/playwright-report/
+frontend/blob-report/
+
+# --- WordPress Theme (JerseyPlug) ---
+jerseyplug/node_modules/
+jerseyplug/dist/
+jerseyplug/vendor/
+jerseyplug/.fleet/
+jerseyplug/.idea/
+jerseyplug/.nova/
+jerseyplug/.vscode/
+jerseyplug/.zed/
+
+# --- Build Artifacts ---
+dist/
+build/

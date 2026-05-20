@@ -37,6 +37,17 @@ $raw_languages = function_exists( 'pll_the_languages' )
 	)
 	: [];
 
+$flag_map = [
+	'en' => 'https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg',
+	'af' => 'https://upload.wikimedia.org/wikipedia/commons/a/af/Flag_of_South_Africa.svg',
+];
+
+foreach ( $raw_languages as &$lang_item ) {
+	$slug = strtolower( (string) ( $lang_item['slug'] ?? '' ) );
+	$lang_item['flag_url'] = $flag_map[ $slug ] ?? '';
+}
+unset( $lang_item );
+
 $languages_json = esc_attr( wp_json_encode( array_values( $raw_languages ) ) );
 $current_lang   = '';
 
@@ -50,6 +61,24 @@ foreach ( $raw_languages as $lang_item ) {
 $translate = static function ( string $text ): string {
 	return function_exists( 'jerseyplug_pll' ) ? jerseyplug_pll( $text ) : $text;
 };
+
+$logo_url   = (string) apply_filters( 'jerseyplug_header_logo_url', $logo_url );
+$logo_alt   = (string) apply_filters( 'jerseyplug_header_logo_alt', $logo_alt );
+$world_cup_url = (string) apply_filters( 'jerseyplug_header_world_cup_url', $world_cup_url );
+
+$world_cup_label     = (string) apply_filters( 'jerseyplug_header_world_cup_label', $translate( 'World Cup 2026' ) );
+$top_5_label         = (string) apply_filters( 'jerseyplug_header_top_5_label', $translate( 'Top 5 Leagues' ) );
+$national_label      = (string) apply_filters( 'jerseyplug_header_national_label', $translate( 'National' ) );
+$national_teams_label = (string) apply_filters( 'jerseyplug_header_national_teams_label', $translate( 'National Teams' ) );
+$other_label         = (string) apply_filters( 'jerseyplug_header_other_label', $translate( 'Other' ) );
+$other_leagues_label = (string) apply_filters( 'jerseyplug_header_other_leagues_label', $translate( 'Other Leagues' ) );
+
+$header_classes        = (string) apply_filters( 'jerseyplug_header_classes', 'sticky top-0 z-50 w-full shadow-md h-20 bg-primary text-white', $args );
+$container_classes     = (string) apply_filters( 'jerseyplug_header_container_classes', 'container mx-auto px-4 h-full flex items-center justify-between relative', $args );
+$nav_classes           = (string) apply_filters( 'jerseyplug_header_nav_classes', 'hidden lg:flex items-center gap-6 font-medium text-sm tracking-wide h-full absolute left-1/2 -translate-x-1/2 z-10', $args );
+$actions_classes       = (string) apply_filters( 'jerseyplug_header_actions_classes', 'flex items-center gap-4 lg:gap-6 flex-1 justify-end', $args );
+$mobile_drawer_classes = (string) apply_filters( 'jerseyplug_header_mobile_drawer_classes', 'fixed top-0 left-0 w-80 h-full overflow-y-auto bg-darkBg z-50 lg:hidden', $args );
+$mobile_overlay_classes = (string) apply_filters( 'jerseyplug_header_mobile_overlay_classes', 'lg:hidden fixed inset-0 bg-black/50 z-40', $args );
 ?>
 
 <?php do_action( 'jerseyplug_before_header' ); ?>
@@ -68,9 +97,10 @@ $translate = static function ( string $text ): string {
 		mobileAccordion: { top5: false, national: false, other: false }
 	}"
 	@keydown.escape.window="isMobileMenuOpen = false; activeDropdown = null; langSwitcherOpen = false"
-	class="sticky top-0 z-50 w-full shadow-md h-20 bg-primary text-white"
+	class="<?php echo esc_attr( $header_classes ); ?>"
 >
-	<div class="container mx-auto px-4 h-full flex items-center justify-between relative">
+	<?php do_action( 'jerseyplug_before_header_inner', $args ); ?>
+	<div class="<?php echo esc_attr( $container_classes ); ?>">
 		<div class="flex items-center gap-4 flex-1 justify-start">
 			<button
 				class="lg:hidden p-1 rounded transition-colors hover:bg-white/10"
@@ -90,13 +120,14 @@ $translate = static function ( string $text ): string {
 			</a>
 		</div>
 
-		<nav class="hidden lg:flex items-center gap-6 font-medium text-sm tracking-wide h-full absolute left-1/2 -translate-x-1/2 z-10" aria-label="<?php echo esc_attr( $translate( 'Primary Navigation' ) ); ?>">
+		<?php do_action( 'jerseyplug_before_header_nav', $args ); ?>
+		<nav class="<?php echo esc_attr( $nav_classes ); ?>" aria-label="<?php echo esc_attr( $translate( 'Primary Navigation' ) ); ?>">
 				<a href="<?php echo esc_url( $world_cup_url ); ?>" class="transition-colors relative group py-2 h-full flex items-center hover:opacity-80">
-					<?php echo esc_html( $translate( 'World Cup 2026' ) ); ?>
+					<?php echo esc_html( $world_cup_label ); ?>
 				</a>
 				<div class="relative h-full flex items-center" @mouseenter="activeDropdown = 'top5'" @mouseleave="activeDropdown = null">
 					<button class="flex items-center gap-1 hover:opacity-80">
-						<?php echo esc_html( $translate( 'Top 5 Leagues' ) ); ?>
+						<?php echo esc_html( $top_5_label ); ?>
 						<svg class="w-[14px] h-[14px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
 					</button>
 					<div x-show="activeDropdown === 'top5'" x-cloak x-transition class="absolute top-full left-1/2 -translate-x-1/2 w-[90vw] max-w-6xl bg-white text-gray-900 shadow-xl border-t-4 border-accent rounded-b-lg p-6">
@@ -106,7 +137,7 @@ $translate = static function ( string $text ): string {
 
 				<div class="relative h-full flex items-center" @mouseenter="activeDropdown = 'national'" @mouseleave="activeDropdown = null">
 					<button class="flex items-center gap-1 hover:opacity-80">
-						<?php echo esc_html( $translate( 'National' ) ); ?>
+						<?php echo esc_html( $national_label ); ?>
 						<svg class="w-[14px] h-[14px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
 					</button>
 					<div x-show="activeDropdown === 'national'" x-cloak x-transition class="absolute top-full left-1/2 -translate-x-1/2 w-[90vw] max-w-6xl bg-white text-gray-900 shadow-xl border-t-4 border-accent rounded-b-lg p-6">
@@ -116,7 +147,7 @@ $translate = static function ( string $text ): string {
 
 				<div class="relative h-full flex items-center" @mouseenter="activeDropdown = 'other'" @mouseleave="activeDropdown = null">
 					<button class="flex items-center gap-1 hover:opacity-80">
-						<?php echo esc_html( $translate( 'Other' ) ); ?>
+						<?php echo esc_html( $other_label ); ?>
 						<svg class="w-[14px] h-[14px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
 					</button>
 					<div x-show="activeDropdown === 'other'" x-cloak x-transition class="absolute top-full left-1/2 -translate-x-1/2 w-[90vw] max-w-6xl bg-white text-gray-900 shadow-xl border-t-4 border-accent rounded-b-lg p-6">
@@ -124,8 +155,10 @@ $translate = static function ( string $text ): string {
 					</div>
 				</div>
 		</nav>
+		<?php do_action( 'jerseyplug_after_header_nav', $args ); ?>
 
-		<div class="flex items-center gap-4 lg:gap-6 flex-1 justify-end">
+		<?php do_action( 'jerseyplug_before_header_actions', $args ); ?>
+		<div class="<?php echo esc_attr( $actions_classes ); ?>">
 			<?php if ( ! empty( $raw_languages ) ) : ?>
 				<div x-data="{ languages: <?php echo $languages_json; ?> }" @click.away="langSwitcherOpen = false" class="relative hidden sm:block">
 					<button @click="langSwitcherOpen = !langSwitcherOpen" class="flex items-center gap-1.5 hover:opacity-80 transition-all py-2 px-2 rounded" :class="langSwitcherOpen ? 'bg-white/10' : ''" aria-label="<?php echo esc_attr( $translate( 'Change Language' ) ); ?>">
@@ -139,7 +172,7 @@ $translate = static function ( string $text ): string {
 						</p>
 						<template x-for="lang in languages" :key="lang.slug">
 							<a :href="lang.url" :class="lang.current_lang ? 'text-[#163300] font-bold bg-gray-50' : 'text-gray-600'" class="w-full text-left px-4 py-2 text-sm flex items-center gap-3 hover:bg-gray-50 transition-colors no-underline">
-								<span class="text-lg" x-html="lang.flag"></span>
+								<img :src="lang.flag_url" :alt="lang.name" class="w-5 h-4 object-cover inline-block mr-2" loading="lazy" x-show="lang.flag_url" />
 								<span x-text="lang.name"></span>
 								<span x-show="lang.current_lang" class="ml-auto w-1.5 h-1.5 rounded-full bg-[#65cf21]"></span>
 							</a>
@@ -164,8 +197,11 @@ $translate = static function ( string $text ): string {
 				<?php echo jerseyplug_get_header_cart_markup(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			<?php endif; ?>
 		</div>
+		<?php do_action( 'jerseyplug_after_header_actions', $args ); ?>
 	</div>
+	<?php do_action( 'jerseyplug_after_header_inner', $args ); ?>
 
+	<?php do_action( 'jerseyplug_before_header_mobile_menu', $args ); ?>
 	<div x-show="isMobileMenuOpen" x-cloak
 		x-transition:enter="transition-transform duration-300 ease-in-out"
 		x-transition:enter-start="-translate-x-full"
@@ -173,7 +209,7 @@ $translate = static function ( string $text ): string {
 		x-transition:leave="transition-transform duration-300 ease-in-out"
 		x-transition:leave-start="translate-x-0"
 		x-transition:leave-end="-translate-x-full"
-		class="fixed top-0 left-0 w-80 h-full overflow-y-auto bg-darkBg z-50 lg:hidden"
+		class="<?php echo esc_attr( $mobile_drawer_classes ); ?>"
 	>
 		<div class="p-4">
 			<div class="flex justify-between items-center mb-4">
@@ -197,12 +233,12 @@ $translate = static function ( string $text ): string {
 
 			<nav class="flex flex-col space-y-2" aria-label="<?php echo esc_attr( $translate( 'Primary Navigation' ) ); ?>">
 					<a href="<?php echo esc_url( $world_cup_url ); ?>" @click="isMobileMenuOpen = false" class="text-white py-3 border-b border-gray-700/50 font-bold hover:opacity-80">
-						<?php echo esc_html( $translate( 'World Cup 2026' ) ); ?>
+						<?php echo esc_html( $world_cup_label ); ?>
 					</a>
 
 					<div class="py-2 border-b border-gray-700/50">
 						<button @click="mobileAccordion.top5 = !mobileAccordion.top5" class="w-full flex justify-between items-center text-white py-2 font-bold">
-							<?php echo esc_html( $translate( 'Top 5 Leagues' ) ); ?>
+							<?php echo esc_html( $top_5_label ); ?>
 							<svg :class="{'rotate-180': mobileAccordion.top5}" class="w-4 h-4 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
 						</button>
 						<div x-show="mobileAccordion.top5" x-collapse x-cloak class="pt-2 pl-4">
@@ -212,7 +248,7 @@ $translate = static function ( string $text ): string {
 
 					<div class="py-2 border-b border-gray-700/50">
 						<button @click="mobileAccordion.national = !mobileAccordion.national" class="w-full flex justify-between items-center text-white py-2 font-bold">
-							<?php echo esc_html( $translate( 'National Teams' ) ); ?>
+							<?php echo esc_html( $national_teams_label ); ?>
 							<svg :class="{'rotate-180': mobileAccordion.national}" class="w-4 h-4 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
 						</button>
 						<div x-show="mobileAccordion.national" x-collapse x-cloak class="pt-2 pl-4">
@@ -222,7 +258,7 @@ $translate = static function ( string $text ): string {
 
 					<div class="py-2 border-b border-gray-700/50">
 						<button @click="mobileAccordion.other = !mobileAccordion.other" class="w-full flex justify-between items-center text-white py-2 font-bold">
-							<?php echo esc_html( $translate( 'Other Leagues' ) ); ?>
+							<?php echo esc_html( $other_leagues_label ); ?>
 							<svg :class="{'rotate-180': mobileAccordion.other}" class="w-4 h-4 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
 						</button>
 						<div x-show="mobileAccordion.other" x-collapse x-cloak class="pt-2 pl-4">
@@ -256,8 +292,9 @@ $translate = static function ( string $text ): string {
 		x-transition:leave="ease-in duration-200"
 		x-transition:leave-start="opacity-100"
 		x-transition:leave-end="opacity-0"
-		class="lg:hidden fixed inset-0 bg-black/50 z-40"
+		class="<?php echo esc_attr( $mobile_overlay_classes ); ?>"
 	></div>
+	<?php do_action( 'jerseyplug_after_header_mobile_menu', $args ); ?>
 
 </header>
 

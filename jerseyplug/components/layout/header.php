@@ -115,9 +115,22 @@ $mobile_overlay_classes = (string) apply_filters( 'jerseyplug_header_mobile_over
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
 				</template>
 			</button>
-			<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="flex items-center gap-1 group active:scale-95 transition-transform">
-				<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $logo_alt ); ?>" class="w-auto h-18 md:h-20 lg:h-26" fetchpriority="high" decoding="async" />
-			</a>
+			<?php
+			get_template_part(
+				'components/ui/logo',
+				null,
+				[
+					'class'         => 'w-auto h-18 md:h-20 lg:h-26',
+					'img_class'     => 'object-contain transition-all',
+					'wrapper_class' => 'flex items-center gap-1 group active:scale-95 transition-transform',
+					'logo_url'      => $logo_url,
+					'logo_alt'      => $logo_alt,
+					'fetchpriority' => 'high',
+					'loading'       => 'eager',
+					'decoding'      => 'async',
+				]
+			);
+			?>
 		</div>
 
 		<?php do_action( 'jerseyplug_before_header_nav', $args ); ?>
@@ -213,9 +226,20 @@ $mobile_overlay_classes = (string) apply_filters( 'jerseyplug_header_mobile_over
 	>
 		<div class="p-4">
 			<div class="flex justify-between items-center mb-4">
-				<a href="<?php echo esc_url( home_url( '/' ) ); ?>">
-					<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $logo_alt ); ?>" class="w-auto h-8" fetchpriority="high" decoding="async" />
-				</a>
+				<?php
+				get_template_part(
+					'components/ui/logo',
+					null,
+					[
+						'class'     => 'w-auto h-8',
+						'img_class' => 'object-contain transition-all',
+						'logo_url'  => $logo_url,
+						'logo_alt'  => $logo_alt,
+						'loading'   => 'eager',
+						'decoding'  => 'async',
+					]
+				);
+				?>
 				<button @click="isMobileMenuOpen = false" class="text-white" aria-label="<?php echo esc_attr( $translate( 'Close Mobile Menu' ) ); ?>">
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
 				</button>

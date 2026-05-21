@@ -12,6 +12,7 @@ $jerseyplug_require = static function ( string $relative_path ): void {
 };
 
 $jerseyplug_require( '/inc/helpers.php' );
+$jerseyplug_require( '/inc/admin-options.php' );
 $jerseyplug_require( '/inc/setup.php' );
 $jerseyplug_require( '/inc/enqueue.php' );
 

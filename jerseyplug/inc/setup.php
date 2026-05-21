@@ -14,6 +14,9 @@ function jerseyplug_register_theme_features(): void {
 			fn( $manager ) => $manager
 				->add( 'primary', __( 'Primary Menu', 'jerseyplug' ) )
 				->add( 'header_utility', __( 'Header Utility Menu', 'jerseyplug' ) )
+				->add( 'footer_shop', __( 'Footer Menu - Shop', 'jerseyplug' ) )
+				->add( 'footer_support', __( 'Footer Menu - Support', 'jerseyplug' ) )
+				->add( 'footer-legal', __( 'Footer Legal', 'jerseyplug' ) )
 		)
 		->themeSupport(
 			fn( $manager ) => $manager->add(
@@ -47,6 +50,9 @@ function jerseyplug_register_nav_menus(): void {
 		[
 			'primary'        => __( 'Primary Menu', 'jerseyplug' ),
 			'header_utility' => __( 'Header Utility Menu', 'jerseyplug' ),
+			'footer_shop'    => __( 'Footer Menu - Shop', 'jerseyplug' ),
+			'footer_support' => __( 'Footer Menu - Support', 'jerseyplug' ),
+			'footer-legal'   => __( 'Footer Legal', 'jerseyplug' ),
 		]
 	);
 }

@@ -17,3 +17,21 @@ if ( ! function_exists( 'jerseyplug_pll' ) ) {
 		return (string) __( $text, 'jerseyplug' );
 	}
 }
+
+if ( ! function_exists( 'get_jerseyplug_setting' ) ) {
+	/**
+	 * Safely fetch a theme setting.
+	 */
+	function get_jerseyplug_setting( string $key, $default = '' ) {
+		$options = get_option( 'jerseyplug_global_options', [] );
+		if ( ! is_array( $options ) ) {
+			return $default;
+		}
+
+		if ( array_key_exists( $key, $options ) ) {
+			return $options[ $key ];
+		}
+
+		return $default;
+	}
+}

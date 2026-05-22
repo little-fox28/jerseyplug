@@ -66,12 +66,10 @@ $logo_url   = (string) apply_filters( 'jerseyplug_header_logo_url', $logo_url );
 $logo_alt   = (string) apply_filters( 'jerseyplug_header_logo_alt', $logo_alt );
 $world_cup_url = (string) apply_filters( 'jerseyplug_header_world_cup_url', $world_cup_url );
 
-$world_cup_label     = (string) apply_filters( 'jerseyplug_header_world_cup_label', $translate( 'World Cup 2026' ) );
-$top_5_label         = (string) apply_filters( 'jerseyplug_header_top_5_label', $translate( 'Top 5 Leagues' ) );
-$national_label      = (string) apply_filters( 'jerseyplug_header_national_label', $translate( 'National' ) );
-$national_teams_label = (string) apply_filters( 'jerseyplug_header_national_teams_label', $translate( 'National Teams' ) );
-$other_label         = (string) apply_filters( 'jerseyplug_header_other_label', $translate( 'Other' ) );
-$other_leagues_label = (string) apply_filters( 'jerseyplug_header_other_leagues_label', $translate( 'Other Leagues' ) );
+$world_cup_label = (string) apply_filters( 'jerseyplug_header_world_cup_label', $translate( 'World Cup 2026' ) );
+
+$mega_menu = function_exists( 'get_jerseyplug_mega_menu' ) ? get_jerseyplug_mega_menu() : [];
+$mega_menu = is_array( $mega_menu ) ? $mega_menu : [];
 
 $header_classes        = (string) apply_filters( 'jerseyplug_header_classes', 'sticky top-0 z-50 w-full shadow-md h-20 bg-primary text-white', $args );
 $container_classes     = (string) apply_filters( 'jerseyplug_header_container_classes', 'container mx-auto px-4 h-full flex items-center justify-between relative', $args );
@@ -94,7 +92,7 @@ $mobile_overlay_classes = (string) apply_filters( 'jerseyplug_header_mobile_over
 		isMobileMenuOpen: false,
 		activeDropdown: null,
 		langSwitcherOpen: false,
-		mobileAccordion: { top5: false, national: false, other: false }
+		mobileAccordion: {}
 	}"
 	@keydown.escape.window="isMobileMenuOpen = false; activeDropdown = null; langSwitcherOpen = false"
 	class="<?php echo esc_attr( $header_classes ); ?>"
@@ -135,38 +133,122 @@ $mobile_overlay_classes = (string) apply_filters( 'jerseyplug_header_mobile_over
 
 		<?php do_action( 'jerseyplug_before_header_nav', $args ); ?>
 		<nav class="<?php echo esc_attr( $nav_classes ); ?>" aria-label="<?php echo esc_attr( $translate( 'Primary Navigation' ) ); ?>">
-				<a href="<?php echo esc_url( $world_cup_url ); ?>" class="transition-colors relative group py-2 h-full flex items-center hover:opacity-80">
-					<?php echo esc_html( $world_cup_label ); ?>
-				</a>
-				<div class="relative h-full flex items-center" @mouseenter="activeDropdown = 'top5'" @mouseleave="activeDropdown = null">
-					<button class="flex items-center gap-1 hover:opacity-80">
-						<?php echo esc_html( $top_5_label ); ?>
-						<svg class="w-[14px] h-[14px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-					</button>
-					<div x-show="activeDropdown === 'top5'" x-cloak x-transition class="absolute top-full left-1/2 -translate-x-1/2 w-[90vw] max-w-6xl bg-white text-gray-900 shadow-xl border-t-4 border-accent rounded-b-lg p-6">
-						<?php get_template_part( 'components/layout/mega-menu', null, [ 'root_slug' => 'top-5-leagues', 'mode' => 'desktop' ] ); ?>
-					</div>
-				</div>
+				<?php foreach ( $mega_menu as $menu_group ) : ?>
+					<?php
+					$root_slug  = sanitize_title( (string) ( $menu_group['slug'] ?? '' ) );
+					$root_name  = (string) ( $menu_group['name'] ?? '' );
+					$root_link  = (string) ( $menu_group['link'] ?? '' );
+					$root_label = (string) apply_filters( 'jerseyplug_header_mega_menu_label', $translate( $root_name ), $menu_group );
+					$children   = is_array( $menu_group['children'] ?? null ) ? $menu_group['children'] : [];
+					?>
+					<?php if ( $root_slug === '' ) : ?>
+						<?php continue; ?>
+					<?php endif; ?>
 
-				<div class="relative h-full flex items-center" @mouseenter="activeDropdown = 'national'" @mouseleave="activeDropdown = null">
-					<button class="flex items-center gap-1 hover:opacity-80">
-						<?php echo esc_html( $national_label ); ?>
-						<svg class="w-[14px] h-[14px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-					</button>
-					<div x-show="activeDropdown === 'national'" x-cloak x-transition class="absolute top-full left-1/2 -translate-x-1/2 w-[90vw] max-w-6xl bg-white text-gray-900 shadow-xl border-t-4 border-accent rounded-b-lg p-6">
-						<?php get_template_part( 'components/layout/mega-menu', null, [ 'root_slug' => 'national-teams', 'mode' => 'desktop' ] ); ?>
-					</div>
-				</div>
+					<?php if ( empty( $children ) ) : ?>
+						<a href="<?php echo esc_url( $root_link ); ?>" class="transition-colors relative group py-2 h-full flex items-center hover:opacity-80">
+							<?php echo esc_html( $root_label ); ?>
+						</a>
+					<?php else : ?>
+						<div class="relative h-full flex items-center" @mouseenter="activeDropdown = '<?php echo esc_js( $root_slug ); ?>'" @mouseleave="activeDropdown = null">
+							<button class="flex items-center gap-1 hover:opacity-80">
+								<?php echo esc_html( $root_label ); ?>
+								<svg class="w-[14px] h-[14px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+							</button>
+							<div x-show="activeDropdown === '<?php echo esc_js( $root_slug ); ?>'" x-cloak x-transition class="absolute top-full left-1/2 -translate-x-1/2 w-[90vw] max-w-6xl bg-white text-gray-900 shadow-xl border-t-4 border-accent rounded-b-lg p-6">
+								<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+									<?php foreach ( $children as $child ) : ?>
+										<?php
+										$child_name     = (string) ( $child['name'] ?? '' );
+										$child_link     = (string) ( $child['link'] ?? '' );
+										$child_logo     = (string) ( $child['logo_url'] ?? '' );
+										$child_external = (string) ( $child['external_logo_url'] ?? '' );
+										$child_thumb_id = (int) ( $child['thumbnail_id'] ?? 0 );
+										$child_logo_src = $child_external;
+										if ( $child_thumb_id > 0 && $child_logo !== '' ) {
+											$child_logo_src = $child_logo;
+										} elseif ( $child_logo_src === '' ) {
+											$child_logo_src = $child_logo;
+										}
+										$child_label    = (string) apply_filters( 'jerseyplug_header_mega_menu_group_label', $translate( $child_name ), $child, $menu_group );
+										$grand_children = is_array( $child['children'] ?? null ) ? $child['children'] : [];
+										?>
+										<div class="flex flex-col gap-3">
+											<?php if ( $child_link !== '' ) : ?>
+												<a href="<?php echo esc_url( $child_link ); ?>" class="flex items-center gap-3 pb-2 border-b border-gray-100 hover:opacity-90 transition-colors">
+													<img
+														src="<?php echo esc_url( $child_logo_src ); ?>"
+														alt="<?php echo esc_attr( $child_label ); ?>"
+														class="w-6 h-6 rounded-full object-contain"
+														loading="lazy"
+														decoding="async"
+													/>
+													<span class="text-sm font-bold text-primary">
+														<?php echo esc_html( $child_label ); ?>
+													</span>
+												</a>
+											<?php else : ?>
+												<div class="flex items-center gap-3 pb-2 border-b border-gray-100">
+													<img
+														src="<?php echo esc_url( $child_logo_src ); ?>"
+														alt="<?php echo esc_attr( $child_label ); ?>"
+														class="w-6 h-6 rounded-full object-contain"
+														loading="lazy"
+														decoding="async"
+													/>
+													<span class="text-sm font-bold text-primary">
+														<?php echo esc_html( $child_label ); ?>
+													</span>
+												</div>
+											<?php endif; ?>
 
-				<div class="relative h-full flex items-center" @mouseenter="activeDropdown = 'other'" @mouseleave="activeDropdown = null">
-					<button class="flex items-center gap-1 hover:opacity-80">
-						<?php echo esc_html( $other_label ); ?>
-						<svg class="w-[14px] h-[14px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-					</button>
-					<div x-show="activeDropdown === 'other'" x-cloak x-transition class="absolute top-full left-1/2 -translate-x-1/2 w-[90vw] max-w-6xl bg-white text-gray-900 shadow-xl border-t-4 border-accent rounded-b-lg p-6">
-						<?php get_template_part( 'components/layout/mega-menu', null, [ 'root_slug' => 'other-leagues', 'mode' => 'desktop' ] ); ?>
-					</div>
-				</div>
+											<?php if ( ! empty( $grand_children ) ) : ?>
+												<ul>
+													<?php foreach ( $grand_children as $grandchild ) : ?>
+														<?php
+														$grand_name  = (string) ( $grandchild['name'] ?? '' );
+														$grand_link  = (string) ( $grandchild['link'] ?? '' );
+														$grand_logo  = (string) ( $grandchild['logo_url'] ?? '' );
+														$grand_external = (string) ( $grandchild['external_logo_url'] ?? '' );
+														$grand_thumb_id = (int) ( $grandchild['thumbnail_id'] ?? 0 );
+														$grand_logo_src = $grand_external;
+														if ( $grand_thumb_id > 0 && $grand_logo !== '' ) {
+															$grand_logo_src = $grand_logo;
+														} elseif ( $grand_logo_src === '' ) {
+															$grand_logo_src = $grand_logo;
+														}
+														$grand_label = (string) apply_filters( 'jerseyplug_header_mega_menu_item_label', $translate( $grand_name ), $grandchild, $child, $menu_group );
+														?>
+														<li class="flex items-center space-x-2 py-1.5">
+															<span class="flex items-center justify-center w-5 h-5 shrink-0">
+																<img
+																	src="<?php echo esc_url( $grand_logo_src ); ?>"
+																	alt="<?php echo esc_attr( $grand_label ); ?>"
+																	class="w-5 h-5 rounded-full object-contain"
+																	loading="lazy"
+																	decoding="async"
+																/>
+															</span>
+															<?php if ( $grand_link !== '' ) : ?>
+																<a href="<?php echo esc_url( $grand_link ); ?>" class="text-sm text-gray-700 hover:text-green-800 transition-colors">
+																	<?php echo esc_html( $grand_label ); ?>
+																</a>
+															<?php else : ?>
+																<span class="text-sm text-gray-700">
+																	<?php echo esc_html( $grand_label ); ?>
+																</span>
+															<?php endif; ?>
+														</li>
+													<?php endforeach; ?>
+												</ul>
+											<?php endif; ?>
+										</div>
+									<?php endforeach; ?>
+								</div>
+							</div>
+						</div>
+					<?php endif; ?>
+				<?php endforeach; ?>
 		</nav>
 		<?php do_action( 'jerseyplug_after_header_nav', $args ); ?>
 
@@ -259,36 +341,92 @@ $mobile_overlay_classes = (string) apply_filters( 'jerseyplug_header_mobile_over
 					<a href="<?php echo esc_url( $world_cup_url ); ?>" @click="isMobileMenuOpen = false" class="text-white py-3 border-b border-gray-700/50 font-bold hover:opacity-80">
 						<?php echo esc_html( $world_cup_label ); ?>
 					</a>
+					<?php foreach ( $mega_menu as $menu_group ) : ?>
+						<?php
+						$root_slug  = sanitize_title( (string) ( $menu_group['slug'] ?? '' ) );
+						$root_name  = (string) ( $menu_group['name'] ?? '' );
+						$root_link  = (string) ( $menu_group['link'] ?? '' );
+						$root_label = (string) apply_filters( 'jerseyplug_header_mega_menu_label', $translate( $root_name ), $menu_group );
+						$children   = is_array( $menu_group['children'] ?? null ) ? $menu_group['children'] : [];
+						?>
+						<?php if ( $root_slug === '' ) : ?>
+							<?php continue; ?>
+						<?php endif; ?>
 
-					<div class="py-2 border-b border-gray-700/50">
-						<button @click="mobileAccordion.top5 = !mobileAccordion.top5" class="w-full flex justify-between items-center text-white py-2 font-bold">
-							<?php echo esc_html( $top_5_label ); ?>
-							<svg :class="{'rotate-180': mobileAccordion.top5}" class="w-4 h-4 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-						</button>
-						<div x-show="mobileAccordion.top5" x-collapse x-cloak class="pt-2 pl-4">
-							<?php get_template_part( 'components/layout/mega-menu', null, [ 'root_slug' => 'top-5-leagues', 'mode' => 'mobile' ] ); ?>
-						</div>
-					</div>
-
-					<div class="py-2 border-b border-gray-700/50">
-						<button @click="mobileAccordion.national = !mobileAccordion.national" class="w-full flex justify-between items-center text-white py-2 font-bold">
-							<?php echo esc_html( $national_teams_label ); ?>
-							<svg :class="{'rotate-180': mobileAccordion.national}" class="w-4 h-4 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-						</button>
-						<div x-show="mobileAccordion.national" x-collapse x-cloak class="pt-2 pl-4">
-							<?php get_template_part( 'components/layout/mega-menu', null, [ 'root_slug' => 'national-teams', 'mode' => 'mobile' ] ); ?>
-						</div>
-					</div>
-
-					<div class="py-2 border-b border-gray-700/50">
-						<button @click="mobileAccordion.other = !mobileAccordion.other" class="w-full flex justify-between items-center text-white py-2 font-bold">
-							<?php echo esc_html( $other_leagues_label ); ?>
-							<svg :class="{'rotate-180': mobileAccordion.other}" class="w-4 h-4 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-						</button>
-						<div x-show="mobileAccordion.other" x-collapse x-cloak class="pt-2 pl-4">
-							<?php get_template_part( 'components/layout/mega-menu', null, [ 'root_slug' => 'other-leagues', 'mode' => 'mobile' ] ); ?>
-						</div>
-					</div>
+						<?php if ( empty( $children ) ) : ?>
+							<a href="<?php echo esc_url( $root_link ); ?>" @click="isMobileMenuOpen = false" class="text-white py-3 border-b border-gray-700/50 font-bold hover:opacity-80">
+								<?php echo esc_html( $root_label ); ?>
+							</a>
+						<?php else : ?>
+							<div class="py-2 border-b border-gray-700/50">
+								<button @click="mobileAccordion['<?php echo esc_js( $root_slug ); ?>'] = !mobileAccordion['<?php echo esc_js( $root_slug ); ?>']" class="w-full flex justify-between items-center text-white py-2 font-bold">
+									<?php echo esc_html( $root_label ); ?>
+									<svg :class="{'rotate-180': mobileAccordion['<?php echo esc_js( $root_slug ); ?>']}" class="w-4 h-4 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+								</button>
+								<div x-show="mobileAccordion['<?php echo esc_js( $root_slug ); ?>']" x-collapse x-cloak class="pt-2 pl-4 space-y-3">
+									<?php foreach ( $children as $child ) : ?>
+										<?php
+										$child_name     = (string) ( $child['name'] ?? '' );
+										$child_link     = (string) ( $child['link'] ?? '' );
+										$child_logo     = (string) ( $child['logo_url'] ?? '' );
+										$child_external = (string) ( $child['external_logo_url'] ?? '' );
+										$child_thumb_id = (int) ( $child['thumbnail_id'] ?? 0 );
+										$child_logo_src = $child_external;
+										if ( $child_thumb_id > 0 && $child_logo !== '' ) {
+											$child_logo_src = $child_logo;
+										} elseif ( $child_logo_src === '' ) {
+											$child_logo_src = $child_logo;
+										}
+										$child_label    = (string) apply_filters( 'jerseyplug_header_mega_menu_group_label', $translate( $child_name ), $child, $menu_group );
+										$grand_children = is_array( $child['children'] ?? null ) ? $child['children'] : [];
+										?>
+										<div>
+											<a href="<?php echo esc_url( $child_link ); ?>" @click="isMobileMenuOpen = false" class="flex items-center gap-2 text-white py-1 text-sm font-semibold hover:opacity-80">
+												<img
+													src="<?php echo esc_url( $child_logo_src ); ?>"
+													alt="<?php echo esc_attr( $child_label ); ?>"
+													class="w-5 h-5 object-contain rounded-full"
+													loading="lazy"
+													decoding="async"
+												/>
+												<?php echo esc_html( $child_label ); ?>
+											</a>
+											<?php if ( ! empty( $grand_children ) ) : ?>
+												<div class="pl-7 pt-2 space-y-1">
+													<?php foreach ( $grand_children as $grandchild ) : ?>
+														<?php
+														$grand_name  = (string) ( $grandchild['name'] ?? '' );
+														$grand_link  = (string) ( $grandchild['link'] ?? '' );
+														$grand_logo  = (string) ( $grandchild['logo_url'] ?? '' );
+														$grand_external = (string) ( $grandchild['external_logo_url'] ?? '' );
+														$grand_thumb_id = (int) ( $grandchild['thumbnail_id'] ?? 0 );
+														$grand_logo_src = $grand_external;
+														if ( $grand_thumb_id > 0 && $grand_logo !== '' ) {
+															$grand_logo_src = $grand_logo;
+														} elseif ( $grand_logo_src === '' ) {
+															$grand_logo_src = $grand_logo;
+														}
+														$grand_label = (string) apply_filters( 'jerseyplug_header_mega_menu_item_label', $translate( $grand_name ), $grandchild, $child, $menu_group );
+														?>
+														<a href="<?php echo esc_url( $grand_link ); ?>" @click="isMobileMenuOpen = false" class="flex items-center gap-2 text-gray-300 py-1 text-sm hover:text-white">
+															<img
+																src="<?php echo esc_url( $grand_logo_src ); ?>"
+																alt="<?php echo esc_attr( $grand_label ); ?>"
+																class="w-4 h-4 object-contain rounded-full"
+																loading="lazy"
+																decoding="async"
+															/>
+															<?php echo esc_html( $grand_label ); ?>
+														</a>
+													<?php endforeach; ?>
+												</div>
+											<?php endif; ?>
+										</div>
+									<?php endforeach; ?>
+								</div>
+							</div>
+						<?php endif; ?>
+					<?php endforeach; ?>
 
 					<?php if ( ! empty( $raw_languages ) ) : ?>
 						<div class="flex items-center justify-between py-3 border-b border-gray-700/50">

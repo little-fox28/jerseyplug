@@ -29,26 +29,28 @@ if ( is_admin() ) {
 }
 
 /**
- * Resolve category logo URL from ACF term field with fallback.
+ * Resolve category logo URL from native WooCommerce and custom external_logo_url meta.
+ * Legacy ACF category_logo field has been removed in favor of:
+ * 1. Native WooCommerce thumbnail_id (primary source)
+ * 2. Custom external_logo_url term meta (fallback source)
  */
 function jerseyplug_get_category_logo_url( int $term_id ): string {
-	$logo = function_exists( 'get_field' ) ? get_field( 'category_logo', 'product_cat_' . $term_id ) : null;
-
-	if ( is_array( $logo ) && ! empty( $logo['url'] ) ) {
-		return (string) $logo['url'];
-	}
-
-	if ( is_numeric( $logo ) ) {
-		$image_url = wp_get_attachment_image_url( (int) $logo, 'thumbnail' );
-		if ( $image_url ) {
-			return $image_url;
+	// Primary: WooCommerce native thumbnail_id
+	$thumbnail_id = (int) get_term_meta( $term_id, 'thumbnail_id', true );
+	if ( $thumbnail_id > 0 ) {
+		$thumbnail_url = wp_get_attachment_image_url( $thumbnail_id, 'thumbnail' );
+		if ( $thumbnail_url ) {
+			return $thumbnail_url;
 		}
 	}
 
-	if ( is_string( $logo ) && $logo !== '' ) {
-		return $logo;
+	// Fallback: Custom external_logo_url term meta
+	$external_logo = (string) get_term_meta( $term_id, 'external_logo_url', true );
+	if ( $external_logo !== '' ) {
+		return $external_logo;
 	}
 
+	// Final fallback: WooCommerce or theme placeholder image
 	return function_exists( 'wc_placeholder_img_src' )
 		? wc_placeholder_img_src( 'woocommerce_thumbnail' )
 		: get_theme_file_uri( '/resources/images/placeholder-category.png' );
@@ -125,7 +127,9 @@ function jerseyplug_flush_mega_menu_cache(): void {
 	$wpdb->query(
 		"DELETE FROM {$wpdb->options}
          WHERE option_name LIKE '_transient_jerseyplug_mega_menu_%'
-            OR option_name LIKE '_transient_timeout_jerseyplug_mega_menu_%'"
+            OR option_name LIKE '_transient_timeout_jerseyplug_mega_menu_%'
+            OR option_name LIKE '_transient_jerseyplug_mega_menu_data_%'
+            OR option_name LIKE '_transient_timeout_jerseyplug_mega_menu_data_%'"
 	);
 }
 add_action( 'created_product_cat', 'jerseyplug_flush_mega_menu_cache' );

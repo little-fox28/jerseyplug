@@ -15,6 +15,8 @@ $jerseyplug_require( '/inc/helpers.php' );
 $jerseyplug_require( '/inc/admin-options.php' );
 $jerseyplug_require( '/inc/setup.php' );
 $jerseyplug_require( '/inc/enqueue.php' );
+$jerseyplug_require( '/inc/homepage.php' );
+$jerseyplug_require( '/inc/router.php' );
 
 if ( function_exists( 'WC' ) || class_exists( 'WooCommerce' ) ) {
 	$jerseyplug_require( '/inc/woocommerce.php' );

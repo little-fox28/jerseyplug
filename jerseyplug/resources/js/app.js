@@ -28,6 +28,83 @@ function jerseyplugOpenCartDrawer(trigger) {
     return event.defaultPrevented
 }
 
+function jerseyplugInitHomeSlider() {
+    const sections = document.querySelectorAll('[data-home-slider]')
+
+    sections.forEach((section) => {
+        const slides = Array.from(section.querySelectorAll('[data-home-slide]'))
+        const indicators = Array.from(section.querySelectorAll('[data-home-slider-dot]'))
+
+        if (!slides.length) {
+            return
+        }
+
+        const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        let current = 0
+        let interval = null
+
+        const syncIndicators = (index) => {
+            indicators.forEach((button, idx) => {
+                const span = button.querySelector('span')
+                if (!span) {
+                    return
+                }
+
+                if (idx === index) {
+                    span.classList.add('w-8', 'bg-secondary')
+                    span.classList.remove('w-2', 'bg-white/50')
+                } else {
+                    span.classList.add('w-2', 'bg-white/50')
+                    span.classList.remove('w-8', 'bg-secondary')
+                }
+            })
+        }
+
+        const showSlide = (index) => {
+            slides.forEach((slide, idx) => {
+                slide.classList.toggle('opacity-100', idx === index)
+                slide.classList.toggle('opacity-0', idx !== index)
+                slide.setAttribute('aria-hidden', idx === index ? 'false' : 'true')
+            })
+
+            syncIndicators(index)
+            current = index
+        }
+
+        const stop = () => {
+            if (interval) {
+                window.clearInterval(interval)
+                interval = null
+            }
+        }
+
+        const start = () => {
+            if (reducedMotion || slides.length < 2 || interval) {
+                return
+            }
+
+            interval = window.setInterval(() => {
+                showSlide((current + 1) % slides.length)
+            }, 5000)
+        }
+
+        indicators.forEach((button, index) => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault()
+                showSlide(index)
+                stop()
+                start()
+            })
+        })
+
+        section.addEventListener('mouseenter', stop)
+        section.addEventListener('mouseleave', start)
+
+        showSlide(0)
+        start()
+    })
+}
+
 window.addEventListener('load', function () {
     let mainNavigation = document.getElementById('primary-navigation')
     let mainNavigationToggle = document.getElementById('primary-menu-toggle')
@@ -50,4 +127,6 @@ window.addEventListener('load', function () {
             event.preventDefault()
         }
     })
+
+    jerseyplugInitHomeSlider()
 })

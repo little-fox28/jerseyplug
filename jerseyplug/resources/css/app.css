@@ -6,6 +6,7 @@
 /* 1. NGUỒN QUÉT CỦA TAILPRESS (GIỮ NGUYÊN) */
 @source '../../vendor/tailpress/framework/**/*.php';
 @source '../../vendor/tailpress/framework/**/**/*.php';
+@source '../../blocks/**/*.php';
 
 /* =========================================
    2. CẤU HÌNH THEME TỪ REACT (THÊM VÀO)

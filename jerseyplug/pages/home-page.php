@@ -11,7 +11,7 @@ get_header();
 			do_action('jerseyplug_before_homepage', $page_id);
 
 			the_content();
-			get_template_part('components/home/section', 'categories',        ['page_id' => $page_id]);
+
 			get_template_part('components/home/section', 'leagues',           ['page_id' => $page_id]);
 			get_template_part('components/home/section', 'featured-products', ['page_id' => $page_id]);
 			get_template_part('components/home/section', 'new-arrivals',      ['page_id' => $page_id]);

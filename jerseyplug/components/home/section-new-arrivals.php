@@ -32,7 +32,7 @@ do_action( 'jerseyplug_before_home_new_arrivals', $products, (int) $args['page_i
 
 		<div class="grid grid-cols-2 gap-3 md:gap-8 lg:grid-cols-4">
 			<?php foreach ( $products as $product ) : ?>
-				<?php get_template_part( 'parts/home/product-card', null, [ 'product' => $product ] ); ?>
+				<?php get_template_part( 'components/products/product-card', null, [ 'product' => $product ] ); ?>
 			<?php endforeach; ?>
 		</div>
 

@@ -22,6 +22,29 @@ function jerseyplug_register_assets(): void {
 jerseyplug_register_assets();
 
 /**
+ * Conditionally enqueue the products page filter script.
+ */
+function jerseyplug_enqueue_products_assets(): void {
+	$is_products_page = function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() );
+
+	if ( ! $is_products_page ) {
+		return;
+	}
+
+	TailPress\Framework\Theme::instance()
+		->assets(
+			fn( $manager ) => $manager
+				->withCompiler(
+					new TailPress\Framework\Assets\ViteCompiler(),
+					fn( $compiler ) => $compiler
+						->registerAsset( 'resources/js/products-filter.js' )
+				)
+				->enqueueAssets()
+		);
+}
+add_action( 'wp_enqueue_scripts', 'jerseyplug_enqueue_products_assets' );
+
+/**
  * Enqueue Alpine.js from CDN.
  */
 add_action(

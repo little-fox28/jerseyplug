@@ -251,6 +251,11 @@ if ( ! function_exists( 'jerseyplug_get_homepage_products' ) ) {
 
 			$image_id = $product->get_image_id();
 			$image    = $image_id > 0 ? wp_get_attachment_image_url( $image_id, 'woocommerce_thumbnail' ) : '';
+			$gallery_ids = $product->get_gallery_image_ids();
+			$image_back  = '';
+			if ( ! empty( $gallery_ids ) ) {
+				$image_back = wp_get_attachment_image_url( $gallery_ids[0], 'woocommerce_thumbnail' );
+			}
 			$terms    = get_the_terms( $product->get_id(), 'product_cat' );
 			$category = '';
 			if ( is_array( $terms ) && ! empty( $terms ) && $terms[0] instanceof WP_Term ) {
@@ -263,9 +268,10 @@ if ( ! function_exists( 'jerseyplug_get_homepage_products' ) ) {
 				'name'     => (string) $product->get_name(),
 				'url'      => (string) get_permalink( $product->get_id() ),
 				'image'    => $image ?: ( function_exists( 'wc_placeholder_img_src' ) ? (string) wc_placeholder_img_src( 'woocommerce_thumbnail' ) : '' ),
+				'image_back'   => $image_back ?: $image,
 				'category' => $category,
-				'price'    => wp_strip_all_tags( $product->get_price_html() ),
-				'rating_label' => number_format_i18n( (float) $product->get_average_rating(), 1 ),
+				'price'    => $product->get_price_html(),
+				'rating_label' => jerseyplug_get_random_rating_and_reviews( (int) $product->get_id() )['rating'],
 				'tag'      => $context === 'featured' ? ( function_exists( 'jerseyplug_pll' ) ? jerseyplug_pll( 'Trending Now' ) : __( 'Trending Now', 'jerseyplug' ) ) : ( function_exists( 'jerseyplug_pll' ) ? jerseyplug_pll( 'New' ) : __( 'New', 'jerseyplug' ) ),
 			];
 		}

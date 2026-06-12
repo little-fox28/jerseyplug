@@ -35,3 +35,26 @@ if ( ! function_exists( 'get_jerseyplug_setting' ) ) {
 		return $default;
 	}
 }
+
+if ( ! function_exists( 'jerseyplug_get_random_rating_and_reviews' ) ) {
+	/**
+	 * Generate deterministic rating (4.5 - 5.0) and review count (< 200) based on product ID.
+	 *
+	 * @param int $product_id Product ID to seed the random calculation.
+	 * @return array{rating: string, reviews: int}
+	 */
+	function jerseyplug_get_random_rating_and_reviews( int $product_id ): array {
+		$seed = (int) $product_id;
+		// Ratings: 4.5, 4.6, 4.7, 4.8, 4.9, 5.0
+		$ratings = [ 4.5, 4.6, 4.7, 4.8, 4.9, 5.0 ];
+		$rating  = $ratings[ $seed % count( $ratings ) ];
+
+		// Reviews: under 200 (between 45 and 195)
+		$reviews = 45 + ( ( $seed * 13 ) % 150 );
+
+		return [
+			'rating'  => number_format_i18n( $rating, 1 ),
+			'reviews' => $reviews,
+		];
+	}
+}

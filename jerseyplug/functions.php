@@ -20,6 +20,7 @@ $jerseyplug_require( '/inc/router.php' );
 
 if ( function_exists( 'WC' ) || class_exists( 'WooCommerce' ) ) {
 	$jerseyplug_require( '/inc/woocommerce.php' );
+	$jerseyplug_require( '/inc/products.php' );
 }
 
 if ( function_exists( 'get_field' ) || is_admin() ) {

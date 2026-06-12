@@ -204,3 +204,108 @@ if ( ! function_exists( 'get_jerseyplug_mega_menu' ) ) {
 		return $menu_data;
 	}
 }
+
+/**
+ * Capture custom personalization data (name, number, patches) when adding to cart.
+ */
+function jerseyplug_add_personalization_to_cart( array $cart_item_data, int $product_id, int $variation_id ): array {
+	if ( ! empty( $_POST['custom_name'] ) ) {
+		$cart_item_data['custom_name'] = sanitize_text_field( wp_unslash( $_POST['custom_name'] ) );
+	}
+	if ( ! empty( $_POST['custom_number'] ) ) {
+		$cart_item_data['custom_number'] = sanitize_text_field( wp_unslash( $_POST['custom_number'] ) );
+	}
+	if ( ! empty( $_POST['selected_patch'] ) ) {
+		$patch_json = sanitize_text_field( wp_unslash( $_POST['selected_patch'] ) );
+		$patch = json_decode( html_entity_decode( $patch_json ), true );
+		if ( is_array( $patch ) ) {
+			$cart_item_data['selected_patch'] = [
+				'name'  => sanitize_text_field( $patch['name'] ?? $patch['label'] ?? '' ),
+				'price' => (float) ( $patch['price'] ?? 0 ),
+			];
+		}
+	}
+	return $cart_item_data;
+}
+add_filter( 'woocommerce_add_cart_item_data', 'jerseyplug_add_personalization_to_cart', 10, 3 );
+
+/**
+ * Display personalization data in WooCommerce cart/checkout items lists.
+ */
+function jerseyplug_display_personalization_in_cart( array $item_data, array $cart_item ): array {
+	if ( ! empty( $cart_item['custom_name'] ) ) {
+		$item_data[] = [
+			'key'     => function_exists( 'jerseyplug_pll' ) ? jerseyplug_pll( 'Custom Name' ) : __( 'Custom Name', 'jerseyplug' ),
+			'display' => strtoupper( $cart_item['custom_name'] ),
+		];
+	}
+	if ( ! empty( $cart_item['custom_number'] ) ) {
+		$item_data[] = [
+			'key'     => function_exists( 'jerseyplug_pll' ) ? jerseyplug_pll( 'Custom Number' ) : __( 'Custom Number', 'jerseyplug' ),
+			'display' => $cart_item['custom_number'],
+		];
+	}
+	if ( ! empty( $cart_item['selected_patch'] ) && ! empty( $cart_item['selected_patch']['name'] ) ) {
+		$patch_label = function_exists( 'jerseyplug_pll' ) ? jerseyplug_pll( 'Patch' ) : __( 'Patch', 'jerseyplug' );
+		$item_data[] = [
+			'key'     => $patch_label,
+			'display' => sprintf( '%s (+%s)', $cart_item['selected_patch']['name'], wc_price( $cart_item['selected_patch']['price'] ) ),
+		];
+	}
+	return $item_data;
+}
+add_filter( 'woocommerce_get_item_data', 'jerseyplug_display_personalization_in_cart', 10, 2 );
+
+/**
+ * Adjust product price dynamically based on personalization options.
+ */
+function jerseyplug_calculate_custom_cart_item_prices( WC_Cart $cart ): void {
+	if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
+		return;
+	}
+	foreach ( $cart->get_cart() as $cart_item ) {
+		$extra_fee = 0.0;
+		$product = $cart_item['data'];
+
+		$has_print = ! empty( $cart_item['custom_name'] ) || ! empty( $cart_item['custom_number'] );
+		if ( $has_print ) {
+			$print_price = (float) get_post_meta( $product->get_id(), '_print_price', true );
+			if ( $print_price > 0 ) {
+				$extra_fee += $print_price;
+			}
+		}
+
+		if ( ! empty( $cart_item['selected_patch'] ) && isset( $cart_item['selected_patch']['price'] ) ) {
+			$extra_fee += (float) $cart_item['selected_patch']['price'];
+		}
+
+		if ( $extra_fee > 0 ) {
+			$product->set_price( (float) $product->get_price() + $extra_fee );
+		}
+	}
+}
+add_action( 'woocommerce_before_calculate_totals', 'jerseyplug_calculate_custom_cart_item_prices', 10, 1 );
+
+/**
+ * Persist custom personalization meta data into order item details.
+ */
+function jerseyplug_save_personalization_to_order_items( WC_Order_Item_Product $item, string $cart_item_key, array $values, WC_Order $order ): void {
+	if ( ! empty( $values['custom_name'] ) ) {
+		$key = function_exists( 'jerseyplug_pll' ) ? jerseyplug_pll( 'Custom Name' ) : __( 'Custom Name', 'jerseyplug' );
+		$item->update_meta_data( '_custom_name', strtoupper( $values['custom_name'] ) );
+		$item->update_meta_data( $key, strtoupper( $values['custom_name'] ) );
+	}
+	if ( ! empty( $values['custom_number'] ) ) {
+		$key = function_exists( 'jerseyplug_pll' ) ? jerseyplug_pll( 'Custom Number' ) : __( 'Custom Number', 'jerseyplug' );
+		$item->update_meta_data( '_custom_number', $values['custom_number'] );
+		$item->update_meta_data( $key, $values['custom_number'] );
+	}
+	if ( ! empty( $values['selected_patch'] ) && ! empty( $values['selected_patch']['name'] ) ) {
+		$key = function_exists( 'jerseyplug_pll' ) ? jerseyplug_pll( 'Patch' ) : __( 'Patch', 'jerseyplug' );
+		$item->update_meta_data( '_selected_patch_name', $values['selected_patch']['name'] );
+		$item->update_meta_data( '_selected_patch_price', $values['selected_patch']['price'] );
+		$item->update_meta_data( $key, sprintf( '%s (+%s)', $values['selected_patch']['name'], wc_price( $values['selected_patch']['price'] ) ) );
+	}
+}
+add_action( 'woocommerce_checkout_create_order_line_item', 'jerseyplug_save_personalization_to_order_items', 10, 4 );
+

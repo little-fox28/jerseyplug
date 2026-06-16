@@ -66,6 +66,6 @@ if ( $fetchpriority !== '' ) {
 		class="<?php echo esc_attr( trim( $width_class . ' ' . $img_class ) ); ?>"
 		loading="<?php echo esc_attr( $loading ); ?>"
 		decoding="<?php echo esc_attr( $decoding ); ?>"
-		<?php echo $fetchpriority_attribute; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		<?php echo $fetchpriority_attribute; ?>
 	/>
 </a>

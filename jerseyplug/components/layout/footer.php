@@ -76,7 +76,7 @@ $youtube_url        = $get_setting( 'jerseyplug_social_youtube', '' );
 					'components/ui/logo',
 					null,
 					[
-						'class'         => 'w-auto h-30',
+						'class'         => 'w-auto !h-16 md:!h-20',
 						'img_class'     => 'object-contain transition-all',
 						'wrapper_class' => 'flex items-center group',
 						'aria_label'    => __( 'JerseyPlug home', 'jerseyplug' ),

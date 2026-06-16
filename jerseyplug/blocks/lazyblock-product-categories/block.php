@@ -70,7 +70,7 @@ if (empty($cards)) {
 $count = count($cards);
 
 // --- Dynamic Grid Class Mapping ----------------------------------------------
-// Mobile: grid-cols-1 (default) | Tablet: md:grid-cols-2 | Desktop: lg:grid-cols-4
+// Mobile: grid-cols-2 (custom) | Tablet: md:grid-cols-2 | Desktop: lg:grid-cols-4
 $grid_classes    = [];
 $heading_classes = [];
 
@@ -80,65 +80,65 @@ foreach ($cards as $i => $card) {
 	if (0 === $i) {
 		if ($count === 1) {
 			// Solo: full width on all breakpoints
-			$grid_classes[$i]    = 'row-span-2 min-h-[320px] md:col-span-2 md:row-span-2 md:min-h-[400px] lg:col-span-4 lg:row-span-2 lg:min-h-[480px]';
+			$grid_classes[$i]    = 'col-span-2 row-span-2 min-h-[250px] sm:min-h-[320px] md:col-span-2 md:row-span-2 md:min-h-[400px] lg:col-span-4 lg:row-span-2 lg:min-h-[480px]';
 			$heading_classes[$i] = 'text-2xl font-bold text-white md:text-3xl lg:text-4xl';
 		} elseif ($count === 2) {
-			// Pair: half-width on desktop, full-width on tablet
-			$grid_classes[$i]    = 'row-span-2 min-h-[320px] md:col-span-2 md:row-span-2 md:min-h-[400px] lg:col-span-2 lg:row-span-2 lg:min-h-[480px]';
+			// Pair: half-width on desktop, full-width on tablet & mobile
+			$grid_classes[$i]    = 'col-span-2 row-span-2 min-h-[250px] sm:min-h-[320px] md:col-span-2 md:row-span-2 md:min-h-[400px] lg:col-span-2 lg:row-span-2 lg:min-h-[480px]';
 			$heading_classes[$i] = 'text-xl font-bold text-white md:text-2xl lg:text-3xl';
 		} else {
 			// 3–6+ items: standard featured
-			$grid_classes[$i]    = 'row-span-2 min-h-[320px] md:col-span-2 md:row-span-2 md:min-h-[400px] lg:col-span-2 lg:row-span-2 lg:min-h-[400px]';
+			$grid_classes[$i]    = 'col-span-2 row-span-2 min-h-[250px] sm:min-h-[320px] md:col-span-2 md:row-span-2 md:min-h-[400px] lg:col-span-2 lg:row-span-2 lg:min-h-[400px]';
 			$heading_classes[$i] = 'text-xl font-bold text-white md:text-2xl lg:text-3xl';
 		}
 
 		// ── Non-Featured Items ──
 	} else {
 		if ($count === 2) {
-			// Item 2 mirrors Item 1 on desktop
-			$grid_classes[$i]    = 'min-h-[200px] md:col-span-1 md:min-h-[200px] lg:col-span-2 lg:row-span-2 lg:min-h-[480px]';
+			// Item 2 mirrors Item 1 on desktop, stacks on mobile
+			$grid_classes[$i]    = 'col-span-2 min-h-[200px] md:col-span-1 md:min-h-[200px] lg:col-span-2 lg:row-span-2 lg:min-h-[480px]';
 			$heading_classes[$i] = 'text-xl font-bold text-white md:text-2xl lg:text-3xl';
 		} elseif ($count === 3) {
-			// Items 2 & 3 stack on the right (each col-span-2 row-span-1 on desktop)
-			$grid_classes[$i]    = 'min-h-[200px] md:col-span-1 md:min-h-[200px] lg:col-span-2 lg:row-span-1 lg:min-h-[192px]';
-			$heading_classes[$i] = 'text-lg font-bold text-white md:text-xl lg:text-2xl';
+			// Items 2 & 3 side-by-side on mobile
+			$grid_classes[$i]    = 'col-span-1 min-h-[150px] sm:min-h-[200px] md:col-span-1 md:min-h-[200px] lg:col-span-2 lg:row-span-1 lg:min-h-[192px]';
+			$heading_classes[$i] = 'text-base sm:text-lg font-bold text-white md:text-xl lg:text-2xl';
 		} elseif ($count === 4) {
 			if (1 === $i) {
-				// Item 2: col-span-2 row-span-1 on desktop
-				$grid_classes[$i]    = 'min-h-[200px] md:col-span-1 md:min-h-[200px] lg:col-span-2 lg:row-span-1 lg:min-h-[192px]';
+				// Item 2: full width mobile, half desktop
+				$grid_classes[$i]    = 'col-span-2 min-h-[180px] sm:min-h-[200px] md:col-span-1 md:min-h-[200px] lg:col-span-2 lg:row-span-1 lg:min-h-[192px]';
 				$heading_classes[$i] = 'text-lg font-bold text-white md:text-xl lg:text-2xl';
 			} else {
-				// Items 3 & 4: col-span-1 row-span-1 on desktop
-				$grid_classes[$i]    = 'min-h-[200px] md:col-span-1 md:min-h-[200px] lg:col-span-1 lg:row-span-1 lg:min-h-[192px]';
-				$heading_classes[$i] = 'text-lg font-bold text-white md:text-xl lg:text-xl uppercase';
+				// Items 3 & 4: side-by-side
+				$grid_classes[$i]    = 'col-span-1 min-h-[150px] sm:min-h-[200px] md:col-span-1 md:min-h-[200px] lg:col-span-1 lg:row-span-1 lg:min-h-[192px]';
+				$heading_classes[$i] = 'text-base sm:text-lg font-bold text-white md:text-xl lg:text-xl uppercase';
 			}
 		} elseif ($count === 5) {
-			// Items 2–5: col-span-1 row-span-1 on desktop, auto-flow around featured
-			$grid_classes[$i]    = 'min-h-[200px] md:col-span-1 md:min-h-[200px] lg:col-span-1 lg:row-span-1 lg:min-h-[192px]';
-			$heading_classes[$i] = 'text-lg font-bold text-white md:text-xl lg:text-xl uppercase';
+			// Items 2–5: side-by-side on mobile (2 cols)
+			$grid_classes[$i]    = 'col-span-1 min-h-[150px] sm:min-h-[200px] md:col-span-1 md:min-h-[200px] lg:col-span-1 lg:row-span-1 lg:min-h-[192px]';
+			$heading_classes[$i] = 'text-base sm:text-lg font-bold text-white md:text-xl lg:text-xl uppercase';
 		} elseif ($count === 6) {
 			if ($i <= 4) {
-				// Items 2–5: standard quarter cells
-				$grid_classes[$i]    = 'min-h-[200px] md:col-span-1 md:min-h-[200px] lg:col-span-1 lg:row-span-1 lg:min-h-[192px]';
-				$heading_classes[$i] = 'text-lg font-bold text-white md:text-xl lg:text-xl uppercase';
+				// Items 2–5: side-by-side
+				$grid_classes[$i]    = 'col-span-1 min-h-[150px] sm:min-h-[200px] md:col-span-1 md:min-h-[200px] lg:col-span-1 lg:row-span-1 lg:min-h-[192px]';
+				$heading_classes[$i] = 'text-base sm:text-lg font-bold text-white md:text-xl lg:text-xl uppercase';
 			} else {
-				// Item 6: symmetrical full-width footer row on desktop
-				$grid_classes[$i]    = 'min-h-[200px] md:col-span-2 md:min-h-[200px] lg:col-span-4 lg:row-span-1 lg:min-h-[100px]';
+				// Item 6: full-width footer
+				$grid_classes[$i]    = 'col-span-2 min-h-[180px] sm:min-h-[200px] md:col-span-2 md:min-h-[200px] lg:col-span-4 lg:row-span-1 lg:min-h-[100px]';
 				$heading_classes[$i] = 'text-lg font-bold text-white md:text-xl lg:text-2xl';
 			}
 		} else {
 			// 7+ items: Featured + Grid fallback
 			if ($i <= 4) {
-				$grid_classes[$i]    = 'min-h-[200px] md:col-span-1 md:min-h-[200px] lg:col-span-1 lg:row-span-1 lg:min-h-[192px]';
-				$heading_classes[$i] = 'text-lg font-bold text-white md:text-xl lg:text-xl uppercase';
+				$grid_classes[$i]    = 'col-span-1 min-h-[150px] sm:min-h-[200px] md:col-span-1 md:min-h-[200px] lg:col-span-1 lg:row-span-1 lg:min-h-[192px]';
+				$heading_classes[$i] = 'text-base sm:text-lg font-bold text-white md:text-xl lg:text-xl uppercase';
 			} else {
-				// Additional items: 2 per row on desktop
-				$grid_classes[$i]    = 'min-h-[200px] md:col-span-1 md:min-h-[200px] lg:col-span-2 lg:row-span-1 lg:min-h-[192px]';
-				$heading_classes[$i] = 'text-lg font-bold text-white md:text-xl lg:text-2xl';
+				// Additional items: 2 per row on desktop and mobile
+				$grid_classes[$i]    = 'col-span-1 min-h-[150px] sm:min-h-[200px] md:col-span-1 md:min-h-[200px] lg:col-span-2 lg:row-span-1 lg:min-h-[192px]';
+				$heading_classes[$i] = 'text-base sm:text-lg font-bold text-white md:text-xl lg:text-2xl';
 
 				// Center the last item if it's alone on its row
 				if ($i === $count - 1 && ($count % 2 !== 0)) {
-					$grid_classes[$i] = 'min-h-[200px] md:col-span-2 md:min-h-[200px] lg:col-span-4 lg:row-span-1 lg:min-h-[192px]';
+					$grid_classes[$i] = 'col-span-2 min-h-[180px] sm:min-h-[200px] md:col-span-2 md:min-h-[200px] lg:col-span-4 lg:row-span-1 lg:min-h-[192px]';
 				}
 			}
 		}
@@ -165,10 +165,10 @@ $discover_text = function_exists('jerseyplug_pll') ? jerseyplug_pll('Discover') 
 		</div>
 
 		<!-- Bento Grid -->
-		<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+		<div class="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4">
 			<?php foreach ($cards as $i => $card) :
-				$card_grid    = $grid_classes[$i] ?? 'min-h-[200px] md:col-span-1 lg:col-span-1 lg:row-span-1';
-				$card_heading = $heading_classes[$i] ?? 'text-lg font-bold text-white md:text-xl uppercase';
+				$card_grid    = $grid_classes[$i] ?? 'col-span-1 min-h-[150px] sm:min-h-[200px] md:col-span-1 lg:col-span-1 lg:row-span-1';
+				$card_heading = $heading_classes[$i] ?? 'text-base sm:text-lg font-bold text-white md:text-xl uppercase';
 				$is_large  = (0 === $i);
 				$is_medium = (($count > 1 && 1 === $i) || ($count > 4 && $i > 4));
 				$is_small  = (($count >= 4 && (2 === $i || 3 === $i)) || ($count === 5 && 4 === $i));

@@ -124,9 +124,9 @@ $mobile_overlay_classes = (string) apply_filters('jerseyplug_header_mobile_overl
 				'components/ui/logo',
 				null,
 				[
-					'class'         => 'w-auto !h-12 md:!h-16 lg:!h-20',
+					'class'         => 'w-auto !h-20 md:!h-24 lg:!h-28',
 					'img_class'     => 'object-contain transition-all',
-					'wrapper_class' => 'flex items-center gap-1 group active:scale-95 transition-transform',
+					'wrapper_class' => 'flex items-center gap-1 group active:scale-95 transition-transform absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0',
 					'logo_url'      => $logo_url,
 					'logo_alt'      => $logo_alt,
 					'fetchpriority' => 'high',
@@ -325,21 +325,7 @@ $mobile_overlay_classes = (string) apply_filters('jerseyplug_header_mobile_overl
 		class="<?php echo esc_attr($mobile_drawer_classes); ?>">
 		<div class="p-4">
 			<div class="flex justify-between items-center mb-4">
-				<?php
-				get_template_part(
-					'components/ui/logo',
-					null,
-					[
-						'class'     => 'w-auto h-8',
-						'img_class' => 'object-contain transition-all',
-						'logo_url'  => $logo_url,
-						'logo_alt'  => $logo_alt,
-						'loading'   => 'eager',
-						'decoding'  => 'async',
-					]
-				);
-				?>
-				<button @click="isMobileMenuOpen = false" class="text-white" aria-label="<?php echo esc_attr($translate('Close Mobile Menu')); ?>">
+				<button @click="isMobileMenuOpen = false" class="text-white ml-auto" aria-label="<?php echo esc_attr($translate('Close Mobile Menu')); ?>">
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 						<line x1="18" y1="6" x2="6" y2="18"></line>
 						<line x1="6" y1="6" x2="18" y2="18"></line>

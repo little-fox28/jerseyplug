@@ -319,3 +319,55 @@ function jerseyplug_save_personalization_to_order_items(WC_Order_Item_Product $i
 	}
 }
 add_action('woocommerce_checkout_create_order_line_item', 'jerseyplug_save_personalization_to_order_items', 10, 4);
+
+/**
+ * WooCommerce SPA-like Toast Notification System
+ * Disable default notice output.
+ */
+function jerseyplug_disable_default_wc_notices(): void
+{
+	remove_action('woocommerce_before_shop_loop', 'woocommerce_output_all_notices', 10);
+	remove_action('woocommerce_before_single_product', 'woocommerce_output_all_notices', 10);
+	remove_action('woocommerce_before_cart', 'woocommerce_output_all_notices', 10);
+	remove_action('woocommerce_before_checkout_form', 'woocommerce_output_all_notices', 10);
+	remove_action('woocommerce_account_content', 'woocommerce_output_all_notices', 5);
+	remove_action('woocommerce_before_customer_login_form', 'woocommerce_output_all_notices', 10);
+	remove_action('woocommerce_before_lost_password_form', 'woocommerce_output_all_notices', 10);
+	remove_action('woocommerce_before_reset_password_form', 'woocommerce_output_all_notices', 10);
+	remove_action('woocommerce_before_edit_account_form', 'woocommerce_output_all_notices', 10);
+	remove_action('woocommerce_share', 'woocommerce_output_all_notices', 10);
+}
+add_action('init', 'jerseyplug_disable_default_wc_notices');
+
+/**
+ * Inject WooCommerce notices into the footer as Alpine.js custom events.
+ */
+function jerseyplug_inject_wc_notices_to_footer(): void
+{
+	if (!function_exists('WC') || !WC()->session) {
+		return;
+	}
+
+	$notices = WC()->session->get('wc_notices', []);
+
+	if (!empty($notices)) {
+		$scripts = [];
+		foreach ($notices as $type => $messages) {
+			foreach ($messages as $message) {
+				$raw_message = is_array($message) ? ($message['notice'] ?? '') : $message;
+				$clean_message = wp_strip_all_tags($raw_message);
+				$clean_type = esc_js($type);
+				$clean_message_js = esc_js($clean_message);
+				$scripts[] = "window.dispatchEvent(new CustomEvent('notify', { detail: { message: '{$clean_message_js}', type: '{$clean_type}' } }));";
+			}
+		}
+		
+		if (!empty($scripts)) {
+			echo "<script>document.addEventListener('DOMContentLoaded', function() {\n" . implode("\n", $scripts) . "\n});</script>";
+		}
+		
+		// Clear session notices so they don't display again
+		wc_clear_notices();
+	}
+}
+add_action('wp_footer', 'jerseyplug_inject_wc_notices_to_footer', 10);

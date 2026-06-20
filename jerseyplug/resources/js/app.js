@@ -130,3 +130,59 @@ window.addEventListener('load', function () {
 
     jerseyplugInitHomeSlider()
 })
+
+document.addEventListener('alpine:init', () => {
+    Alpine.data('toastSystem', () => ({
+        toasts: [],
+        addToast(message, type = 'success') {
+            const id = Date.now() + Math.floor(Math.random() * 1000);
+            this.toasts.push({ id, message, type, visible: true });
+
+            setTimeout(() => {
+                this.removeToast(id);
+            }, 3500);
+        },
+        removeToast(id) {
+            const index = this.toasts.findIndex(t => t.id === id);
+            if (index !== -1) {
+                this.toasts[index].visible = false;
+                setTimeout(() => {
+                    this.toasts = this.toasts.filter(t => t.id !== id);
+                }, 300);
+            }
+        }
+    }));
+});
+
+// WooCommerce AJAX Listeners
+if (typeof jQuery !== 'undefined') {
+    jQuery(document.body).on('added_to_cart', function(event, fragments, cart_hash, $button) {
+        let productName = 'Product';
+        if ($button && $button.attr('aria-label')) {
+            const aria = $button.attr('aria-label');
+            // aria-label format: "Add &ldquo;Product Name&rdquo; to your cart"
+            const match = aria.match(/&ldquo;(.*?)&rdquo;/);
+            if (match && match[1]) {
+                productName = match[1];
+            } else {
+                // Try fallback logic
+                const possibleName = aria.replace(/Add /i, '').replace(/ to your cart/i, '').replace(/['"]/g, '').trim();
+                if (possibleName) productName = possibleName;
+            }
+        } else if ($button && $button.data('product_title')) {
+            productName = $button.data('product_title');
+        }
+
+        window.dispatchEvent(new CustomEvent('notify', {
+            detail: { message: `${productName} successfully added to your cart.`, type: 'success' }
+        }));
+    });
+
+    jQuery(document.body).on('checkout_error', function() {
+        // WooCommerce usually displays errors in a div.woocommerce-error on the page
+        // We can just show a generic error toast to direct their attention
+        window.dispatchEvent(new CustomEvent('notify', {
+            detail: { message: 'There was an error processing your checkout. Please check the form.', type: 'error' }
+        }));
+    });
+}

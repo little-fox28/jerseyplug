@@ -1,247 +1,560 @@
 /**
- * Alpine.js component for the products page filter/sort/pagination.
+ * Vanilla JS shop filter module.
  *
- * Registered as `Alpine.data('productsFilter', ...)` and mounted on
- * the <main> element of products-page.php via `x-data="productsFilter"`.
+ * Handles AJAX filtering, sorting, and pagination for the products page.
+ * Uses Fetch API to request the filtered URL, parses the response HTML,
+ * and swaps the product grid + pagination containers without a full reload.
+ * Manages URL state via history.pushState for bookmarkable filter URLs.
  *
  * @package JerseyPlug
  */
 
-document.addEventListener('alpine:init', () => {
-    Alpine.data('productsFilter', () => ({
-        // --- State ---
-        selectedCompetitions: [],
-        selectedTeams: [],
-        selectedVersions: [],
-        selectedSizes: [],
-        selectedPriceRange: null,
-        sortBy: 'featured',
+;(function () {
+    'use strict'
 
-        currentPage: 1,
-        maxPages: 1,
-        perPage: 12,
-        totalProducts: 0,
-        displayedCount: 0,
+    // -----------------------------------------------------------------------
+    // DOM references
+    // -----------------------------------------------------------------------
+    const page          = document.getElementById('products-page')
+    if (!page) return // Not on the shop page.
 
-        loading: false,
-        loadingMore: false,
-        drawerOpen: false,
+    const gridContainer = document.getElementById('product-grid')
+    const resultCount   = document.getElementById('result-count')
+    const pagination    = document.getElementById('pagination-container')
+    const loadingEl     = document.getElementById('grid-loading')
+    const clearAllBtn   = document.getElementById('desktop-clear-all')
+    const clearEmptyBtn = document.getElementById('clear-all-filters')
 
-        ajaxUrl: '',
-        nonce: '',
+    // Mobile elements.
+    const mobileToggle  = document.getElementById('mobile-filter-toggle')
+    const drawer        = document.getElementById('mobile-filter-drawer')
+    const overlay       = document.getElementById('mobile-filter-overlay')
+    const drawerClose   = document.getElementById('mobile-drawer-close')
+    const mobileReset   = document.getElementById('mobile-filter-reset')
+    const mobileApply   = document.getElementById('mobile-filter-apply')
 
-        // --- Computed ---
-        get totalFilters() {
-            return (
-                this.selectedCompetitions.length +
-                this.selectedTeams.length +
-                this.selectedVersions.length +
-                this.selectedSizes.length +
-                (this.selectedPriceRange ? 1 : 0)
-            )
-        },
+    // Sort selects (desktop + mobile).
+    const desktopSort   = document.getElementById('desktop-shop-sort')
+    const mobileSort    = document.getElementById('mobile-shop-sort')
 
-        // --- Init ---
-        init() {
-            const el = this.$el
-            this.ajaxUrl = el.dataset.ajaxUrl || ''
-            this.nonce = el.dataset.nonce || ''
-            this.perPage = parseInt(el.dataset.perPage, 10) || 12
-            this.totalProducts = parseInt(el.dataset.total, 10) || 0
-            this.maxPages = parseInt(el.dataset.maxPages, 10) || 1
+    const shopUrl       = page.dataset.shopUrl || window.location.pathname
 
-            // Count initial server-rendered cards.
-            this.$nextTick(() => {
-                const grid = this.$refs.productGrid
-                if (grid) {
-                    this.displayedCount = grid.children.length
+    // -----------------------------------------------------------------------
+    // State — derived from current URL on init
+    // -----------------------------------------------------------------------
+    let isLoading = false
+
+    // -----------------------------------------------------------------------
+    // Helpers
+    // -----------------------------------------------------------------------
+
+    /**
+     * Collect all checked filter values from the page.
+     * Returns an object like { filter_competition: [...], filter_team: [...], ... }
+     * Deduplicates values since desktop and mobile filters share the same names.
+     */
+    function collectFilters() {
+        const filters = {}
+
+        // Checkbox-based filters (deduplicate across desktop + mobile).
+        const checkboxes = page.querySelectorAll('input[data-filter]:checked')
+        checkboxes.forEach(function (cb) {
+            const name = cb.name
+            if (!name) return
+
+            if (cb.type === 'radio') {
+                filters[name] = cb.value
+            } else {
+                if (!filters[name]) filters[name] = []
+                if (filters[name].indexOf(cb.value) === -1) {
+                    filters[name].push(cb.value)
+                }
+            }
+        })
+
+        // Sort value.
+        const sortEl = desktopSort || mobileSort
+        if (sortEl && sortEl.value && sortEl.value !== 'featured') {
+            filters['sort'] = sortEl.value
+        }
+
+        return filters
+    }
+
+
+    /**
+     * Build a URL string from the collected filters object.
+     */
+    function buildUrl(filters) {
+        const params = new URLSearchParams()
+
+        Object.keys(filters).forEach(function (key) {
+            const value = filters[key]
+            if (Array.isArray(value)) {
+                value.forEach(function (v) {
+                    params.append(key + '[]', v)
+                })
+            } else if (value) {
+                params.set(key, value)
+            }
+        })
+
+        const qs = params.toString()
+        return shopUrl + (qs ? '?' + qs : '')
+    }
+
+    /**
+     * Show / hide the loading overlay on the grid.
+     */
+    function setLoading(state) {
+        isLoading = state
+
+        if (gridContainer) {
+            if (state) {
+                gridContainer.style.opacity = '0.5'
+                gridContainer.style.pointerEvents = 'none'
+            } else {
+                gridContainer.style.opacity = ''
+                gridContainer.style.pointerEvents = ''
+            }
+        }
+
+        if (loadingEl) {
+            if (state) {
+                loadingEl.classList.remove('hidden')
+                loadingEl.classList.add('flex')
+            } else {
+                loadingEl.classList.add('hidden')
+                loadingEl.classList.remove('flex')
+            }
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // Core: Fetch + swap
+    // -----------------------------------------------------------------------
+
+    /**
+     * Fetch the given URL, parse the HTML response, and swap
+     * the #product-grid, #result-count, and #pagination-container.
+     */
+    async function fetchAndSwap(url, pushState) {
+        if (isLoading) return
+
+        setLoading(true)
+
+        try {
+            const response = await fetch(url, {
+                credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            })
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.status)
+            }
+
+            const html = await response.text()
+            const parser = new DOMParser()
+            const doc = parser.parseFromString(html, 'text/html')
+
+            // Swap product grid.
+            const newGrid = doc.getElementById('product-grid')
+            if (newGrid && gridContainer) {
+                gridContainer.innerHTML = newGrid.innerHTML
+            }
+
+            // Swap result count.
+            const newCount = doc.getElementById('result-count')
+            if (newCount && resultCount) {
+                resultCount.innerHTML = newCount.innerHTML
+            }
+
+            // Swap pagination.
+            const newPagination = doc.getElementById('pagination-container')
+            if (pagination) {
+                if (newPagination) {
+                    pagination.innerHTML = newPagination.innerHTML
+                    pagination.classList.remove('hidden')
+                } else {
+                    pagination.innerHTML = ''
+                    pagination.classList.add('hidden')
+                }
+            }
+
+            // Re-bind pagination links for AJAX.
+            bindPaginationLinks()
+
+            // Push URL state.
+            if (pushState !== false) {
+                window.history.pushState({ shopFilter: true }, '', url)
+            }
+
+            // Scroll to grid top.
+            if (gridContainer) {
+                gridContainer.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+
+        } catch (err) {
+            console.error('JerseyPlug: Filter fetch error', err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    /**
+     * Apply current filter state: collect filters, build URL, fetch + swap.
+     */
+    function applyFilters(pushState) {
+        const filters = collectFilters()
+        const url = buildUrl(filters)
+        fetchAndSwap(url, pushState)
+    }
+
+    // -----------------------------------------------------------------------
+    // Dropdown toggles (desktop filter dropdowns)
+    // -----------------------------------------------------------------------
+
+    function initDropdowns() {
+        const dropdowns = page.querySelectorAll('[data-dropdown]')
+
+        dropdowns.forEach(function (dropdown) {
+            const trigger = dropdown.querySelector('[data-dropdown-trigger]')
+            const panel   = dropdown.querySelector('[data-dropdown-panel]')
+            if (!trigger || !panel) return
+
+            trigger.addEventListener('click', function (e) {
+                e.stopPropagation()
+                const isOpen = !panel.classList.contains('hidden')
+
+                // Close all other dropdowns first.
+                closeAllDropdowns()
+
+                if (!isOpen) {
+                    panel.classList.remove('hidden')
+                    trigger.querySelector('svg:last-child')?.classList.add('rotate-180')
                 }
             })
 
-            // Restore filters from URL query params.
-            this.restoreFromUrl()
-        },
-
-        // --- Filter toggle ---
-        toggleFilter(type, value) {
-            const map = {
-                competitions: 'selectedCompetitions',
-                teams: 'selectedTeams',
-                versions: 'selectedVersions',
-                sizes: 'selectedSizes',
+            // Apply button inside dropdown.
+            const applyBtn = dropdown.querySelector('[data-apply-group]')
+            if (applyBtn) {
+                applyBtn.addEventListener('click', function () {
+                    panel.classList.add('hidden')
+                    trigger.querySelector('svg:last-child')?.classList.remove('rotate-180')
+                    applyFilters()
+                })
             }
 
-            const key = map[type]
-            if (!key) return
-
-            const arr = this[key]
-            const idx = arr.indexOf(value)
-            if (idx > -1) {
-                arr.splice(idx, 1)
-            } else {
-                arr.push(value)
+            // Reset button inside dropdown.
+            const resetBtn = dropdown.querySelector('[data-reset-group]')
+            if (resetBtn) {
+                resetBtn.addEventListener('click', function () {
+                    const group = resetBtn.dataset.resetGroup
+                    if (group === 'price') {
+                        // Uncheck all price radios.
+                        dropdown.querySelectorAll('input[data-filter="price"]').forEach(function (r) {
+                            r.checked = false
+                            updateCheckVisual(r)
+                        })
+                    } else {
+                        dropdown.querySelectorAll('input[data-filter="' + group + '"]').forEach(function (cb) {
+                            cb.checked = false
+                            updateCheckVisual(cb)
+                        })
+                    }
+                    applyFilters()
+                })
             }
-        },
+        })
 
-        // --- Clear all filters ---
-        clearAllFilters() {
-            this.selectedCompetitions = []
-            this.selectedTeams = []
-            this.selectedVersions = []
-            this.selectedSizes = []
-            this.selectedPriceRange = null
-            this.applyFilters()
-        },
-
-        // --- Apply filters (full refresh) ---
-        async applyFilters() {
-            this.currentPage = 1
-            this.loading = true
-
-            try {
-                const result = await this.fetchProducts(1)
-                const grid = this.$refs.productGrid
-                if (grid) {
-                    grid.innerHTML = result.html
-                }
-                this.totalProducts = result.total
-                this.maxPages = result.max_pages
-                this.displayedCount = grid ? grid.children.length : 0
-                this.pushToUrl()
-            } catch (err) {
-                console.error('JerseyPlug: Filter error', err)
-            } finally {
-                this.loading = false
+        // Close dropdowns when clicking outside.
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('[data-dropdown]')) {
+                closeAllDropdowns()
             }
-        },
+        })
+    }
 
-        // --- Load more ---
-        async loadMore() {
-            if (this.loadingMore || this.currentPage >= this.maxPages) return
+    function closeAllDropdowns() {
+        page.querySelectorAll('[data-dropdown-panel]').forEach(function (panel) {
+            panel.classList.add('hidden')
+        })
+        page.querySelectorAll('[data-dropdown-trigger] svg:last-child').forEach(function (svg) {
+            svg.classList.remove('rotate-180')
+        })
+    }
 
-            this.loadingMore = true
-            const nextPage = this.currentPage + 1
+    // -----------------------------------------------------------------------
+    // Checkbox / radio visual sync
+    // -----------------------------------------------------------------------
 
-            try {
-                const result = await this.fetchProducts(nextPage)
-                const grid = this.$refs.productGrid
-                if (grid && result.html) {
-                    // Create a temporary container and append children.
-                    const temp = document.createElement('div')
-                    temp.innerHTML = result.html
-                    while (temp.firstChild) {
-                        grid.appendChild(temp.firstChild)
+    /**
+     * Update the custom visual checkbox/radio indicator for a given input.
+     */
+    function updateCheckVisual(input) {
+        const label = input.closest('label')
+        if (!label) return
+
+        const visual = label.querySelector('[data-check-visual]')
+        const icon   = label.querySelector('[data-check-icon]')
+        const text   = label.querySelector('span:last-child')
+
+        if (input.checked) {
+            if (visual) {
+                visual.classList.add('border-primary', 'bg-primary')
+                visual.classList.remove('border-gray-300', 'bg-white')
+            }
+            if (icon) icon.classList.remove('hidden')
+            if (text) {
+                text.classList.add('font-bold', 'text-primary')
+                text.classList.remove('text-gray-600')
+            }
+        } else {
+            if (visual) {
+                visual.classList.remove('border-primary', 'bg-primary')
+                visual.classList.add('border-gray-300', 'bg-white')
+            }
+            if (icon) icon.classList.add('hidden')
+            if (text) {
+                text.classList.remove('font-bold', 'text-primary')
+                text.classList.add('text-gray-600')
+            }
+        }
+    }
+
+    function initCheckboxes() {
+        // Desktop + mobile drawer checkboxes.
+        page.querySelectorAll('input[data-filter]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                // For radios, uncheck siblings (toggle behavior).
+                if (input.type === 'radio') {
+                    const wasChecked = input.dataset.wasChecked === 'true'
+                    if (wasChecked) {
+                        input.checked = false
+                        input.dataset.wasChecked = 'false'
+                    } else {
+                        // Uncheck all radios with the same name in this container.
+                        const container = input.closest('[data-dropdown-panel], [data-accordion-panel]')
+                        if (container) {
+                            container.querySelectorAll('input[name="' + input.name + '"]').forEach(function (r) {
+                                r.dataset.wasChecked = 'false'
+                                updateCheckVisual(r)
+                            })
+                        }
+                        input.dataset.wasChecked = 'true'
                     }
                 }
-                this.currentPage = nextPage
-                this.totalProducts = result.total
-                this.maxPages = result.max_pages
-                this.displayedCount = grid ? grid.children.length : 0
-            } catch (err) {
-                console.error('JerseyPlug: Load more error', err)
-            } finally {
-                this.loadingMore = false
-            }
-        },
 
-        // --- Fetch products from AJAX endpoint ---
-        async fetchProducts(page) {
-            const body = new FormData()
-            body.append('action', 'jerseyplug_filter_products')
-            body.append('nonce', this.nonce)
-            body.append('page', page)
-            body.append('per_page', this.perPage)
-            body.append('sort_by', this.sortBy)
-
-            if (this.selectedPriceRange) {
-                body.append('price_range', this.selectedPriceRange)
-            }
-
-            this.selectedCompetitions.forEach((v) => body.append('competitions[]', v))
-            this.selectedTeams.forEach((v) => body.append('teams[]', v))
-            this.selectedVersions.forEach((v) => body.append('versions[]', v))
-            this.selectedSizes.forEach((v) => body.append('sizes[]', v))
-
-            const response = await fetch(this.ajaxUrl, {
-                method: 'POST',
-                credentials: 'same-origin',
-                body,
+                updateCheckVisual(input)
             })
 
-            const json = await response.json()
+            // Initialize wasChecked state for radios.
+            if (input.type === 'radio' && input.checked) {
+                input.dataset.wasChecked = 'true'
+            }
+        })
+    }
 
-            if (!json.success) {
-                throw new Error(json.data?.message || 'Unknown error')
-            }
+    // -----------------------------------------------------------------------
+    // Sort selects
+    // -----------------------------------------------------------------------
 
-            return json.data
-        },
+    function initSort() {
+        if (desktopSort) {
+            desktopSort.addEventListener('change', function () {
+                // Sync mobile sort.
+                if (mobileSort) mobileSort.value = desktopSort.value
+                applyFilters()
+            })
+        }
 
-        // --- URL state sync ---
-        pushToUrl() {
-            const params = new URLSearchParams()
+        if (mobileSort) {
+            mobileSort.addEventListener('change', function () {
+                // Sync desktop sort.
+                if (desktopSort) desktopSort.value = mobileSort.value
+                applyFilters()
+            })
+        }
+    }
 
-            if (this.selectedCompetitions.length) {
-                params.set('competitions', this.selectedCompetitions.join(','))
-            }
-            if (this.selectedTeams.length) {
-                params.set('teams', this.selectedTeams.join(','))
-            }
-            if (this.selectedVersions.length) {
-                params.set('versions', this.selectedVersions.join(','))
-            }
-            if (this.selectedSizes.length) {
-                params.set('sizes', this.selectedSizes.join(','))
-            }
-            if (this.selectedPriceRange) {
-                params.set('price', this.selectedPriceRange)
-            }
-            if (this.sortBy && this.sortBy !== 'featured') {
-                params.set('sort', this.sortBy)
-            }
+    // -----------------------------------------------------------------------
+    // Clear all filters
+    // -----------------------------------------------------------------------
 
-            const qs = params.toString()
-            const url = window.location.pathname + (qs ? '?' + qs : '')
-            window.history.replaceState(null, '', url)
-        },
+    function clearAllFilters() {
+        // Uncheck all filter inputs.
+        page.querySelectorAll('input[data-filter]').forEach(function (input) {
+            input.checked = false
+            input.dataset.wasChecked = 'false'
+            updateCheckVisual(input)
+        })
 
-        restoreFromUrl() {
-            const params = new URLSearchParams(window.location.search)
+        // Reset sort.
+        if (desktopSort) desktopSort.value = 'featured'
+        if (mobileSort) mobileSort.value = 'featured'
 
-            const competitions = params.get('competitions')
-            if (competitions) {
-                this.selectedCompetitions = competitions.split(',')
-            }
+        // Reset size toggle buttons in drawer.
+        page.querySelectorAll('[data-size-toggle]').forEach(function (btn) {
+            btn.classList.remove('border-primary', 'bg-primary', 'text-white')
+            btn.classList.add('border-gray-200', 'bg-white', 'text-gray-600')
+        })
 
-            const teams = params.get('teams')
-            if (teams) {
-                this.selectedTeams = teams.split(',')
-            }
+        applyFilters()
+    }
 
-            const versions = params.get('versions')
-            if (versions) {
-                this.selectedVersions = versions.split(',')
-            }
+    function initClearButtons() {
+        if (clearAllBtn) {
+            clearAllBtn.addEventListener('click', clearAllFilters)
+        }
+        if (clearEmptyBtn) {
+            clearEmptyBtn.addEventListener('click', clearAllFilters)
+        }
+    }
 
-            const sizes = params.get('sizes')
-            if (sizes) {
-                this.selectedSizes = sizes.split(',')
-            }
+    // -----------------------------------------------------------------------
+    // Mobile drawer
+    // -----------------------------------------------------------------------
 
-            const price = params.get('price')
-            if (price) {
-                this.selectedPriceRange = price
-            }
+    function openDrawer() {
+        if (!drawer || !overlay) return
+        overlay.classList.remove('hidden')
+        drawer.classList.remove('translate-x-full')
+        drawer.classList.add('translate-x-0')
+        document.body.style.overflow = 'hidden'
+    }
 
-            const sort = params.get('sort')
-            if (sort) {
-                this.sortBy = sort
-            }
+    function closeDrawer() {
+        if (!drawer || !overlay) return
+        overlay.classList.add('hidden')
+        drawer.classList.add('translate-x-full')
+        drawer.classList.remove('translate-x-0')
+        document.body.style.overflow = ''
+    }
 
-            // If any filters were restored from the URL, apply them.
-            if (this.totalFilters > 0 || (sort && sort !== 'featured')) {
-                this.applyFilters()
-            }
-        },
-    }))
-})
+    function initDrawer() {
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', openDrawer)
+        }
+        if (drawerClose) {
+            drawerClose.addEventListener('click', closeDrawer)
+        }
+        if (overlay) {
+            overlay.addEventListener('click', closeDrawer)
+        }
+        if (mobileReset) {
+            mobileReset.addEventListener('click', function () {
+                clearAllFilters()
+                closeDrawer()
+            })
+        }
+        if (mobileApply) {
+            mobileApply.addEventListener('click', function () {
+                closeDrawer()
+                applyFilters()
+            })
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // Mobile drawer: Accordions
+    // -----------------------------------------------------------------------
+
+    function initAccordions() {
+        const accordions = page.querySelectorAll('[data-accordion]')
+
+        accordions.forEach(function (accordion) {
+            const trigger = accordion.querySelector('[data-accordion-trigger]')
+            const panel   = accordion.querySelector('[data-accordion-panel]')
+            if (!trigger || !panel) return
+
+            trigger.addEventListener('click', function () {
+                const isOpen = !panel.classList.contains('hidden')
+                panel.classList.toggle('hidden', isOpen)
+
+                // Rotate chevron.
+                const svg = trigger.querySelector('svg')
+                if (svg) {
+                    svg.classList.toggle('rotate-180', !isOpen)
+                }
+            })
+        })
+    }
+
+    // -----------------------------------------------------------------------
+    // Mobile drawer: Size toggle buttons
+    // -----------------------------------------------------------------------
+
+    function initSizeToggles() {
+        page.querySelectorAll('[data-size-toggle]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const size = btn.dataset.sizeToggle
+                // Find the matching hidden checkbox.
+                const checkbox = drawer?.querySelector('input[data-filter="sizes"][value="' + size + '"]')
+                if (!checkbox) return
+
+                checkbox.checked = !checkbox.checked
+
+                // Update button visual.
+                if (checkbox.checked) {
+                    btn.classList.add('border-primary', 'bg-primary', 'text-white')
+                    btn.classList.remove('border-gray-200', 'bg-white', 'text-gray-600')
+                } else {
+                    btn.classList.remove('border-primary', 'bg-primary', 'text-white')
+                    btn.classList.add('border-gray-200', 'bg-white', 'text-gray-600')
+                }
+            })
+        })
+    }
+
+    // -----------------------------------------------------------------------
+    // Pagination: intercept links for AJAX
+    // -----------------------------------------------------------------------
+
+    function bindPaginationLinks() {
+        const paginationContainer = document.getElementById('pagination-container')
+        if (!paginationContainer) return
+
+        paginationContainer.querySelectorAll('a.page-numbers').forEach(function (link) {
+            link.addEventListener('click', function (e) {
+                e.preventDefault()
+                const href = link.getAttribute('href')
+                if (href) {
+                    fetchAndSwap(href, true)
+                }
+            })
+        })
+    }
+
+    // -----------------------------------------------------------------------
+    // Browser back/forward (popstate)
+    // -----------------------------------------------------------------------
+
+    function initPopstate() {
+        window.addEventListener('popstate', function () {
+            fetchAndSwap(window.location.href, false)
+        })
+    }
+
+    // -----------------------------------------------------------------------
+    // Init
+    // -----------------------------------------------------------------------
+
+    function init() {
+        initDropdowns()
+        initCheckboxes()
+        initSort()
+        initClearButtons()
+        initDrawer()
+        initAccordions()
+        initSizeToggles()
+        bindPaginationLinks()
+        initPopstate()
+    }
+
+    // Run on DOM ready.
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init)
+    } else {
+        init()
+    }
+})()

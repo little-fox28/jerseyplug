@@ -89,3 +89,97 @@ a {
     margin-bottom: 0 !important;
   }
 }
+
+/* ============================================================
+   WOOCOMMERCE CART — CartPage.jsx design parity
+   ============================================================ */
+
+/* ── Quantity stepper: wrap WooCommerce's input in a styled flex row ── */
+.woocommerce-cart-form .product-quantity .quantity {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e5e7eb; /* gray-200 */
+  border-radius: 0.5rem;
+  height: 2.5rem;
+  overflow: hidden;
+  background: #fff;
+}
+
+.woocommerce-cart-form .product-quantity .quantity input.qty {
+  width: 3rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  border: none !important;
+  outline: none !important;
+  background: transparent;
+  -moz-appearance: textfield;
+}
+
+.woocommerce-cart-form .product-quantity .quantity input.qty::-webkit-outer-spin-button,
+.woocommerce-cart-form .product-quantity .quantity input.qty::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ── Product thumbnail: ensure object-fit inside WC-generated img tags ── */
+.woocommerce-cart-form .product-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Cart totals table — match sidebar design ── */
+.woocommerce-cart .cart_totals h2 {
+  display: none; /* Title already rendered in PHP above the collaterals */
+}
+
+.woocommerce-cart .cart_totals table.shop_table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.woocommerce-cart .cart_totals table.shop_table th,
+.woocommerce-cart .cart_totals table.shop_table td {
+  padding: 0.625rem 0;
+  color: #4b5563; /* gray-600 */
+}
+
+.woocommerce-cart .cart_totals table.shop_table th {
+  font-weight: 500;
+  text-align: left;
+}
+
+.woocommerce-cart .cart_totals table.shop_table .order-total th,
+.woocommerce-cart .cart_totals table.shop_table .order-total td {
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  color: #111827;
+  font-weight: 700;
+}
+
+.woocommerce-cart .cart_totals table.shop_table .order-total .amount {
+  font-size: 1.5rem;
+  color: #163300;
+}
+
+/* WC applies .cart-subtotal, .woocommerce-shipping-totals, .tax-rate, .order-total rows */
+.woocommerce-cart .cart_totals table.shop_table tr:not(.order-total) th,
+.woocommerce-cart .cart_totals table.shop_table tr:not(.order-total) td {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* Hide WC's default checkout button inside .cart_totals (we render our own) */
+.woocommerce-cart .cart_totals .wc-proceed-to-checkout {
+  display: none !important;
+}
+
+/* ── Coupon notices ── */
+.woocommerce-cart .woocommerce-message,
+.woocommerce-cart .woocommerce-error,
+.woocommerce-cart .woocommerce-info {
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+

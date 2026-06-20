@@ -1,6 +1,9 @@
 <?php
 /**
- * Products page data helpers and AJAX handler.
+ * Products page data helpers and server-side query modifiers.
+ *
+ * Uses pre_get_posts to modify the standard WooCommerce main loop
+ * based on URL query parameters for filtering and sorting.
  *
  * @package JerseyPlug
  */
@@ -107,173 +110,6 @@ if ( ! function_exists( 'jerseyplug_get_products_page_filter_options' ) ) {
 	}
 }
 
-if ( ! function_exists( 'jerseyplug_query_filtered_products' ) ) {
-	/**
-	 * Query WooCommerce products with filter/sort/pagination support.
-	 *
-	 * @param array $filters {
-	 *     @type string[] $competitions  Selected competition/category names.
-	 *     @type string[] $teams         Selected team names.
-	 *     @type string[] $versions      Selected version attribute values.
-	 *     @type string[] $sizes         Selected size attribute values.
-	 *     @type string   $price_range   Price range ID (p1, p2, p3).
-	 *     @type string   $sort_by       Sort option string.
-	 *     @type int      $page          Current page number.
-	 *     @type int      $per_page      Products per page.
-	 * }
-	 * @return array{ products: array, total: int, max_pages: int }
-	 */
-	function jerseyplug_query_filtered_products( array $filters = [] ): array {
-		if ( ! function_exists( 'wc_get_products' ) ) {
-			return [ 'products' => [], 'total' => 0, 'max_pages' => 0 ];
-		}
-
-		$defaults = [
-			'competitions' => [],
-			'teams'        => [],
-			'versions'     => [],
-			'sizes'        => [],
-			'price_range'  => '',
-			'sort_by'      => 'featured',
-			'page'         => 1,
-			'per_page'     => 12,
-		];
-		$filters = wp_parse_args( $filters, $defaults );
-
-		$args = [
-			'status'  => 'publish',
-			'limit'   => (int) $filters['per_page'],
-			'page'    => max( 1, (int) $filters['page'] ),
-			'return'  => 'objects',
-			'paginate' => true,
-		];
-
-		// --- Sorting ---
-		switch ( $filters['sort_by'] ) {
-			case 'price_low':
-				$args['orderby'] = 'price';
-				$args['order']   = 'ASC';
-				break;
-			case 'price_high':
-				$args['orderby'] = 'price';
-				$args['order']   = 'DESC';
-				break;
-			case 'newest':
-				$args['orderby'] = 'date';
-				$args['order']   = 'DESC';
-				break;
-			case 'featured':
-			default:
-				$args['featured'] = true;
-				$args['orderby']  = 'date';
-				$args['order']    = 'DESC';
-				break;
-		}
-
-		// --- Category / taxonomy filters ---
-		$tax_query = [];
-
-		if ( ! empty( $filters['competitions'] ) && taxonomy_exists( 'product_cat' ) ) {
-			$tax_query[] = [
-				'taxonomy' => 'product_cat',
-				'field'    => 'name',
-				'terms'    => array_map( 'sanitize_text_field', $filters['competitions'] ),
-			];
-		}
-
-		if ( ! empty( $filters['teams'] ) && taxonomy_exists( 'product_cat' ) ) {
-			$tax_query[] = [
-				'taxonomy' => 'product_cat',
-				'field'    => 'name',
-				'terms'    => array_map( 'sanitize_text_field', $filters['teams'] ),
-			];
-		}
-
-		if ( ! empty( $filters['versions'] ) && taxonomy_exists( 'pa_version' ) ) {
-			$tax_query[] = [
-				'taxonomy' => 'pa_version',
-				'field'    => 'name',
-				'terms'    => array_map( 'sanitize_text_field', $filters['versions'] ),
-			];
-		}
-
-		if ( ! empty( $filters['sizes'] ) && taxonomy_exists( 'pa_size' ) ) {
-			$tax_query[] = [
-				'taxonomy' => 'pa_size',
-				'field'    => 'name',
-				'terms'    => array_map( 'sanitize_text_field', $filters['sizes'] ),
-			];
-		}
-
-		if ( count( $tax_query ) > 1 ) {
-			$tax_query['relation'] = 'AND';
-		}
-
-		if ( ! empty( $tax_query ) ) {
-			$args['tax_query'] = $tax_query;
-		}
-
-		// --- Price range filter ---
-		if ( ! empty( $filters['price_range'] ) ) {
-			$price_ranges = jerseyplug_get_products_page_filter_options()['priceRanges'] ?? [];
-			foreach ( $price_ranges as $range ) {
-				if ( ( $range['id'] ?? '' ) === $filters['price_range'] ) {
-					$args['min_price'] = (float) $range['min'];
-					$args['max_price'] = (float) $range['max'];
-					break;
-				}
-			}
-		}
-
-		$args = apply_filters( 'jerseyplug_products_page_query_args', $args, $filters );
-
-		$results = wc_get_products( $args );
-
-		$cards = [];
-		if ( isset( $results->products ) ) {
-			foreach ( $results->products as $product ) {
-				if ( ! $product instanceof WC_Product ) {
-					continue;
-				}
-
-				$image_id = $product->get_image_id();
-				$image    = $image_id > 0 ? wp_get_attachment_image_url( $image_id, 'woocommerce_thumbnail' ) : '';
-				$gallery_ids = $product->get_gallery_image_ids();
-				$image_back  = '';
-				if ( ! empty( $gallery_ids ) ) {
-					$image_back = wp_get_attachment_image_url( $gallery_ids[0], 'woocommerce_thumbnail' );
-				}
-				$terms    = get_the_terms( $product->get_id(), 'product_cat' );
-				$category = '';
-				if ( is_array( $terms ) && ! empty( $terms ) && $terms[0] instanceof WP_Term ) {
-					$category = (string) $terms[0]->name;
-				}
-
-				$cards[] = [
-					'id'           => (int) $product->get_id(),
-					'slug'         => (string) $product->get_slug(),
-					'name'         => (string) $product->get_name(),
-					'url'          => (string) get_permalink( $product->get_id() ),
-					'image'        => $image ?: ( function_exists( 'wc_placeholder_img_src' ) ? (string) wc_placeholder_img_src( 'woocommerce_thumbnail' ) : '' ),
-					'image_back'   => $image_back ?: $image,
-					'category'     => $category,
-					'price'        => $product->get_price_html(),
-					'rating_label' => jerseyplug_get_random_rating_and_reviews( (int) $product->get_id() )['rating'],
-					'tag'          => $product->is_featured()
-						? jerseyplug_pll( 'Trending Now' )
-						: ( jerseyplug_is_new_product( $product ) ? jerseyplug_pll( 'New' ) : '' ),
-				];
-			}
-		}
-
-		return [
-			'products'  => $cards,
-			'total'     => isset( $results->total ) ? (int) $results->total : count( $cards ),
-			'max_pages' => isset( $results->max_num_pages ) ? (int) $results->max_num_pages : 1,
-		];
-	}
-}
-
 if ( ! function_exists( 'jerseyplug_is_new_product' ) ) {
 	/**
 	 * Check if a product was published within the last 30 days.
@@ -291,40 +127,164 @@ if ( ! function_exists( 'jerseyplug_is_new_product' ) ) {
 }
 
 /**
- * AJAX handler for filtered product queries.
+ * Modify the main WooCommerce shop query based on URL filter parameters.
  *
- * Accepts POST data with filter parameters, returns HTML fragment
- * of product cards ready to be inserted into the grid.
+ * Reads $_GET params (filter_competition, filter_team, filter_version,
+ * filter_size, filter_price, sort) and applies tax_query / orderby
+ * modifications to the main product loop.
+ *
+ * @param WP_Query $query The main query object.
  */
-function jerseyplug_ajax_filter_products(): void {
-	check_ajax_referer( 'jerseyplug_products_nonce', 'nonce' );
-
-	$filters = [
-		'competitions' => isset( $_POST['competitions'] ) ? array_map( 'sanitize_text_field', (array) $_POST['competitions'] ) : [],
-		'teams'        => isset( $_POST['teams'] ) ? array_map( 'sanitize_text_field', (array) $_POST['teams'] ) : [],
-		'versions'     => isset( $_POST['versions'] ) ? array_map( 'sanitize_text_field', (array) $_POST['versions'] ) : [],
-		'sizes'        => isset( $_POST['sizes'] ) ? array_map( 'sanitize_text_field', (array) $_POST['sizes'] ) : [],
-		'price_range'  => isset( $_POST['price_range'] ) ? sanitize_text_field( wp_unslash( $_POST['price_range'] ) ) : '',
-		'sort_by'      => isset( $_POST['sort_by'] ) ? sanitize_text_field( wp_unslash( $_POST['sort_by'] ) ) : 'featured',
-		'page'         => isset( $_POST['page'] ) ? absint( $_POST['page'] ) : 1,
-		'per_page'     => isset( $_POST['per_page'] ) ? min( absint( $_POST['per_page'] ), 48 ) : 12,
-	];
-
-	$result = jerseyplug_query_filtered_products( $filters );
-
-	// Render product cards as HTML fragment.
-	ob_start();
-	foreach ( $result['products'] as $product ) {
-		get_template_part( 'components/products/product-card', null, [ 'product' => $product ] );
+function jerseyplug_modify_shop_query( WP_Query $query ): void {
+	// Only modify the main query on the front-end shop/taxonomy archives.
+	if ( is_admin() || ! $query->is_main_query() ) {
+		return;
 	}
-	$html = ob_get_clean();
 
-	wp_send_json_success( [
-		'html'      => $html,
-		'total'     => $result['total'],
-		'max_pages' => $result['max_pages'],
-		'page'      => (int) $filters['page'],
-	] );
+	$is_shop = function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() );
+	if ( ! $is_shop ) {
+		return;
+	}
+
+	// --- Posts per page ---
+	$per_page = (int) apply_filters( 'jerseyplug_products_per_page', 12 );
+	$query->set( 'posts_per_page', $per_page );
+
+	// --- Taxonomy filters ---
+	$tax_query = $query->get( 'tax_query', [] );
+	if ( ! is_array( $tax_query ) ) {
+		$tax_query = [];
+	}
+
+	// Competition filter (product_cat).
+	if ( ! empty( $_GET['filter_competition'] ) && taxonomy_exists( 'product_cat' ) ) {
+		$comps = array_map( 'sanitize_text_field', (array) wp_unslash( $_GET['filter_competition'] ) );
+		$tax_query[] = [
+			'taxonomy' => 'product_cat',
+			'field'    => 'name',
+			'terms'    => $comps,
+		];
+	}
+
+	// Team filter (product_cat).
+	if ( ! empty( $_GET['filter_team'] ) && taxonomy_exists( 'product_cat' ) ) {
+		$teams = array_map( 'sanitize_text_field', (array) wp_unslash( $_GET['filter_team'] ) );
+		$tax_query[] = [
+			'taxonomy' => 'product_cat',
+			'field'    => 'name',
+			'terms'    => $teams,
+		];
+	}
+
+	// Version filter (pa_version attribute).
+	if ( ! empty( $_GET['filter_version'] ) && taxonomy_exists( 'pa_version' ) ) {
+		$versions = array_map( 'sanitize_text_field', (array) wp_unslash( $_GET['filter_version'] ) );
+		$tax_query[] = [
+			'taxonomy' => 'pa_version',
+			'field'    => 'name',
+			'terms'    => $versions,
+		];
+	}
+
+	// Size filter (pa_size attribute).
+	if ( ! empty( $_GET['filter_size'] ) && taxonomy_exists( 'pa_size' ) ) {
+		$sizes = array_map( 'sanitize_text_field', (array) wp_unslash( $_GET['filter_size'] ) );
+		$tax_query[] = [
+			'taxonomy' => 'pa_size',
+			'field'    => 'name',
+			'terms'    => $sizes,
+		];
+	}
+
+	if ( count( $tax_query ) > 1 ) {
+		$tax_query['relation'] = 'AND';
+	}
+
+	if ( ! empty( $tax_query ) ) {
+		$query->set( 'tax_query', $tax_query );
+	}
+
+	// --- Sorting ---
+	$sort = isset( $_GET['sort'] ) ? sanitize_text_field( wp_unslash( $_GET['sort'] ) ) : 'featured';
+
+	switch ( $sort ) {
+		case 'price_low':
+			$query->set( 'meta_key', '_price' );
+			$query->set( 'orderby', 'meta_value_num' );
+			$query->set( 'order', 'ASC' );
+			break;
+		case 'price_high':
+			$query->set( 'meta_key', '_price' );
+			$query->set( 'orderby', 'meta_value_num' );
+			$query->set( 'order', 'DESC' );
+			break;
+		case 'newest':
+			$query->set( 'orderby', 'date' );
+			$query->set( 'order', 'DESC' );
+			break;
+		case 'featured':
+		default:
+			$query->set( 'orderby', 'date' );
+			$query->set( 'order', 'DESC' );
+			break;
+	}
+
+	// --- Price range filter (handled via posts_clauses) ---
+	if ( ! empty( $_GET['filter_price'] ) ) {
+		$price_id = sanitize_text_field( wp_unslash( $_GET['filter_price'] ) );
+		$ranges   = jerseyplug_get_products_page_filter_options()['priceRanges'] ?? [];
+
+		foreach ( $ranges as $range ) {
+			if ( ( $range['id'] ?? '' ) === $price_id ) {
+				// Store for the posts_clauses filter.
+				$query->set( 'jerseyplug_min_price', (float) $range['min'] );
+				$query->set( 'jerseyplug_max_price', (float) $range['max'] );
+				break;
+			}
+		}
+	}
 }
-add_action( 'wp_ajax_jerseyplug_filter_products', 'jerseyplug_ajax_filter_products' );
-add_action( 'wp_ajax_nopriv_jerseyplug_filter_products', 'jerseyplug_ajax_filter_products' );
+add_action( 'pre_get_posts', 'jerseyplug_modify_shop_query' );
+
+/**
+ * Filter SQL clauses to add price range filtering via _price meta.
+ *
+ * Reads custom query vars set by jerseyplug_modify_shop_query().
+ *
+ * @param array    $clauses SQL clauses array.
+ * @param WP_Query $query   The query object.
+ * @return array Modified clauses.
+ */
+function jerseyplug_filter_shop_price_clauses( array $clauses, WP_Query $query ): array {
+	if ( is_admin() || ! $query->is_main_query() ) {
+		return $clauses;
+	}
+
+	$min_price = $query->get( 'jerseyplug_min_price' );
+	$max_price = $query->get( 'jerseyplug_max_price' );
+
+	if ( $min_price === '' && $max_price === '' ) {
+		return $clauses;
+	}
+
+	global $wpdb;
+
+	$min = (float) $min_price;
+	$max = (float) $max_price;
+
+	// Join the postmeta table for _price if not already joined.
+	$price_join = "INNER JOIN {$wpdb->postmeta} AS jp_price ON ({$wpdb->posts}.ID = jp_price.post_id AND jp_price.meta_key = '_price')";
+
+	if ( strpos( $clauses['join'], 'jp_price' ) === false ) {
+		$clauses['join'] .= " {$price_join}";
+	}
+
+	$clauses['where'] .= $wpdb->prepare(
+		' AND CAST(jp_price.meta_value AS DECIMAL(10,2)) >= %f AND CAST(jp_price.meta_value AS DECIMAL(10,2)) <= %f',
+		$min,
+		$max
+	);
+
+	return $clauses;
+}
+add_filter( 'posts_clauses', 'jerseyplug_filter_shop_price_clauses', 10, 2 );

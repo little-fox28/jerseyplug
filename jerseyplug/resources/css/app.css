@@ -7,6 +7,11 @@
 @source '../../vendor/tailpress/framework/**/*.php';
 @source '../../vendor/tailpress/framework/**/**/*.php';
 @source '../../blocks/**/*.php';
+@source '../../woocommerce/**/*.php';
+@source '../../pages/**/*.php';
+@source '../../components/**/*.php';
+@source '../../parts/**/*.php';
+
 
 /* =========================================
    2. CẤU HÌNH THEME TỪ REACT (THÊM VÀO)

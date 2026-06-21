@@ -34,6 +34,7 @@ function jerseyplug_register_theme_features(): void {
 						'gallery',
 						'caption',
 					],
+					'woocommerce',
 				]
 			)
 		);

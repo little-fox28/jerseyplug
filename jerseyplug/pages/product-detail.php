@@ -77,9 +77,9 @@ if (! empty($related_ids)) {
 				<h2 class="text-xl font-black uppercase text-gray-900 mb-8 tracking-wider">
 					<?php echo esc_html(jerseyplug_pll('You May Also Like')); ?>
 				</h2>
-				<div class="grid grid-cols-2 gap-3 md:gap-8 lg:grid-cols-4">
+				<ul class="products grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-3 md:gap-x-4 md:gap-y-10 lg:grid-cols-4 before:!hidden after:!hidden list-none !m-0 !p-0">
 					<?php
-					foreach ($related_products as $rel_prod) :
+					foreach ($related_products as $index => $rel_prod) :
 						if (! $rel_prod instanceof WC_Product) {
 							continue;
 						}
@@ -106,10 +106,10 @@ if (! empty($related_ids)) {
 								: (function_exists('jerseyplug_is_new_product') && jerseyplug_is_new_product($rel_prod) ? (function_exists('jerseyplug_pll') ? jerseyplug_pll('New') : 'New') : ''),
 						];
 
-						get_template_part('components/products/product-card', null, ['product' => $card_data]);
+						get_template_part('components/products/product-card', null, ['product' => $card_data, 'index' => $index]);
 					endforeach;
 					?>
-				</div>
+				</ul>
 			</div>
 		<?php endif; ?>
 	</main>

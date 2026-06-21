@@ -183,3 +183,38 @@ a {
   margin-bottom: 1.5rem;
 }
 
+/* ============================================================
+   PRODUCT CARD BUTTON OVERRIDES — Bypass WooCommerce Core CSS
+   ============================================================ */
+.woocommerce ul.products li.product a.button.add_to_cart_button,
+.woocommerce ul.products li.product a.button {
+  background-color: #163300 !important; /* var(--primary) */
+  color: #ffffff !important;
+  padding: 0.625rem 1rem !important; /* py-2.5 px-4 */
+  border-radius: 0.5rem !important; /* rounded-lg */
+  font-size: 0.75rem !important; /* text-xs */
+  font-weight: 700 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  margin: 0 !important;
+  border: none !important;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important; /* shadow-lg */
+  transition: all 0.3s ease !important;
+  line-height: 1.2 !important;
+  height: auto !important;
+}
+
+.woocommerce ul.products li.product a.button.add_to_cart_button:hover,
+.woocommerce ul.products li.product a.button:hover {
+  background-color: #65cf21 !important; /* var(--accent) */
+  color: #163300 !important; /* var(--primary) */
+}
+
+/* Hide default WooCommerce spinner after Quick Add buttons */
+.woocommerce ul.products li.product a.button.loading::after {
+  display: none !important;
+}
+
+

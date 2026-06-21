@@ -62,7 +62,7 @@ if ( ! empty( $active_filters['competitions'] ) ) {
 			do_action( 'woocommerce_before_shop_loop' );
 			?>
 
-			<ul class="products grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-3 md:gap-x-4 md:gap-y-10 lg:grid-cols-4">
+			<ul class="products grid !grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-3 md:gap-x-4 md:gap-y-10 lg:grid-cols-4 before:!hidden after:!hidden list-none !m-0 !p-0">
 				<?php
 				while ( have_posts() ) :
 					the_post();

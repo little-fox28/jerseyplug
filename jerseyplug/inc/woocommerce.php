@@ -340,6 +340,17 @@ function jerseyplug_disable_default_wc_notices(): void
 add_action('init', 'jerseyplug_disable_default_wc_notices');
 
 /**
+ * Remove default WooCommerce UI elements from the shop loop.
+ */
+function jerseyplug_remove_default_woo_ui(): void
+{
+	remove_action('woocommerce_before_shop_loop', 'woocommerce_result_count', 20);
+	remove_action('woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30);
+	remove_action('woocommerce_after_shop_loop', 'woocommerce_pagination', 10);
+}
+add_action('init', 'jerseyplug_remove_default_woo_ui');
+
+/**
  * Inject WooCommerce notices into the footer as Alpine.js custom events.
  */
 function jerseyplug_inject_wc_notices_to_footer(): void

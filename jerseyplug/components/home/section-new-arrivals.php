@@ -30,11 +30,11 @@ do_action( 'jerseyplug_before_home_new_arrivals', $products, (int) $args['page_i
 			</a>
 		</div>
 
-		<div class="grid grid-cols-2 gap-3 md:gap-8 lg:grid-cols-4">
-			<?php foreach ( $products as $product ) : ?>
-				<?php get_template_part( 'components/products/product-card', null, [ 'product' => $product ] ); ?>
+		<ul class="products grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-3 md:gap-x-4 md:gap-y-10 lg:grid-cols-4 before:!hidden after:!hidden list-none !m-0 !p-0">
+			<?php foreach ( $products as $index => $product ) : ?>
+				<?php get_template_part( 'components/products/product-card', null, [ 'product' => $product, 'index' => $index ] ); ?>
 			<?php endforeach; ?>
-		</div>
+		</ul>
 
 		<div class="mt-8 text-center md:hidden">
 			<a href="<?php echo esc_url( jerseyplug_get_homepage_shop_url() ); ?>" class="inline-flex items-center gap-2 font-bold text-primary hover:underline">

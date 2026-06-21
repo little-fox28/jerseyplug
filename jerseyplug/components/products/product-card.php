@@ -86,7 +86,7 @@ $loading_attr  = $is_above_fold ? 'eager' : 'lazy';
 $priority_attr = $is_above_fold ? 'high' : 'auto';
 ?>
 
-<li class="group relative flex flex-col gap-3 product">
+<li class="group relative flex flex-col gap-3 product text-left !w-full !m-0 !p-0 list-none float-none">
 	<div class="relative aspect-4/5 overflow-hidden rounded-xl bg-gray-100 shadow-sm transition-all duration-300 hover:shadow-lg">
 		<?php if ( ! empty( $tag ) ) : ?>
 			<span class="absolute left-2 top-2 z-10 rounded-sm bg-white/90 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-primary backdrop-blur">
@@ -105,7 +105,7 @@ $priority_attr = $is_above_fold ? 'high' : 'auto';
 				<!-- Front Image -->
 				<img src="<?php echo esc_url( $image_front ); ?>"
 					alt="<?php echo esc_attr( $name ); ?>"
-					class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 <?php echo ( $image_back !== $image_front ) ? 'group-hover:opacity-0' : ''; ?>"
+					class="absolute inset-0 !h-full !w-full object-cover transition-transform duration-700 group-hover:scale-105 <?php echo ( $image_back !== $image_front ) ? 'group-hover:opacity-0' : ''; ?>"
 					loading="<?php echo esc_attr( $loading_attr ); ?>"
 					fetchpriority="<?php echo esc_attr( $priority_attr ); ?>"
 					decoding="async" />
@@ -115,33 +115,21 @@ $priority_attr = $is_above_fold ? 'high' : 'auto';
 				<!-- Hover Back Image -->
 				<img src="<?php echo esc_url( $image_back ); ?>"
 					alt="<?php echo esc_attr( $name ); ?>"
-					class="absolute inset-0 h-full w-full object-cover opacity-0 transition-all duration-700 group-hover:scale-105 group-hover:opacity-100"
+					class="absolute inset-0 !h-full !w-full object-cover opacity-0 transition-all duration-700 group-hover:scale-105 group-hover:opacity-100"
 					loading="lazy"
 					decoding="async" />
 			<?php endif; ?>
 		</a>
 
 		<div class="absolute inset-x-3 bottom-3 hidden translate-y-full transition-transform duration-300 group-hover:translate-y-0 lg:block">
-			<?php if ( $is_purchasable && $is_simple ) : ?>
-				<a href="?add-to-cart=<?php echo $product_id; ?>"
-					data-product_id="<?php echo $product_id; ?>"
-					class="button product_type_simple add_to_cart_button ajax_add_to_cart flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-xs font-bold text-white shadow-lg transition-colors hover:bg-accent hover:text-primary">
-					<svg aria-hidden="true" viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-						<line x1="12" y1="5" x2="12" y2="19"></line>
-						<line x1="5" y1="12" x2="19" y2="12"></line>
-					</svg>
-					<?php echo esc_html( jerseyplug_pll( 'Quick Add' ) ); ?>
-				</a>
-			<?php else : ?>
-				<a href="<?php echo esc_url( $url ); ?>"
-					class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-xs font-bold text-white shadow-lg transition-colors hover:bg-accent hover:text-primary">
-					<svg aria-hidden="true" viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"></path>
-						<circle cx="12" cy="12" r="3"></circle>
-					</svg>
-					<?php echo esc_html( jerseyplug_pll( 'View Details' ) ); ?>
-				</a>
-			<?php endif; ?>
+			<a href="<?php echo esc_url( $url ); ?>"
+				class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-xs font-bold text-white shadow-lg transition-colors hover:bg-accent hover:text-primary">
+				<svg aria-hidden="true" viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"></path>
+					<circle cx="12" cy="12" r="3"></circle>
+				</svg>
+				<?php echo esc_html( jerseyplug_pll( 'View Details' ) ); ?>
+			</a>
 		</div>
 	</div>
 
@@ -153,7 +141,7 @@ $priority_attr = $is_above_fold ? 'high' : 'auto';
 		<?php endif; ?>
 
 		<a href="<?php echo esc_url( $url ); ?>">
-			<h3 class="mb-1 line-clamp-1 text-sm font-bold text-gray-900 transition-colors group-hover:text-primary">
+			<h3 class="mb-1 line-clamp-1 !text-sm font-bold text-gray-900 transition-colors group-hover:text-primary">
 				<?php echo esc_html( $name ); ?>
 			</h3>
 		</a>

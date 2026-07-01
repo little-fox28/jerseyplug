@@ -213,7 +213,7 @@ if (! function_exists('get_jerseyplug_mega_menu')) {
 }
 
 /**
- * Capture custom personalization data (name, number, patches) when adding to cart.
+ * Capture custom personalization data (name, number) when adding to cart.
  */
 function jerseyplug_add_personalization_to_cart(array $cart_item_data, int $product_id, int $variation_id): array
 {
@@ -222,16 +222,6 @@ function jerseyplug_add_personalization_to_cart(array $cart_item_data, int $prod
 	}
 	if (! empty($_POST['custom_number'])) {
 		$cart_item_data['custom_number'] = sanitize_text_field(wp_unslash($_POST['custom_number']));
-	}
-	if (! empty($_POST['selected_patch'])) {
-		$patch_json = sanitize_text_field(wp_unslash($_POST['selected_patch']));
-		$patch = json_decode(html_entity_decode($patch_json), true);
-		if (is_array($patch)) {
-			$cart_item_data['selected_patch'] = [
-				'name'  => sanitize_text_field($patch['name'] ?? $patch['label'] ?? ''),
-				'price' => (float) ($patch['price'] ?? 0),
-			];
-		}
 	}
 	return $cart_item_data;
 }
@@ -254,47 +244,11 @@ function jerseyplug_display_personalization_in_cart(array $item_data, array $car
 			'display' => $cart_item['custom_number'],
 		];
 	}
-	if (! empty($cart_item['selected_patch']) && ! empty($cart_item['selected_patch']['name'])) {
-		$patch_label = function_exists('jerseyplug_pll') ? jerseyplug_pll('Patch') : __('Patch', 'jerseyplug');
-		$item_data[] = [
-			'key'     => $patch_label,
-			'display' => sprintf('%s (+%s)', $cart_item['selected_patch']['name'], wc_price($cart_item['selected_patch']['price'])),
-		];
-	}
 	return $item_data;
 }
 add_filter('woocommerce_get_item_data', 'jerseyplug_display_personalization_in_cart', 10, 2);
 
-/**
- * Adjust product price dynamically based on personalization options.
- */
-function jerseyplug_calculate_custom_cart_item_prices(WC_Cart $cart): void
-{
-	if (is_admin() && ! defined('DOING_AJAX')) {
-		return;
-	}
-	foreach ($cart->get_cart() as $cart_item) {
-		$extra_fee = 0.0;
-		$product = $cart_item['data'];
 
-		$has_print = ! empty($cart_item['custom_name']) || ! empty($cart_item['custom_number']);
-		if ($has_print) {
-			$print_price = (float) get_post_meta($product->get_id(), '_print_price', true);
-			if ($print_price > 0) {
-				$extra_fee += $print_price;
-			}
-		}
-
-		if (! empty($cart_item['selected_patch']) && isset($cart_item['selected_patch']['price'])) {
-			$extra_fee += (float) $cart_item['selected_patch']['price'];
-		}
-
-		if ($extra_fee > 0) {
-			$product->set_price((float) $product->get_price() + $extra_fee);
-		}
-	}
-}
-add_action('woocommerce_before_calculate_totals', 'jerseyplug_calculate_custom_cart_item_prices', 10, 1);
 
 /**
  * Persist custom personalization meta data into order item details.
@@ -311,14 +265,25 @@ function jerseyplug_save_personalization_to_order_items(WC_Order_Item_Product $i
 		$item->update_meta_data('_custom_number', $values['custom_number']);
 		$item->update_meta_data($key, $values['custom_number']);
 	}
-	if (! empty($values['selected_patch']) && ! empty($values['selected_patch']['name'])) {
-		$key = function_exists('jerseyplug_pll') ? jerseyplug_pll('Patch') : __('Patch', 'jerseyplug');
-		$item->update_meta_data('_selected_patch_name', $values['selected_patch']['name']);
-		$item->update_meta_data('_selected_patch_price', $values['selected_patch']['price']);
-		$item->update_meta_data($key, sprintf('%s (+%s)', $values['selected_patch']['name'], wc_price($values['selected_patch']['price'])));
-	}
 }
 add_action('woocommerce_checkout_create_order_line_item', 'jerseyplug_save_personalization_to_order_items', 10, 4);
+
+/**
+ * Inject hidden fields into the cart form to capture Alpine.js state for Name & Number.
+ * This is necessary because the visible UI inputs might be placed outside the form tag in the template.
+ */
+function jerseyplug_add_hidden_personalization_fields_to_cart_form(): void
+{
+	?>
+	<template x-if="true">
+		<div>
+			<input type="hidden" name="custom_name" :value="customName" />
+			<input type="hidden" name="custom_number" :value="customNumber" />
+		</div>
+	</template>
+	<?php
+}
+add_action('woocommerce_before_add_to_cart_button', 'jerseyplug_add_hidden_personalization_fields_to_cart_form', 10);
 
 /**
  * WooCommerce SPA-like Toast Notification System

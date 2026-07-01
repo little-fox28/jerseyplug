@@ -23,12 +23,12 @@ function jerseyplug_custom_router(string $template): string
 	}
 
 	// Single Product details.
-	if (function_exists('is_product') && is_product()) {
-		$detail_template = get_theme_file_path('/pages/product-detail.php');
-		if (is_string($detail_template) && file_exists($detail_template)) {
-			return $detail_template;
-		}
-	}
+	// if (function_exists('is_product') && is_product()) {
+	// 	$detail_template = get_theme_file_path('/pages/product-detail.php');
+	// 	if (is_string($detail_template) && file_exists($detail_template)) {
+	// 		return $detail_template;
+	// 	}
+	// }
 
 	return $template;
 }

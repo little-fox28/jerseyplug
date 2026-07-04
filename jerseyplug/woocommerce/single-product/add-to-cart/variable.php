@@ -24,7 +24,7 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 
 <div class="custom-variations-wrapper">
 	<form class="variations_form cart space-y-6" action="<?php echo esc_url(apply_filters('woocommerce_add_to_cart_form_action', $product->get_permalink())); ?>" method="post" enctype='multipart/form-data' data-product_id="<?php echo absint($product->get_id()); ?>" data-product_variations="<?php echo $variations_attr; // WPCS: XSS ok. 
-																																																																											?>">
+																																																																									?>">
 		<?php do_action('woocommerce_before_variations_form'); ?>
 
 		<?php if (empty($available_variations) && false !== $available_variations) : ?>
@@ -58,12 +58,15 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 				}
 			}">
 				<?php foreach ($attributes as $attribute_name => $options) :
+					if ($attribute_name === 'pa_patch') {
+						continue;
+					}
 					$sanitized_name = sanitize_title($attribute_name);
 				?>
 					<div class="variation-group">
 						<div class="flex items-center justify-between mb-2">
 							<span class="text-xs font-black uppercase tracking-widest text-gray-500">
-								<?php echo wc_attribute_label($attribute_name); // WPCS: XSS ok. 
+								<?php echo wc_attribute_label($attribute_name);
 								?>
 							</span>
 							<?php if (strtolower($attribute_name) === 'pa_size' || strtolower($attribute_name) === 'size') : ?>
@@ -79,6 +82,22 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 							if (! empty($options)) {
 								if (taxonomy_exists($attribute_name)) {
 									$terms = wc_get_product_terms($product->get_id(), $attribute_name, array('fields' => 'all'));
+									
+									// Custom Size Sorting (XS, S, M, L, XL...)
+									if (strtolower($attribute_name) === 'pa_sp_size' || strtolower($attribute_name) === 'pa_size' || strtolower($attribute_name) === 'sp_size' || strtolower($attribute_name) === 'size') {
+										$size_order = array('xxs' => 1, 'xs' => 2, 's' => 3, 'm' => 4, 'l' => 5, 'xl' => 6, 'xxl' => 7, '2xl' => 7, '3xl' => 8, '4xl' => 9);
+										usort($terms, function($a, $b) use ($size_order) {
+											$slug_a = strtolower($a->slug);
+											$slug_b = strtolower($b->slug);
+											$order_a = isset($size_order[$slug_a]) ? $size_order[$slug_a] : 99;
+											$order_b = isset($size_order[$slug_b]) ? $size_order[$slug_b] : 99;
+											if ($order_a === $order_b) {
+												return strnatcmp($slug_a, $slug_b); // Fallback to natural sort for numbers
+											}
+											return $order_a - $order_b;
+										});
+									}
+
 									foreach ($terms as $term) {
 										if (in_array($term->slug, $options, true)) {
 											$value = $term->slug;
@@ -95,6 +114,21 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 										}
 									}
 								} else {
+									// Custom Size Sorting (XS, S, M, L, XL...)
+									if (strtolower($attribute_name) === 'pa_sp_size' || strtolower($attribute_name) === 'pa_size' || strtolower($attribute_name) === 'sp_size' || strtolower($attribute_name) === 'size') {
+										$size_order = array('xxs' => 1, 'xs' => 2, 's' => 3, 'm' => 4, 'l' => 5, 'xl' => 6, 'xxl' => 7, '2xl' => 7, '3xl' => 8, '4xl' => 9);
+										usort($options, function($a, $b) use ($size_order) {
+											$val_a = strtolower(trim($a));
+											$val_b = strtolower(trim($b));
+											$order_a = isset($size_order[$val_a]) ? $size_order[$val_a] : 99;
+											$order_b = isset($size_order[$val_b]) ? $size_order[$val_b] : 99;
+											if ($order_a === $order_b) {
+												return strnatcmp($val_a, $val_b); // Fallback to natural sort for numbers
+											}
+											return $order_a - $order_b;
+										});
+									}
+
 									foreach ($options as $option) {
 										$value = $option;
 										$label = apply_filters('woocommerce_variation_option_name', $option, null, $attribute_name, $product);
@@ -122,24 +156,109 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 					</div>
 				<?php endforeach; ?>
 
-				<!-- Clear Variations Link -->
-				<div x-show="hasSelection" style="display: none;" class="pt-2">
-					<?php echo apply_filters('woocommerce_reset_variations_link', '<a class="reset_variations text-xs font-bold text-red-500 hover:underline" href="#">' . esc_html__('Clear selection', 'woocommerce') . '</a>'); ?>
+
+				<?php do_action('woocommerce_after_variations_table'); ?>
+
+				<!-- Custom Personalization UI -->
+				<div class="rounded-2xl border border-gray-100 bg-zinc-50 p-4 space-y-4">
+					<h3 class="text-xs font-black uppercase tracking-widest text-gray-500">
+						<?php esc_html_e('Personalization Details', 'jerseyplug'); ?>
+					</h3>
+					<div class="grid grid-cols-3 gap-3">
+						<div class="col-span-2">
+							<label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5" for="custom_name_display">
+								<?php esc_html_e('Name', 'jerseyplug'); ?>
+							</label>
+							<input
+								id="custom_name_display"
+								type="text"
+								x-model="customName"
+								maxlength="12"
+								placeholder="MESSI"
+								autocomplete="off"
+								class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-900 placeholder:text-gray-300 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors" />
+						</div>
+						<div>
+							<label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5" for="custom_number_display">
+								<?php esc_html_e('Number', 'jerseyplug'); ?>
+							</label>
+							<input
+								id="custom_number_display"
+								type="text"
+								x-model="customNumber"
+								maxlength="2"
+								placeholder="10"
+								autocomplete="off"
+								class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-bold text-gray-900 placeholder:text-gray-300 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors" />
+						</div>
+					</div>
+
+					<!-- Patches (Variation Attribute) -->
+					<?php if (isset($attributes['pa_patch']) && !empty($attributes['pa_patch'])) :
+						$attribute_name = 'pa_patch';
+						$options = $attributes['pa_patch'];
+						$sanitized_name = sanitize_title($attribute_name);
+					?>
+						<div class="variation-group pt-4 border-t border-gray-100">
+							<span class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
+								<?php esc_html_e('Patches', 'jerseyplug'); ?>
+							</span>
+							<div class="flex flex-wrap gap-2">
+								<?php
+								if (taxonomy_exists($attribute_name)) {
+									$terms = wc_get_product_terms($product->get_id(), $attribute_name, array('fields' => 'all'));
+									foreach ($terms as $term) {
+										if (in_array($term->slug, $options, true)) {
+											$value = $term->slug;
+											$label = apply_filters('woocommerce_variation_option_name', $term->name, $term, $attribute_name, $product);
+								?>
+											<button
+												type="button"
+												@click="selectOption('<?php echo esc_js($sanitized_name); ?>', '<?php echo esc_js($value); ?>', $event)"
+												:class="selectedOptions['<?php echo esc_js($sanitized_name); ?>'] === '<?php echo esc_js($value); ?>' ? 'border-primary bg-primary text-white shadow-md' : 'border-gray-200 bg-white text-gray-900 hover:border-gray-400'"
+												class="px-4 py-2 rounded-xl border-2 text-xs font-black uppercase transition-all duration-200">
+												<?php echo esc_html($label); ?>
+											</button>
+										<?php
+										}
+									}
+								} else {
+									foreach ($options as $option) {
+										$value = $option;
+										$label = apply_filters('woocommerce_variation_option_name', $option, null, $attribute_name, $product);
+										?>
+										<button
+											type="button"
+											@click="selectOption('<?php echo esc_js($sanitized_name); ?>', '<?php echo esc_js($value); ?>')"
+											:class="selectedOptions['<?php echo esc_js($sanitized_name); ?>'] === '<?php echo esc_js($value); ?>' ? 'border-primary bg-primary text-white shadow-md' : 'border-gray-200 bg-white text-gray-900 hover:border-gray-400'"
+											class="px-4 py-2 rounded-xl border-2 text-xs font-black uppercase transition-all duration-200">
+											<?php echo esc_html($label); ?>
+										</button>
+								<?php
+									}
+								}
+								?>
+							</div>
+							<!-- Native WooCommerce Select (Hidden via Tailwind) -->
+							<div class="hidden">
+								<?php
+								wc_dropdown_variation_attribute_options(array('options' => $options, 'attribute' => $attribute_name, 'product' => $product));
+								?>
+							</div>
+						</div>
+					<?php endif; ?>
 				</div>
-			</div>
 
-			<?php do_action('woocommerce_after_variations_table'); ?>
+				<div class="single_variation_wrap mt-6 space-y-4">
+					<?php
+					do_action('woocommerce_before_single_variation');
+					do_action('woocommerce_single_variation');
+					do_action('woocommerce_after_single_variation');
+					?>
+				</div>
+			<?php endif; ?>
 
-			<div class="single_variation_wrap mt-6 space-y-4">
-				<?php
-				do_action('woocommerce_before_single_variation');
-				do_action('woocommerce_single_variation');
-				do_action('woocommerce_after_single_variation');
-				?>
-			</div>
-		<?php endif; ?>
-
-		<?php do_action('woocommerce_after_variations_form'); ?>
+			<?php do_action('woocommerce_after_variations_form'); ?>
 	</form>
 </div>
 

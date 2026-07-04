@@ -328,7 +328,8 @@ add_action('wp', 'jerseyplug_move_woocommerce_breadcrumb');
  * Remove default WooCommerce Sale Flash on single product pages.
  * We are using a custom badge system inside the product gallery instead.
  */
-function jerseyplug_remove_default_sale_flash() {
+function jerseyplug_remove_default_sale_flash()
+{
 	remove_action('woocommerce_before_single_product_summary', 'woocommerce_show_product_sale_flash', 10);
 }
 add_action('wp', 'jerseyplug_remove_default_sale_flash');

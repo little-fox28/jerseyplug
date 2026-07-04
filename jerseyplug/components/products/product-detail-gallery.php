@@ -31,6 +31,7 @@ foreach ($gallery_image_ids as $img_id) {
 }
 
 $in_stock = $product->is_in_stock();
+$is_on_sale = $product->is_on_sale();
 ?>
 
 <div
@@ -42,16 +43,28 @@ $in_stock = $product->is_in_stock();
 	}">
 	<!-- Main Display Image -->
 	<div class="relative aspect-5/5 overflow-hidden rounded-2xl bg-zinc-100 shadow-sm">
-		<!-- Stock Badge -->
-		<?php if (! $in_stock) : ?>
-			<span class="absolute left-4 top-4 z-10 rounded-full bg-red-600 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white">
-				<?php echo esc_html(jerseyplug_pll('Out of Stock')); ?>
-			</span>
-		<?php else : ?>
-			<span class="absolute left-4 top-4 z-10 rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white">
-				<?php echo esc_html(jerseyplug_pll('In Stock')); ?>
-			</span>
-		<?php endif; ?>
+		
+		<!-- Badges -->
+		<div class="absolute left-4 top-4 z-20 flex flex-col items-start gap-2">
+			<!-- Stock Badge -->
+			<?php if (! $in_stock) : ?>
+				<span class="rounded-full bg-red-600 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-white shadow-sm">
+					<?php echo esc_html(jerseyplug_pll('Out of Stock')); ?>
+				</span>
+			<?php else : ?>
+				<span class="rounded-full bg-emerald-600 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-white shadow-sm">
+					<?php echo esc_html(jerseyplug_pll('In Stock')); ?>
+				</span>
+			<?php endif; ?>
+
+			<!-- Sale Badge -->
+			<?php if ($is_on_sale) : ?>
+				<span class="rounded-full bg-secondary px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-primary shadow-sm">
+					<?php echo esc_html(jerseyplug_pll('Sale')); ?>
+				</span>
+			<?php endif; ?>
+		</div>
+
 
 		<img
 			:src="activeImage"

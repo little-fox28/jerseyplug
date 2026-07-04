@@ -274,16 +274,64 @@ add_action('woocommerce_checkout_create_order_line_item', 'jerseyplug_save_perso
  */
 function jerseyplug_add_hidden_personalization_fields_to_cart_form(): void
 {
-	?>
+?>
 	<template x-if="true">
 		<div>
 			<input type="hidden" name="custom_name" :value="customName" />
 			<input type="hidden" name="custom_number" :value="customNumber" />
 		</div>
 	</template>
-	<?php
+<?php
 }
 add_action('woocommerce_before_add_to_cart_button', 'jerseyplug_add_hidden_personalization_fields_to_cart_form', 10);
+
+/**
+ * Customize WooCommerce Breadcrumb with Tailwind CSS.
+ */
+function jerseyplug_custom_woocommerce_breadcrumbs($defaults)
+{
+	$margin = is_product() ? 'mb-0 lg:mb-2' : 'mb-4 md:mb-6';
+	$defaults['wrap_before'] = '<nav class="woocommerce-breadcrumb flex items-center flex-wrap text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400 pb-2 md:pb-4 ' . $margin . ' gap-y-2" aria-label="Breadcrumb">';
+	$defaults['wrap_after']  = '</nav>';
+	$defaults['delimiter']   = '<svg class="w-3 h-3 md:w-3.5 md:h-3.5 mx-2 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
+	$defaults['before']      = '<span class="hover:text-primary transition-colors duration-200">';
+	$defaults['after']       = '</span>';
+	return $defaults;
+}
+add_filter('woocommerce_breadcrumb_defaults', 'jerseyplug_custom_woocommerce_breadcrumbs');
+
+/**
+ * Remove the current product name from the end of the breadcrumb to keep it shorter.
+ */
+function jerseyplug_remove_current_product_breadcrumb($crumbs, $breadcrumb)
+{
+	if (is_product() && !empty($crumbs)) {
+		array_pop($crumbs); // Remove the last item (current product)
+	}
+	return $crumbs;
+}
+add_filter('woocommerce_get_breadcrumb', 'jerseyplug_remove_current_product_breadcrumb', 10, 2);
+
+/**
+ * Move breadcrumb above the product image on single product pages.
+ */
+function jerseyplug_move_woocommerce_breadcrumb()
+{
+	if (is_product()) {
+		remove_action('woocommerce_before_main_content', 'woocommerce_breadcrumb', 20);
+		add_action('woocommerce_before_single_product_summary', 'woocommerce_breadcrumb', 5);
+	}
+}
+add_action('wp', 'jerseyplug_move_woocommerce_breadcrumb');
+
+/**
+ * Remove default WooCommerce Sale Flash on single product pages.
+ * We are using a custom badge system inside the product gallery instead.
+ */
+function jerseyplug_remove_default_sale_flash() {
+	remove_action('woocommerce_before_single_product_summary', 'woocommerce_show_product_sale_flash', 10);
+}
+add_action('wp', 'jerseyplug_remove_default_sale_flash');
 
 /**
  * WooCommerce SPA-like Toast Notification System
@@ -337,11 +385,11 @@ function jerseyplug_inject_wc_notices_to_footer(): void
 				$scripts[] = "window.dispatchEvent(new CustomEvent('notify', { detail: { message: '{$clean_message_js}', type: '{$clean_type}' } }));";
 			}
 		}
-		
+
 		if (!empty($scripts)) {
 			echo "<script>document.addEventListener('DOMContentLoaded', function() {\n" . implode("\n", $scripts) . "\n});</script>";
 		}
-		
+
 		// Clear session notices so they don't display again
 		wc_clear_notices();
 	}

@@ -72,7 +72,7 @@ $is_new    = function_exists('jerseyplug_is_new_product') && jerseyplug_is_new_p
 
 		<!-- Badges -->
 		<div class="absolute left-3 top-3 z-10 flex flex-col gap-1.5">
-			<?php if (! $in_stock) : ?>
+			<!-- <?php if (! $in_stock) : ?>
 				<span class="rounded-full bg-red-600 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white shadow-sm">
 					<?php esc_html_e('Out of Stock', 'jerseyplug'); ?>
 				</span>
@@ -80,7 +80,7 @@ $is_new    = function_exists('jerseyplug_is_new_product') && jerseyplug_is_new_p
 				<span class="rounded-full bg-emerald-600 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white shadow-sm">
 					<?php esc_html_e('In Stock', 'jerseyplug'); ?>
 				</span>
-			<?php endif; ?>
+			<?php endif; ?> -->
 			<?php if ($has_sale) : ?>
 				<span class="rounded-full bg-secondary px-3 py-1 text-[10px] font-black uppercase tracking-wider text-primary shadow-sm">
 					<?php esc_html_e('Sale', 'jerseyplug'); ?>

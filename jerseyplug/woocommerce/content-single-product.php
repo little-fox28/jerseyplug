@@ -26,7 +26,7 @@ if ($product->is_type('variable')) {
 
 $print_price = (float) get_post_meta($product_id, '_print_price', true);
 if ($print_price <= 0) {
-	$print_price = 150.0;
+	$print_price = 0.0;
 }
 
 /**
@@ -204,6 +204,9 @@ if (post_password_required()) {
 					if (variation && variation.display_price !== undefined) {
 						this.basePrice = parseFloat(variation.display_price);
 						this.regularPrice = variation.display_regular_price !== undefined ? parseFloat(variation.display_regular_price) : this.basePrice;
+						if (variation.print_price !== undefined) {
+							this.printPrice = parseFloat(variation.print_price);
+						}
 						this.isVariationSelected = true;
 					}
 				});

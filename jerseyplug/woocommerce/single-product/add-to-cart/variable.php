@@ -45,6 +45,33 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 							});
 						}, 10);
 					});
+
+					// Watch parent's customName and customNumber to auto-update the hidden variation
+					this.$watch('customName', () => this.updateCustomVariation());
+					this.$watch('customNumber', () => this.updateCustomVariation());
+
+					// Auto-select 'No Patch' and initialize Custom Name variation
+					setTimeout(() => {
+						const patchSelect = this.$el.querySelector('select[name=\'attribute_pa_patch\']');
+						if (patchSelect && (!patchSelect.value || patchSelect.value === '')) {
+							let noPatchValue = null;
+							Array.from(patchSelect.options).forEach(opt => {
+								const txt = opt.text.toLowerCase();
+								const val = opt.value.toLowerCase();
+								if (txt.includes('no patch') || val.includes('no-patch') || val.includes('no_patch') || txt === 'none' || val === 'none') {
+									noPatchValue = opt.value;
+								}
+							});
+							if (noPatchValue) {
+								this.selectedOptions['pa_patch'] = noPatchValue;
+								patchSelect.value = noPatchValue;
+								patchSelect.dispatchEvent(new Event('change', { bubbles: true }));
+								if (typeof jQuery !== 'undefined') { jQuery(patchSelect).trigger('change'); }
+							}
+						}
+
+						this.updateCustomVariation();
+					}, 200);
 				},
 				selectOption(attributeName, value, event) {
 					if (this.selectedOptions[attributeName] === value) { value = ''; }
@@ -55,6 +82,26 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 						selectEl.dispatchEvent(new Event('change', { bubbles: true }));
 						if (typeof jQuery !== 'undefined') { jQuery(selectEl).trigger('change'); }
 					}
+				},
+				updateCustomVariation() {
+					const hasCustom = this.customName.trim() !== '' || this.customNumber.trim() !== '';
+					const selects = this.$el.querySelectorAll('select[name*=\'custom-name\'], select[name*=\'custom_name\']');
+					selects.forEach(select => {
+						let targetValue = '';
+						Array.from(select.options).forEach(opt => {
+							const txt = opt.text.toLowerCase();
+							const val = opt.value.toLowerCase();
+							if (hasCustom && (txt === 'yes' || val === 'yes')) targetValue = opt.value;
+							if (!hasCustom && (txt === 'no' || val === 'no')) targetValue = opt.value;
+						});
+						
+						if (targetValue && select.value !== targetValue) {
+							this.selectedOptions[select.name.replace('attribute_', '')] = targetValue;
+							select.value = targetValue;
+							select.dispatchEvent(new Event('change', { bubbles: true }));
+							if (typeof jQuery !== 'undefined') { jQuery(select).trigger('change'); }
+						}
+					});
 				}
 			}">
 				<?php foreach ($attributes as $attribute_name => $options) :
@@ -62,8 +109,10 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 						continue;
 					}
 					$sanitized_name = sanitize_title($attribute_name);
+					$is_custom_name = strpos(strtolower($attribute_name), 'custom-name') !== false || strpos(strtolower($attribute_name), 'custom_name') !== false;
+					$group_class = $is_custom_name ? 'hidden' : 'variation-group';
 				?>
-					<div class="variation-group">
+					<div class="<?php echo esc_attr($group_class); ?>">
 						<div class="flex items-center justify-between mb-2">
 							<span class="text-xs font-black uppercase tracking-widest text-gray-500">
 								<?php echo wc_attribute_label($attribute_name);
@@ -164,6 +213,7 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 					<h3 class="text-xs font-black uppercase tracking-widest text-gray-500">
 						<?php esc_html_e('Personalization Details', 'jerseyplug'); ?>
 					</h3>
+					
 					<div class="grid grid-cols-3 gap-3">
 						<div class="col-span-2">
 							<label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5" for="custom_name_display">
@@ -194,7 +244,9 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 					</div>
 
 					<!-- Patches (Variation Attribute) -->
-					<?php if (isset($attributes['pa_patch']) && !empty($attributes['pa_patch'])) :
+					<?php 
+					$has_patches = isset($attributes['pa_patch']) && !empty($attributes['pa_patch']);
+					if ($has_patches) :
 						$attribute_name = 'pa_patch';
 						$options = $attributes['pa_patch'];
 						$sanitized_name = sanitize_title($attribute_name);

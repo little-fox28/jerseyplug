@@ -248,7 +248,34 @@ function jerseyplug_display_personalization_in_cart(array $item_data, array $car
 }
 add_filter('woocommerce_get_item_data', 'jerseyplug_display_personalization_in_cart', 10, 2);
 
+/**
+ * Adjust cart item price to include personalization printing fee.
+ */
+function jerseyplug_calculate_personalization_fee($cart_object): void
+{
+	if (is_admin() && !defined('DOING_AJAX')) {
+		return;
+	}
 
+	foreach ($cart_object->get_cart() as $cart_item) {
+		if (!empty($cart_item['custom_name']) || !empty($cart_item['custom_number'])) {
+			$product_id  = $cart_item['product_id']; // Use base product ID for global setting
+			$print_price = (float) get_post_meta($product_id, '_print_price', true);
+
+			if ($print_price <= 0) {
+				$print_price = 0.0; // Fallback default
+			}
+
+			// Get the active price (variation price or simple product price)
+			$active_price = (float) $cart_item['data']->get_price();
+
+			// Add print price
+			$new_price = $active_price + $print_price;
+			$cart_item['data']->set_price($new_price);
+		}
+	}
+}
+add_action('woocommerce_before_calculate_totals', 'jerseyplug_calculate_personalization_fee', 10, 1);
 
 /**
  * Persist custom personalization meta data into order item details.
@@ -396,3 +423,33 @@ function jerseyplug_inject_wc_notices_to_footer(): void
 	}
 }
 add_action('wp_footer', 'jerseyplug_inject_wc_notices_to_footer', 10);
+
+/**
+ * Add custom print price field to WooCommerce product data panel (General tab)
+ */
+function jerseyplug_add_custom_print_price_field() {
+	echo '<div class="options_group show_if_simple show_if_variable show_if_external show_if_grouped">';
+	woocommerce_wp_text_input(array(
+		'id' => '_print_price',
+		'label' => function_exists('jerseyplug_pll') ? jerseyplug_pll('Custom Name & Number Fee (R)') : __('Custom Name & Number Fee (R)', 'jerseyplug'),
+		'desc_tip' => true,
+		'description' => __('Enter the additional fee for custom name & number printing (e.g. 10.00). Leave empty or 0 if free.', 'jerseyplug'),
+		'type' => 'number',
+		'custom_attributes' => array(
+			'step' => '0.01',
+			'min' => '0'
+		)
+	));
+	echo '</div>';
+}
+add_action('woocommerce_product_options_general_product_data', 'jerseyplug_add_custom_print_price_field');
+
+/**
+ * Save custom print price field
+ */
+function jerseyplug_save_custom_print_price_field($post_id) {
+	if (isset($_POST['_print_price'])) {
+		update_post_meta($post_id, '_print_price', wc_clean($_POST['_print_price']));
+	}
+}
+add_action('woocommerce_process_product_meta', 'jerseyplug_save_custom_print_price_field');

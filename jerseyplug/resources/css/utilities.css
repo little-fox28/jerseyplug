@@ -12,7 +12,8 @@
     max-width: none;
     position: relative;
 
-    img {
+    & > img,
+    &.wp-block-image img {
         width: calc(100% + 320px) !important;
         max-width: none !important;
         margin-left: -160px;

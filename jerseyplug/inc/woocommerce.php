@@ -318,26 +318,16 @@ add_action('woocommerce_before_add_to_cart_button', 'jerseyplug_add_hidden_perso
 function jerseyplug_custom_woocommerce_breadcrumbs($defaults)
 {
 	$margin = is_product() ? 'mb-0 lg:mb-2' : 'mb-4 md:mb-6';
-	$defaults['wrap_before'] = '<nav class="woocommerce-breadcrumb flex items-center flex-wrap text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400 pb-2 md:pb-4 ' . $margin . ' gap-y-2" aria-label="Breadcrumb">';
-	$defaults['wrap_after']  = '</nav>';
-	$defaults['delimiter']   = '<svg class="w-3 h-3 md:w-3.5 md:h-3.5 mx-2 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
+	$style = is_product() ? '<style>.woocommerce-breadcrumb ol li:last-child { display: none !important; }</style>' : '';
+	$defaults['wrap_before'] = $style . '<nav class="woocommerce-breadcrumb ' . $margin . '" aria-label="Breadcrumb"><ol class="flex items-center flex-wrap text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400 pb-2 md:pb-4 gap-y-2"><li class="flex items-center">';
+	$defaults['wrap_after']  = '</li></ol></nav>';
+	$defaults['delimiter']   = '</li><li class="flex items-center"><svg class="w-3 h-3 md:w-3.5 md:h-3.5 mx-2 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
 	$defaults['before']      = '<span class="hover:text-primary transition-colors duration-200">';
 	$defaults['after']       = '</span>';
 	return $defaults;
 }
 add_filter('woocommerce_breadcrumb_defaults', 'jerseyplug_custom_woocommerce_breadcrumbs');
 
-/**
- * Remove the current product name from the end of the breadcrumb to keep it shorter.
- */
-function jerseyplug_remove_current_product_breadcrumb($crumbs, $breadcrumb)
-{
-	if (is_product() && !empty($crumbs)) {
-		array_pop($crumbs); // Remove the last item (current product)
-	}
-	return $crumbs;
-}
-add_filter('woocommerce_get_breadcrumb', 'jerseyplug_remove_current_product_breadcrumb', 10, 2);
 
 /**
  * Move breadcrumb above the product image on single product pages.

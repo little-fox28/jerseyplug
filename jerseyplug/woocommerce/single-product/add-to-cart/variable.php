@@ -46,9 +46,7 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 						}, 10);
 					});
 
-					// Watch parent's customName and customNumber to auto-update the hidden variation
-					this.$watch('customName', () => this.updateCustomVariation());
-					this.$watch('customNumber', () => this.updateCustomVariation());
+					// Watch parent's customName and customNumber to auto-update the hidden variation (REMOVED: Custom Name is now global)
 
 					// Auto-select 'No Patch' and initialize Custom Name variation
 					setTimeout(() => {
@@ -69,8 +67,6 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 								if (typeof jQuery !== 'undefined') { jQuery(patchSelect).trigger('change'); }
 							}
 						}
-
-						this.updateCustomVariation();
 					}, 200);
 				},
 				selectOption(attributeName, value, event) {
@@ -82,26 +78,6 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 						selectEl.dispatchEvent(new Event('change', { bubbles: true }));
 						if (typeof jQuery !== 'undefined') { jQuery(selectEl).trigger('change'); }
 					}
-				},
-				updateCustomVariation() {
-					const hasCustom = this.customName.trim() !== '' || this.customNumber.trim() !== '';
-					const selects = this.$el.querySelectorAll('select[name*=\'custom-name\'], select[name*=\'custom_name\']');
-					selects.forEach(select => {
-						let targetValue = '';
-						Array.from(select.options).forEach(opt => {
-							const txt = opt.text.toLowerCase();
-							const val = opt.value.toLowerCase();
-							if (hasCustom && (txt === 'yes' || val === 'yes')) targetValue = opt.value;
-							if (!hasCustom && (txt === 'no' || val === 'no')) targetValue = opt.value;
-						});
-						
-						if (targetValue && select.value !== targetValue) {
-							this.selectedOptions[select.name.replace('attribute_', '')] = targetValue;
-							select.value = targetValue;
-							select.dispatchEvent(new Event('change', { bubbles: true }));
-							if (typeof jQuery !== 'undefined') { jQuery(select).trigger('change'); }
-						}
-					});
 				}
 			}">
 				<?php foreach ($attributes as $attribute_name => $options) :
@@ -109,8 +85,7 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 						continue;
 					}
 					$sanitized_name = sanitize_title($attribute_name);
-					$is_custom_name = strpos(strtolower($attribute_name), 'custom-name') !== false || strpos(strtolower($attribute_name), 'custom_name') !== false;
-					$group_class = $is_custom_name ? 'hidden' : 'variation-group';
+					$group_class = 'variation-group';
 				?>
 					<div class="<?php echo esc_attr($group_class); ?>">
 						<div class="flex items-center justify-between mb-2">

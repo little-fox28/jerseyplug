@@ -170,10 +170,7 @@ a {
   border-bottom: 1px solid #f3f4f6;
 }
 
-/* Hide WC's default checkout button inside .cart_totals (we render our own) */
-.woocommerce-cart .cart_totals .wc-proceed-to-checkout {
-  display: none !important;
-}
+
 
 /* ── Coupon notices ── */
 .woocommerce-cart .woocommerce-message,

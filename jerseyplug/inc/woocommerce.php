@@ -47,8 +47,7 @@ function jerseyplug_get_header_cart_markup(): string
 		href="<?php echo esc_url($cart_url); ?>"
 		class="header-cart-contents relative hover:opacity-80 transition-transform active:scale-90 group"
 		aria-label="<?php echo esc_attr(function_exists('jerseyplug_pll') ? jerseyplug_pll('Cart') : 'Cart'); ?>"
-		data-cart-count="<?php echo esc_attr((string) $cart_count); ?>"
-		data-cart-drawer-trigger="header">
+		data-cart-count="<?php echo esc_attr((string) $cart_count); ?>">
 		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-100 hover:text-gray-300">
 			<circle cx="8" cy="21" r="1" />
 			<circle cx="19" cy="21" r="1" />

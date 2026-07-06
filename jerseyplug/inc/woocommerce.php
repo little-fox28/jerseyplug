@@ -257,6 +257,10 @@ function jerseyplug_calculate_personalization_fee($cart_object): void
 	}
 
 	foreach ($cart_object->get_cart() as $cart_item) {
+		if (!empty($cart_item['data']->jerseyplug_fee_added)) {
+			continue;
+		}
+
 		if (!empty($cart_item['custom_name']) || !empty($cart_item['custom_number'])) {
 			$product_id  = $cart_item['product_id']; // Use base product ID for global setting
 			$print_price = (float) get_post_meta($product_id, '_print_price', true);
@@ -271,6 +275,7 @@ function jerseyplug_calculate_personalization_fee($cart_object): void
 			// Add print price
 			$new_price = $active_price + $print_price;
 			$cart_item['data']->set_price($new_price);
+			$cart_item['data']->jerseyplug_fee_added = true;
 		}
 	}
 }

@@ -447,3 +447,8 @@ function jerseyplug_save_custom_print_price_field($post_id) {
 	}
 }
 add_action('woocommerce_process_product_meta', 'jerseyplug_save_custom_print_price_field');
+
+/**
+ * Remove default WooCommerce proceed to checkout button to use custom design in cart-totals.php
+ */
+remove_action('woocommerce_proceed_to_checkout', 'woocommerce_button_proceed_to_checkout', 20);

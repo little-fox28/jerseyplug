@@ -106,11 +106,11 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 							if (! empty($options)) {
 								if (taxonomy_exists($attribute_name)) {
 									$terms = wc_get_product_terms($product->get_id(), $attribute_name, array('fields' => 'all'));
-									
+
 									// Custom Size Sorting (XS, S, M, L, XL...)
 									if (strtolower($attribute_name) === 'pa_sp_size' || strtolower($attribute_name) === 'pa_size' || strtolower($attribute_name) === 'sp_size' || strtolower($attribute_name) === 'size') {
 										$size_order = array('xxs' => 1, 'xs' => 2, 's' => 3, 'm' => 4, 'l' => 5, 'xl' => 6, 'xxl' => 7, '2xl' => 7, '3xl' => 8, '4xl' => 9);
-										usort($terms, function($a, $b) use ($size_order) {
+										usort($terms, function ($a, $b) use ($size_order) {
 											$slug_a = strtolower($a->slug);
 											$slug_b = strtolower($b->slug);
 											$order_a = isset($size_order[$slug_a]) ? $size_order[$slug_a] : 99;
@@ -141,7 +141,7 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 									// Custom Size Sorting (XS, S, M, L, XL...)
 									if (strtolower($attribute_name) === 'pa_sp_size' || strtolower($attribute_name) === 'pa_size' || strtolower($attribute_name) === 'sp_size' || strtolower($attribute_name) === 'size') {
 										$size_order = array('xxs' => 1, 'xs' => 2, 's' => 3, 'm' => 4, 'l' => 5, 'xl' => 6, 'xxl' => 7, '2xl' => 7, '3xl' => 8, '4xl' => 9);
-										usort($options, function($a, $b) use ($size_order) {
+										usort($options, function ($a, $b) use ($size_order) {
 											$val_a = strtolower(trim($a));
 											$val_b = strtolower(trim($b));
 											$order_a = isset($size_order[$val_a]) ? $size_order[$val_a] : 99;
@@ -188,7 +188,7 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 					<h3 class="text-xs font-black uppercase tracking-widest text-gray-500">
 						<?php esc_html_e('Personalization Details', 'jerseyplug'); ?>
 					</h3>
-					
+
 					<div class="grid grid-cols-3 gap-3">
 						<div class="col-span-2">
 							<label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5" for="custom_name_display">
@@ -219,7 +219,7 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 					</div>
 
 					<!-- Patches (Variation Attribute) -->
-					<?php 
+					<?php
 					$has_patches = isset($attributes['pa_patch']) && !empty($attributes['pa_patch']);
 					if ($has_patches) :
 						$attribute_name = 'pa_patch';
@@ -276,7 +276,7 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 					<?php endif; ?>
 				</div>
 
-				<div class="single_variation_wrap mt-6 space-y-4">
+				<div class="single_variation_wrap mt-6 space-y-4 [&>.woocommerce-variation]:!hidden">
 					<?php
 					do_action('woocommerce_before_single_variation');
 					do_action('woocommerce_single_variation');

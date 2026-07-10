@@ -452,3 +452,8 @@ add_action('woocommerce_process_product_meta', 'jerseyplug_save_custom_print_pri
  * Remove default WooCommerce proceed to checkout button to use custom design in cart-totals.php
  */
 remove_action('woocommerce_proceed_to_checkout', 'woocommerce_button_proceed_to_checkout', 20);
+
+/**
+ * Disable WooCommerce redirecting to the single product page when there is only one search result.
+ */
+add_filter('woocommerce_redirect_single_search_result', '__return_false');

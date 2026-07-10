@@ -287,15 +287,98 @@ $mobile_overlay_classes = (string) apply_filters('jerseyplug_header_mobile_overl
 				</div>
 			<?php endif; ?>
 
-			<form role="search" method="get" class="hidden md:flex relative group" action="<?php echo esc_url(home_url('/')); ?>">
-				<input type="search" name="s" value="<?php echo esc_attr(get_search_query()); ?>" placeholder="<?php echo esc_attr($translate('Search...')); ?>" class="text-white text-sm rounded-full pl-4 pr-10 py-1.5 focus:outline-none focus:ring-1 w-32 focus:w-56 transition-all duration-300 placeholder-white/60 bg-black/20" style="--tw-ring-color:#f2c86c" />
-				<input type="hidden" name="post_type" value="product" />
-				<button type="submit" class="absolute right-3 top-1.5 text-white/60" aria-label="<?php echo esc_attr($translate('Search')); ?>">
-					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<circle cx="11" cy="11" r="8"></circle>
-						<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-					</svg>
-				</button>
+			<form role="search" method="get" class="hidden md:flex relative group" action="<?php echo esc_url($shop_url); ?>" 
+				x-data="{
+					query: '<?php echo esc_js(get_search_query()); ?>',
+					results: [],
+					isLoading: false,
+					isOpen: false,
+					cache: {},
+					selectedIndex: -1,
+					fetchResults() {
+						if (!this.query.trim()) {
+							this.results = [];
+							this.isOpen = false;
+							return;
+						}
+						
+						const searchKey = this.query.trim().toLowerCase();
+						if (this.cache[searchKey]) {
+							this.results = this.cache[searchKey];
+							this.isOpen = true;
+							this.selectedIndex = -1;
+							return;
+						}
+
+						this.isLoading = true;
+						this.isOpen = true;
+						this.selectedIndex = -1;
+						fetch(jerseyplug_ajax.url + '?action=jerseyplug_live_search&nonce=' + jerseyplug_ajax.nonce + '&q=' + encodeURIComponent(this.query))
+							.then(res => res.json())
+							.then(res => {
+								this.isLoading = false;
+								if (res.success) {
+									this.results = res.data.items || [];
+									this.cache[searchKey] = this.results;
+								}
+							});
+					},
+					highlight(text) {
+						if (!this.query.trim()) return text;
+						const regex = new RegExp(`(${this.query.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+						return text.replace(regex, '<span class=\'bg-yellow-200 text-gray-900 px-0.5 rounded\'>$1</span>');
+					},
+					handleKeydown(e) {
+						if (!this.isOpen || this.results.length === 0) return;
+						if (e.key === 'ArrowDown') {
+							e.preventDefault();
+							this.selectedIndex = (this.selectedIndex + 1) % this.results.length;
+						} else if (e.key === 'ArrowUp') {
+							e.preventDefault();
+							this.selectedIndex = this.selectedIndex - 1 < 0 ? this.results.length - 1 : this.selectedIndex - 1;
+						} else if (e.key === 'Enter' && this.selectedIndex >= 0) {
+							e.preventDefault();
+							window.location.href = this.results[this.selectedIndex].url;
+						}
+					}
+				}"
+				@submit="if(!query.trim()) { $event.preventDefault(); $refs.searchInput.focus(); }"
+				@keydown="handleKeydown($event)"
+				@click.away="isOpen = false">
+				<div class="relative flex items-center p-[1.5px] rounded-full bg-white/20 focus-within:bg-gradient-to-r focus-within:from-pink-500 focus-within:via-purple-500 focus-within:to-indigo-500 transition-all duration-500 w-36 focus-within:w-56 focus-within:shadow-[0_0_15px_rgba(168,85,247,0.5)]">
+					<input x-ref="searchInput" type="search" name="s" x-model="query" @input.debounce.500ms="fetchResults" @focus="if(query.trim()) isOpen = true" placeholder="<?php echo esc_attr($translate('Search...')); ?>" class="w-full bg-[#163300] text-white text-sm rounded-full pl-4 pr-10 py-1.5 focus:outline-none placeholder-white/60 transition-colors" autocomplete="off" />
+					<input type="hidden" name="post_type" value="product" />
+					<button type="submit" class="absolute right-3 text-white/70 hover:text-white transition-colors" aria-label="<?php echo esc_attr($translate('Search')); ?>">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="11" cy="11" r="8"></circle>
+							<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+						</svg>
+					</button>
+				</div>
+
+				<!-- Live Search Dropdown -->
+				<div x-show="isOpen" x-transition x-cloak class="absolute top-full mt-3 w-full min-w-[320px] right-0 md:left-auto md:-right-4 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden text-gray-800">
+					<div x-show="isLoading" class="p-6 text-center text-gray-400">
+						<svg class="animate-spin h-6 w-6 mx-auto text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+					</div>
+					<div x-show="!isLoading && results.length === 0" class="p-6 text-center text-sm text-gray-500 font-medium">
+						<?php echo esc_html($translate('No products found.')); ?>
+					</div>
+					<div x-show="!isLoading && results.length > 0">
+						<template x-for="(item, index) in results" :key="item.id">
+							<a :href="item.url" class="flex items-center gap-3 p-3 border-b border-gray-50 hover:bg-gray-50 transition-colors" :class="{'bg-gray-50': selectedIndex === index}">
+								<img :src="item.image" class="w-12 h-12 object-cover rounded shadow-sm shrink-0" />
+								<div class="flex flex-col min-w-0">
+									<span class="text-sm font-bold text-[#163300] truncate block" x-html="highlight(item.title)"></span>
+									<span class="text-xs text-red-600 font-bold block" x-html="item.price"></span>
+								</div>
+							</a>
+						</template>
+						<button type="submit" class="w-full p-3 text-center text-xs font-bold text-[#163300] hover:bg-gray-50 uppercase tracking-widest border-t border-gray-100 bg-gray-50/50">
+							<?php echo esc_html($translate('View All Results →')); ?>
+						</button>
+					</div>
+				</div>
 			</form>
 
 			<a href="<?php echo esc_url(function_exists('wc_get_page_permalink') ? wc_get_page_permalink('myaccount') : wp_login_url()); ?>" class="hover:opacity-80 transition-transform active:scale-90" aria-label="<?php echo esc_attr($translate('My Account')); ?>">
@@ -333,16 +416,99 @@ $mobile_overlay_classes = (string) apply_filters('jerseyplug_header_mobile_overl
 				</button>
 			</div>
 
-			<div class="relative mb-4">
-				<form role="search" method="get" class="search-form" action="<?php echo esc_url(home_url('/')); ?>">
-					<input type="search" class="w-full bg-white/10 text-white text-sm rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-1 focus:ring-secondary placeholder-gray-400" placeholder="<?php echo esc_attr($translate('Search products...')); ?>" value="<?php echo esc_attr(get_search_query()); ?>" name="s" />
-					<button type="submit" class="absolute left-3 top-3 text-gray-400" aria-label="<?php echo esc_attr($translate('Search')); ?>">
-						<svg class="w-[18px] h-[18px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<circle cx="11" cy="11" r="8"></circle>
-							<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-						</svg>
-					</button>
-					<input type="hidden" name="post_type" value="product" />
+			<div class="relative mb-4 z-50">
+				<form role="search" method="get" class="search-form" action="<?php echo esc_url($shop_url); ?>"
+					x-data="{
+						query: '<?php echo esc_js(get_search_query()); ?>',
+						results: [],
+						isLoading: false,
+						isOpen: false,
+						cache: {},
+						selectedIndex: -1,
+						fetchResults() {
+							if (!this.query.trim()) {
+								this.results = [];
+								this.isOpen = false;
+								return;
+							}
+							
+							const searchKey = this.query.trim().toLowerCase();
+							if (this.cache[searchKey]) {
+								this.results = this.cache[searchKey];
+								this.isOpen = true;
+								this.selectedIndex = -1;
+								return;
+							}
+
+							this.isLoading = true;
+							this.isOpen = true;
+							this.selectedIndex = -1;
+							fetch(jerseyplug_ajax.url + '?action=jerseyplug_live_search&nonce=' + jerseyplug_ajax.nonce + '&q=' + encodeURIComponent(this.query))
+								.then(res => res.json())
+								.then(res => {
+									this.isLoading = false;
+									if (res.success) {
+										this.results = res.data.items || [];
+										this.cache[searchKey] = this.results;
+									}
+								});
+						},
+						highlight(text) {
+							if (!this.query.trim()) return text;
+							const regex = new RegExp(`(${this.query.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+							return text.replace(regex, '<span class=\'bg-yellow-200 text-gray-900 px-0.5 rounded\'>$1</span>');
+						},
+						handleKeydown(e) {
+							if (!this.isOpen || this.results.length === 0) return;
+							if (e.key === 'ArrowDown') {
+								e.preventDefault();
+								this.selectedIndex = (this.selectedIndex + 1) % this.results.length;
+							} else if (e.key === 'ArrowUp') {
+								e.preventDefault();
+								this.selectedIndex = this.selectedIndex - 1 < 0 ? this.results.length - 1 : this.selectedIndex - 1;
+							} else if (e.key === 'Enter' && this.selectedIndex >= 0) {
+								e.preventDefault();
+								window.location.href = this.results[this.selectedIndex].url;
+							}
+						}
+					}"
+					@submit="if(!query.trim()) { $event.preventDefault(); $refs.searchMob.focus(); }"
+					@keydown="handleKeydown($event)"
+					@click.away="isOpen = false">
+					<div class="relative flex items-center p-[1.5px] rounded-xl bg-white/20 focus-within:bg-gradient-to-r focus-within:from-pink-500 focus-within:via-purple-500 focus-within:to-indigo-500 focus-within:shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all duration-500">
+						<input x-ref="searchMob" type="search" x-model="query" @input.debounce.500ms="fetchResults" @focus="if(query.trim()) isOpen = true" class="w-full bg-[#163300] text-white text-sm rounded-[10.5px] pl-10 pr-4 py-3 focus:outline-none placeholder-white/50" placeholder="<?php echo esc_attr($translate('Search products...')); ?>" name="s" autocomplete="off" />
+						<button type="submit" class="absolute left-3 text-white/50 hover:text-white transition-colors" aria-label="<?php echo esc_attr($translate('Search')); ?>">
+							<svg class="w-[18px] h-[18px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+								<circle cx="11" cy="11" r="8"></circle>
+								<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+							</svg>
+						</button>
+						<input type="hidden" name="post_type" value="product" />
+					</div>
+
+					<!-- Live Search Dropdown Mobile -->
+					<div x-show="isOpen" x-transition x-cloak class="absolute top-full mt-2 left-0 w-full bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden text-gray-800">
+						<div x-show="isLoading" class="p-6 text-center text-gray-400">
+							<svg class="animate-spin h-6 w-6 mx-auto text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+						</div>
+						<div x-show="!isLoading && results.length === 0" class="p-6 text-center text-sm text-gray-500 font-medium">
+							<?php echo esc_html($translate('No products found.')); ?>
+						</div>
+						<div x-show="!isLoading && results.length > 0">
+							<template x-for="(item, index) in results" :key="item.id">
+								<a :href="item.url" class="flex items-center gap-3 p-3 border-b border-gray-50 hover:bg-gray-50 transition-colors" :class="{'bg-gray-50': selectedIndex === index}">
+									<img :src="item.image" class="w-12 h-12 object-cover rounded shadow-sm shrink-0" />
+									<div class="flex flex-col min-w-0">
+										<span class="text-sm font-bold text-[#163300] truncate block" x-html="highlight(item.title)"></span>
+										<span class="text-xs text-red-600 font-bold block" x-html="item.price"></span>
+									</div>
+								</a>
+							</template>
+							<button type="submit" class="w-full p-3 text-center text-xs font-bold text-[#163300] hover:bg-gray-50 uppercase tracking-widest border-t border-gray-100 bg-gray-50/50">
+								<?php echo esc_html($translate('View All Results →')); ?>
+							</button>
+						</div>
+					</div>
 				</form>
 			</div>
 

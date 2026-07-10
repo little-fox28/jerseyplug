@@ -227,6 +227,14 @@ if ( ! function_exists( 'jerseyplug_get_homepage_products' ) ) {
 			$args['featured'] = true;
 			$args['orderby']   = 'date';
 			$args['order']     = 'DESC';
+		} elseif ( $context === 'sale' ) {
+			$args['include'] = wc_get_product_ids_on_sale();
+			// If there are no products on sale, we should return early or pass an impossible ID
+			if ( empty( $args['include'] ) ) {
+				return [];
+			}
+			$args['orderby'] = 'date';
+			$args['order']   = 'DESC';
 		} else {
 			$args['orderby'] = 'date';
 			$args['order']   = 'DESC';
@@ -234,6 +242,8 @@ if ( ! function_exists( 'jerseyplug_get_homepage_products' ) ) {
 
 		if ( 'featured' === $context ) {
 			$args = apply_filters( 'jerseyplug_home_featured_products_args', $args );
+		} elseif ( 'sale' === $context ) {
+			$args = apply_filters( 'jerseyplug_home_sale_products_args', $args );
 		} else {
 			$args = apply_filters( 'jerseyplug_home_new_products_args', $args );
 		}

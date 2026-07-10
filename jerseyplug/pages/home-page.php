@@ -15,6 +15,7 @@ get_header();
 			get_template_part('components/home/section', 'leagues',           ['page_id' => $page_id]);
 			get_template_part('components/home/section', 'featured-products', ['page_id' => $page_id]);
 			get_template_part('components/home/section', 'new-arrivals',      ['page_id' => $page_id]);
+			get_template_part('components/home/section', 'sale',              ['page_id' => $page_id]);
 			get_template_part('components/home/section', 'flags',             ['page_id' => $page_id]);
 			get_template_part('components/home/section', 'testimonials',      ['page_id' => $page_id]);
 			get_template_part('components/home/section', 'features',          ['page_id' => $page_id]);

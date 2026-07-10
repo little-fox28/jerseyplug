@@ -26,3 +26,5 @@ if (function_exists('WC') || class_exists('WooCommerce')) {
 if (function_exists('get_field') || is_admin()) {
 	$jerseyplug_require('/inc/acf.php');
 }
+
+$jerseyplug_require('/inc/editor.php');

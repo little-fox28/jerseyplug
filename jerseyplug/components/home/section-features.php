@@ -26,16 +26,19 @@ do_action( 'jerseyplug_before_home_features', $features, (int) $args['page_id'] 
 			</p>
 		</div>
 
-		<div class="grid grid-cols-2 gap-4 md:gap-8 lg:grid-cols-4">
+		<div class="grid grid-cols-2 gap-3 md:gap-8 lg:grid-cols-4">
 			<?php foreach ( $features as $feature ) : ?>
-				<div class="flex h-32 flex-col items-center justify-center rounded-xl border border-gray-100 bg-gray-50 p-4 text-center shadow-sm md:h-auto md:p-6">
-					<div class="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-accent/20 md:mb-6 md:h-16 md:w-16">
-						<?php echo wp_kses_post( jerseyplug_get_homepage_feature_icon( $feature['icon'] ?? '' ) ); ?>
+				<div class="flex h-full flex-col items-center justify-center rounded-xl border border-gray-100 bg-gray-50 p-4 text-center shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 md:p-6">
+					<div class="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#65cf21]/20 md:mb-6 md:h-16 md:w-16 text-[#163300]">
+						<?php 
+							// Output SVG directly since wp_kses_post strips <svg> tags
+							echo jerseyplug_get_homepage_feature_icon( $feature['icon'] ?? '' ); 
+						?>
 					</div>
-					<h3 class="mb-1 text-sm font-bold text-textMain md:text-lg">
+					<h3 class="mb-1.5 text-sm font-bold leading-tight text-[#163300] md:mb-2 md:text-lg">
 						<?php echo esc_html( $feature['title'] ?? '' ); ?>
 					</h3>
-					<p class="text-[10px] text-textSub md:text-sm">
+					<p class="text-[11px] leading-snug text-gray-500 md:text-sm">
 						<?php echo esc_html( $feature['desc'] ?? '' ); ?>
 					</p>
 				</div>

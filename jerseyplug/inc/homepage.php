@@ -349,6 +349,26 @@ if ( ! function_exists( 'jerseyplug_get_homepage_testimonials' ) ) {
 				'name'  => 'Ayesha K.',
 				'quote' => function_exists( 'jerseyplug_pll' ) ? jerseyplug_pll( 'Easy to order and the support team was helpful.' ) : __( 'Easy to order and the support team was helpful.', 'jerseyplug' ),
 			],
+			[
+				'name'  => 'David R.',
+				'quote' => function_exists( 'jerseyplug_pll' ) ? jerseyplug_pll( 'Absolutely love my new jersey! The material feels premium.' ) : __( 'Absolutely love my new jersey! The material feels premium.', 'jerseyplug' ),
+			],
+			[
+				'name'  => 'Sarah L.',
+				'quote' => function_exists( 'jerseyplug_pll' ) ? jerseyplug_pll( 'The custom name printing is flawless. Highly recommended!' ) : __( 'The custom name printing is flawless. Highly recommended!', 'jerseyplug' ),
+			],
+			[
+				'name'  => 'Michael T.',
+				'quote' => function_exists( 'jerseyplug_pll' ) ? jerseyplug_pll( 'Best place to buy football jerseys. Will be ordering again.' ) : __( 'Best place to buy football jerseys. Will be ordering again.', 'jerseyplug' ),
+			],
+			[
+				'name'  => 'Nadia S.',
+				'quote' => function_exists( 'jerseyplug_pll' ) ? jerseyplug_pll( 'Shipping was super fast and the packaging was great.' ) : __( 'Shipping was super fast and the packaging was great.', 'jerseyplug' ),
+			],
+			[
+				'name'  => 'Kevin W.',
+				'quote' => function_exists( 'jerseyplug_pll' ) ? jerseyplug_pll( 'Perfect sizing and exactly as described on the website.' ) : __( 'Perfect sizing and exactly as described on the website.', 'jerseyplug' ),
+			],
 		];
 
 		return (array) apply_filters( 'jerseyplug_homepage_testimonials', $items );

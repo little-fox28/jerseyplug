@@ -227,6 +227,11 @@ function jerseyplug_register_polylang_strings(): void {
 	'Waist (cm)',
 	'Pro Tip',
 	'If you are in between sizes, order the smaller size for a tighter fit or the larger size for a looser fit.',
+	// Login/Register strings.
+	"Don't have an account yet?",
+	'Register now',
+	'Already have an account?',
+	'Magic Link',
 	];
 
 	foreach ( $strings as $label ) {

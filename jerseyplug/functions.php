@@ -18,6 +18,7 @@ $jerseyplug_require('/inc/enqueue.php');
 $jerseyplug_require('/inc/homepage.php');
 $jerseyplug_require('/inc/router.php');
 $jerseyplug_require('/inc/ajax-search.php');
+$jerseyplug_require('/inc/security.php');
 
 if (function_exists('WC') || class_exists('WooCommerce')) {
 	$jerseyplug_require('/inc/woocommerce.php');

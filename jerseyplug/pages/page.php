@@ -8,15 +8,17 @@
 get_header();
 ?>
 
-<main id="primary" class="site-main py-12 md:py-16">
+<main id="primary" class="site-main py-6 md:py-16">
 	<?php if ( have_posts() ) : ?>
 		<?php while ( have_posts() ) : the_post(); ?>
 			<article id="post-<?php the_ID(); ?>" <?php post_class( 'container mx-auto px-4 max-w-5xl' ); ?>>
+				<?php if ( ! ( function_exists( 'is_account_page' ) && is_account_page() ) ) : ?>
 				<header class="mb-8 md:mb-10">
 					<h1 class="text-3xl md:text-5xl font-bold text-primary">
 						<?php the_title(); ?>
 					</h1>
 				</header>
+				<?php endif; ?>
 
 				<?php if ( function_exists('is_checkout') && is_checkout() && ! is_order_received_page() ) : ?>
 					<div class="mb-8">

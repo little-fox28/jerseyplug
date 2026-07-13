@@ -38,8 +38,8 @@ $national_teams = apply_filters(
 
 $wrapper_classes = apply_filters('jerseyplug_home_rolling_flags_wrapper_classes', 'w-full h-20 md:h-32 relative overflow-hidden bg-white mb-0', $context);
 $fill_classes    = apply_filters('jerseyplug_home_rolling_flags_fill_classes', 'h-full absolute top-0 left-0 bg-primary w-full origin-left', $context);
-$arrow_classes    = apply_filters('jerseyplug_home_rolling_flags_arrow_classes', 'absolute top-0 h-20 w-20 md:h-32 md:w-32 flex items-center justify-center z-20 bg-accent rounded-full border-4 border-primary', $context);
-$flags_classes    = apply_filters('jerseyplug_home_rolling_flags_flags_classes', 'absolute top-0 h-full flex items-center z-10 gap-6', $context);
+$arrow_classes    = apply_filters('jerseyplug_home_rolling_flags_arrow_classes', 'absolute top-0 h-20 w-20 md:h-32 md:w-32 flex items-center justify-center z-20 bg-accent rounded-full border-4 border-primary shrink-0', $context);
+$flags_classes    = apply_filters('jerseyplug_home_rolling_flags_flags_classes', 'absolute top-0 h-full flex items-center z-10 gap-3 md:gap-6 w-max [--flag-offset:3.5rem] md:[--flag-offset:5rem]', $context);
 
 $flags_dir = get_theme_file_uri('/assets/images/flags/');
 ?>
@@ -71,13 +71,13 @@ $flags_dir = get_theme_file_uri('/assets/images/flags/');
     <?php do_action('jerseyplug_before_rolling_flags_flags', $national_teams, $context); ?>
     <div
         class="<?php echo esc_attr($flags_classes); ?>"
-        :style="shouldAnimate ? `left: calc(${percentage}% + 5rem); --flag-rotation: ${percentage * 8}deg` : 'left: calc(100% + 5rem); --flag-rotation: 0deg'"
+        :style="shouldAnimate ? `left: calc(${percentage}% + var(--flag-offset, 5rem)); --flag-rotation: ${percentage * 8}deg` : `left: calc(100% + var(--flag-offset, 5rem)); --flag-rotation: 0deg`"
         style="will-change: transform;">
         <?php foreach ($national_teams as $nation) : ?>
             <img
                 src="<?php echo esc_url($flags_dir . strtolower($nation['flag']) . '.svg'); ?>"
                 alt="<?php echo esc_attr($nation['name']); ?>"
-                class="h-20 w-20 md:h-32 md:w-32"
+                class="h-20 w-20 md:h-32 md:w-32 shrink-0 rounded-full"
                 style="transform: rotate(var(--flag-rotation))"
                 loading="lazy"
                 decoding="async" />

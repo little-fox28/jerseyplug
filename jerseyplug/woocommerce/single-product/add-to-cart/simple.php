@@ -61,7 +61,8 @@ if ( $product->is_in_stock() ) : ?>
 				type="submit" 
 				name="add-to-cart" 
 				value="<?php echo esc_attr( $product->get_id() ); ?>" 
-				class="single_add_to_cart_button button alt flex-1 h-12 rounded-xl bg-primary text-xs font-black uppercase tracking-widest text-white shadow-lg transition-all duration-200 flex items-center justify-center gap-2 hover:bg-accent hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed">
+				style="background-color: #163300 !important; color: #f2c86c !important;"
+				class="single_add_to_cart_button button alt flex-1 h-12 rounded-xl text-xs font-black uppercase tracking-widest shadow-[0_4px_14px_0_rgba(22,51,0,0.39)] hover:shadow-[0_6px_20px_rgba(22,51,0,0.23)] hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
 				<?php echo esc_html( $product->single_add_to_cart_text() ); ?>
 			</button>
 		</div>

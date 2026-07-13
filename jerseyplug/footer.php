@@ -59,6 +59,22 @@
 		</template>
 	</div>
 
+	<!-- Override native window.alert to use our Toast System -->
+	<script>
+		(function() {
+			var _originalAlert = window.alert;
+			window.alert = function(message) {
+				// We assume alerts from Woo are mostly errors (like out of stock, select variations)
+				window.dispatchEvent(new CustomEvent('notify', {
+					detail: {
+						message: message,
+						type: 'error'
+					}
+				}));
+			};
+		})();
+	</script>
+
 <?php wp_footer(); ?>
 </body>
 </html>

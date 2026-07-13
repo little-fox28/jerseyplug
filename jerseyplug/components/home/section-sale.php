@@ -19,7 +19,7 @@ do_action('jerseyplug_before_home_sale', $products, (int) $args['page_id']);
 <section class="bg-white py-16">
 	<div class="container mx-auto px-4">
 		<div class="mb-14 text-center">
-			<h2 class="mb-3 text-5xl font-black uppercase md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500 inline-block drop-shadow-sm">
+			<h2 class="mb-3 text-4xl font-black uppercase md:text-5xl lg:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500 inline-block drop-shadow-sm">
 				<?php echo esc_html(jerseyplug_pll('On Sale')); ?>
 			</h2>
 		</div>

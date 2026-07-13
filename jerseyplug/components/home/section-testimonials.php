@@ -55,28 +55,28 @@ do_action( 'jerseyplug_before_home_testimonials', $testimonials, (int) $args['pa
 					$name = $testimonial['name'] ?? 'Customer';
 					$initial = mb_substr( $name, 0, 1 );
 				?>
-					<div class="w-[85vw] sm:w-[350px] md:w-[380px] rounded-2xl border border-gray-100 bg-gray-50 p-6 shadow-sm flex flex-col justify-between transition-transform hover:-translate-y-1 hover:shadow-md cursor-default">
+					<div class="w-[280px] sm:w-[350px] md:w-[380px] rounded-2xl border border-gray-100 bg-gray-50 p-5 md:p-8 shadow-sm flex flex-col justify-between transition-transform hover:-translate-y-1 hover:shadow-md cursor-default">
 						<div>
 							<!-- Rating Stars -->
-							<div class="flex gap-1 mb-4 text-[#F79E1B]">
+							<div class="flex gap-1 mb-3 md:mb-4 text-[#F79E1B]">
 								<?php for ( $i = 0; $i < 5; $i++ ) : ?>
-									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 md:w-5 md:h-5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
 								<?php endfor; ?>
 							</div>
 							<!-- Quote -->
-							<p class="mb-6 text-sm leading-7 text-gray-600 md:text-base italic">
+							<p class="mb-5 md:mb-6 text-[13px] md:text-base leading-relaxed md:leading-7 text-gray-600 italic">
 								"<?php echo esc_html( $testimonial['quote'] ?? '' ); ?>"
 							</p>
 						</div>
 						
 						<!-- User Info & Avatar -->
-						<div class="flex items-center gap-4 mt-auto pt-4 border-t border-gray-200/50">
-							<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#163300] text-lg font-bold text-white uppercase shadow-sm">
+						<div class="flex items-center gap-3 md:gap-4 mt-auto pt-4 border-t border-gray-200/50">
+							<div class="flex h-10 w-10 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-full bg-[#163300] text-base md:text-lg font-bold text-white uppercase shadow-sm">
 								<?php echo esc_html( $initial ); ?>
 							</div>
 							<div class="flex flex-col">
-								<span class="font-bold text-[#163300]"><?php echo esc_html( $name ); ?></span>
-								<span class="text-xs text-gray-500 font-medium">Verified Buyer</span>
+								<span class="font-bold text-sm md:text-base text-[#163300]"><?php echo esc_html( $name ); ?></span>
+								<span class="text-[11px] md:text-xs text-gray-500 font-medium">Verified Buyer</span>
 							</div>
 						</div>
 					</div>

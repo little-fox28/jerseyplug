@@ -38,13 +38,14 @@ $show_results_label = jerseyplug_pll( 'Show Results' );
 <!-- Drawer -->
 <div
 	id="mobile-filter-drawer"
-	class="fixed inset-y-0 right-0 z-50 flex w-full max-w-md translate-x-full flex-col bg-white shadow-2xl transition-transform duration-300 ease-out"
+	class="fixed inset-y-0 right-0 z-50 flex w-[85%] max-w-sm translate-x-full flex-col bg-white shadow-2xl transition-transform duration-300 ease-out"
 >
 	<!-- Header -->
 	<div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
 		<h2 class="text-lg font-bold text-zinc-900"><?php echo esc_html( $filters_label ); ?></h2>
-		<button type="button" id="mobile-drawer-close" class="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600">
-			<svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+		<button type="button" id="mobile-drawer-close" class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-bold text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900">
+			<?php echo esc_html( jerseyplug_pll( 'Close' ) ); ?>
+			<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
 		</button>
 	</div>
 

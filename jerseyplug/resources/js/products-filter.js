@@ -181,6 +181,41 @@
                 }
             }
 
+            // Sync toolbar state
+            // Sync [data-filter-count] badges
+            doc.querySelectorAll('[data-filter-count]').forEach(function(newBadge) {
+                const filterType = newBadge.dataset.filterCount
+                const oldBadge = page.querySelector(`[data-filter-count="${filterType}"]`)
+                if (oldBadge) {
+                    oldBadge.className = newBadge.className
+                    oldBadge.innerHTML = newBadge.innerHTML
+                }
+            })
+
+            // Sync desktop clear button
+            const newDesktopClear = doc.getElementById('desktop-clear-all')
+            const oldDesktopClear = document.getElementById('desktop-clear-all')
+            if (newDesktopClear && oldDesktopClear) {
+                oldDesktopClear.className = newDesktopClear.className
+                oldDesktopClear.innerHTML = newDesktopClear.innerHTML
+            }
+
+            // Sync mobile filter count
+            const newMobileCount = doc.getElementById('mobile-filter-count')
+            const oldMobileCount = document.getElementById('mobile-filter-count')
+            if (newMobileCount && oldMobileCount) {
+                oldMobileCount.className = newMobileCount.className
+                oldMobileCount.innerHTML = newMobileCount.innerHTML
+            }
+
+            // Sync dropdown triggers active styling
+            doc.querySelectorAll('[data-dropdown-trigger]').forEach(function(newTrigger, index) {
+                const oldTriggers = page.querySelectorAll('[data-dropdown-trigger]')
+                if (oldTriggers[index]) {
+                    oldTriggers[index].className = newTrigger.className
+                }
+            })
+
             // Re-bind pagination links for AJAX.
             bindPaginationLinks()
 
@@ -430,7 +465,29 @@
         })
 
         // Reset sort.
-        if (desktopSort) desktopSort.value = 'featured'
+        if (desktopSort && desktopSort.value !== 'featured') {
+            desktopSort.value = 'featured'
+            // Visually reset custom sort dropdown
+            const featuredBtn = page.querySelector('[data-sort-option="featured"]')
+            if (featuredBtn) {
+                page.querySelectorAll('[data-sort-option]').forEach(function (otherBtn) {
+                    if (otherBtn === featuredBtn) {
+                        otherBtn.classList.add('bg-gray-50', 'font-bold', 'text-primary')
+                        otherBtn.classList.remove('text-gray-600')
+                        if (!otherBtn.querySelector('svg')) {
+                            otherBtn.insertAdjacentHTML('beforeend', '<svg class="h-4 w-4 text-primary" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>')
+                        }
+                    } else {
+                        otherBtn.classList.remove('bg-gray-50', 'font-bold', 'text-primary')
+                        otherBtn.classList.add('text-gray-600')
+                        const svg = otherBtn.querySelector('svg')
+                        if (svg) svg.remove()
+                    }
+                })
+                const labelEl = featuredBtn.closest('[data-dropdown]')?.querySelector('[data-sort-label]')
+                if (labelEl) labelEl.textContent = featuredBtn.textContent.trim()
+            }
+        }
         if (mobileSort) mobileSort.value = 'featured'
 
         // Reset size toggle buttons in drawer.
@@ -443,12 +500,12 @@
     }
 
     function initClearButtons() {
-        if (clearAllBtn) {
-            clearAllBtn.addEventListener('click', clearAllFilters)
-        }
-        if (clearEmptyBtn) {
-            clearEmptyBtn.addEventListener('click', clearAllFilters)
-        }
+        page.addEventListener('click', function(e) {
+            if (e.target.closest('#desktop-clear-all') || e.target.closest('#clear-all-filters')) {
+                e.preventDefault()
+                clearAllFilters()
+            }
+        })
     }
 
     // -----------------------------------------------------------------------

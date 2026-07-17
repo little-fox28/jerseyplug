@@ -10,39 +10,31 @@
  */
 
 defined( 'ABSPATH' ) || exit;
-
 ?>
 
-<div class="max-w-6xl mx-auto py-12 px-4">
-	<div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-		
-		<!-- Navigation Sidebar -->
-		<div class="lg:col-span-1">
-			<div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden sticky top-24">
-				<?php
-				/**
-				 * My Account navigation.
-				 *
-				 * @since 2.6.0
-				 */
-				do_action( 'woocommerce_account_navigation' );
-				?>
-			</div>
-		</div>
+<div class="max-w-7xl mx-auto py-4 sm:py-8 w-full">
+    <!-- Tiêu đề trang -->
+    <h1 class="text-3xl font-extrabold text-primary tracking-tight mb-8"><?php esc_html_e( 'My Account', 'woocommerce' ); ?></h1>
 
-		<!-- Main Content Area -->
-		<div class="lg:col-span-3">
-			<div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-10 min-h-[500px]">
-				<?php
-				/**
-				 * My Account content.
-				 *
-				 * @since 2.6.0
-				 */
-				do_action( 'woocommerce_account_content' );
-				?>
-			</div>
-		</div>
+    <style>
+        @keyframes tab-fade-in {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-tab-fade {
+            animation: tab-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+    </style>
 
-	</div>
+    <div class="flex flex-col md:flex-row gap-8 lg:gap-12 items-start">
+        
+        <!-- SIDEBAR NAV (Điều hướng) -->
+        <?php do_action( 'woocommerce_account_navigation' ); ?>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="woocommerce-MyAccount-content w-full flex-1 animate-tab-fade pb-24 md:pb-0">
+            <?php do_action( 'woocommerce_account_content' ); ?>
+        </div>
+        
+    </div>
 </div>

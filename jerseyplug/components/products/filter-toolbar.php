@@ -248,16 +248,51 @@ $total_active = count( $active_competitions ) + count( $active_teams ) + count( 
 		</div>
 
 		<!-- Sort -->
-		<div class="flex shrink-0 items-center gap-3 border-l border-gray-200 pl-6">
+		<div class="flex shrink-0 items-center gap-2 border-l border-gray-200 pl-6">
 			<span class="text-sm text-gray-500"><?php echo esc_html( $sort_label ); ?>:</span>
-			<select
-				id="desktop-shop-sort"
-				class="cursor-pointer border-none bg-transparent text-sm font-bold text-primary focus:ring-0"
-			>
-				<option value="featured" <?php selected( $active_sort, 'featured' ); ?>><?php echo esc_html( jerseyplug_pll( 'Featured' ) ); ?></option>
-				<option value="price_low" <?php selected( $active_sort, 'price_low' ); ?>><?php echo esc_html( jerseyplug_pll( 'Price: Low to High' ) ); ?></option>
-				<option value="price_high" <?php selected( $active_sort, 'price_high' ); ?>><?php echo esc_html( jerseyplug_pll( 'Price: High to Low' ) ); ?></option>
-				<option value="newest" <?php selected( $active_sort, 'newest' ); ?>><?php echo esc_html( jerseyplug_pll( 'Newest' ) ); ?></option>
+			
+			<div class="relative shrink-0" data-dropdown>
+				<?php
+				$sort_options = [
+					'featured'   => jerseyplug_pll( 'Featured' ),
+					'price_low'  => jerseyplug_pll( 'Price: Low to High' ),
+					'price_high' => jerseyplug_pll( 'Price: High to Low' ),
+					'newest'     => jerseyplug_pll( 'Newest' ),
+				];
+				$current_sort_label = $sort_options[ $active_sort ] ?? $sort_options['featured'];
+				?>
+				<button
+					type="button"
+					data-dropdown-trigger
+					class="flex items-center gap-1 text-sm font-bold text-primary transition-colors hover:text-accent"
+				>
+					<span data-sort-label><?php echo esc_html( $current_sort_label ); ?></span>
+					<svg class="h-4 w-4 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+				</button>
+				<div data-dropdown-panel class="absolute right-0 top-full z-50 mt-2 hidden w-48 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-xl">
+					<div class="p-1">
+						<?php foreach ( $sort_options as $val => $label ) : ?>
+							<button 
+								type="button" 
+								data-sort-option="<?php echo esc_attr( $val ); ?>"
+								class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-gray-50 <?php echo $active_sort === $val ? 'bg-gray-50 font-bold text-primary' : 'text-gray-600'; ?>"
+							>
+								<?php echo esc_html( $label ); ?>
+								<?php if ( $active_sort === $val ) : ?>
+									<svg class="h-4 w-4 text-primary" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+								<?php endif; ?>
+							</button>
+						<?php endforeach; ?>
+					</div>
+				</div>
+			</div>
+
+			<!-- Hidden native select for JS state sync -->
+			<select id="desktop-shop-sort" class="hidden">
+				<option value="featured" <?php selected( $active_sort, 'featured' ); ?>>Featured</option>
+				<option value="price_low" <?php selected( $active_sort, 'price_low' ); ?>>Price Low to High</option>
+				<option value="price_high" <?php selected( $active_sort, 'price_high' ); ?>>Price High to Low</option>
+				<option value="newest" <?php selected( $active_sort, 'newest' ); ?>>Newest</option>
 			</select>
 		</div>
 	</div>

@@ -20,7 +20,11 @@ if (! $product instanceof WC_Product) {
 $related_ids = function_exists('wc_get_related_products') ? wc_get_related_products($product->get_id(), 4) : [];
 $related_products = [];
 if (! empty($related_ids)) {
-	$related_products = wc_get_products(['include' => $related_ids, 'limit' => 4]);
+	$related_products = wc_get_products([
+		'include' => $related_ids,
+		'limit'   => 4,
+		'orderby' => 'post__in',
+	]);
 }
 ?>
 
@@ -84,29 +88,11 @@ if (! empty($related_ids)) {
 							continue;
 						}
 
-						$image_id = $rel_prod->get_image_id();
-						$image = $image_id > 0 ? wp_get_attachment_image_url($image_id, 'woocommerce_thumbnail') : '';
-						$terms = get_the_terms($rel_prod->get_id(), 'product_cat');
-						$category = '';
-						if (is_array($terms) && ! empty($terms) && $terms[0] instanceof WP_Term) {
-							$category = (string) $terms[0]->name;
-						}
-
-						$card_data = [
-							'id'           => $rel_prod->get_id(),
-							'slug'         => $rel_prod->get_slug(),
-							'name'         => $rel_prod->get_name(),
-							'url'          => get_permalink($rel_prod->get_id()),
-							'image'        => $image ?: (function_exists('wc_placeholder_img_src') ? wc_placeholder_img_src('woocommerce_thumbnail') : ''),
-							'category'     => $category,
-							'price'        => $rel_prod->get_price_html(),
-							'rating_label' => jerseyplug_get_random_rating_and_reviews((int) $rel_prod->get_id())['rating'],
-							'tag'          => $rel_prod->is_featured()
-								? (function_exists('jerseyplug_pll') ? jerseyplug_pll('Trending Now') : 'Trending Now')
-								: (function_exists('jerseyplug_is_new_product') && jerseyplug_is_new_product($rel_prod) ? (function_exists('jerseyplug_pll') ? jerseyplug_pll('New') : 'New') : ''),
-						];
-
-						get_template_part('components/products/product-card', null, ['product' => $card_data, 'index' => $index]);
+						// Pass the WC_Product object directly for highest performance
+						get_template_part('components/products/product-card', null, [
+							'product_obj' => $rel_prod,
+							'index'       => $index,
+						]);
 					endforeach;
 					?>
 				</ul>

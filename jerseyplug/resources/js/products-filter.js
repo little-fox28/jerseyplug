@@ -375,6 +375,46 @@
                 applyFilters()
             })
         }
+
+        // Custom sort dropdown interaction
+        page.querySelectorAll('[data-sort-option]').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault()
+                const val = btn.dataset.sortOption
+                
+                // Visually update all sort buttons in the dropdown
+                page.querySelectorAll('[data-sort-option]').forEach(function (otherBtn) {
+                    if (otherBtn === btn) {
+                        otherBtn.classList.add('bg-gray-50', 'font-bold', 'text-primary')
+                        otherBtn.classList.remove('text-gray-600')
+                        // Add checkmark SVG if it doesn't exist
+                        if (!otherBtn.querySelector('svg')) {
+                            otherBtn.insertAdjacentHTML('beforeend', '<svg class="h-4 w-4 text-primary" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>')
+                        }
+                    } else {
+                        otherBtn.classList.remove('bg-gray-50', 'font-bold', 'text-primary')
+                        otherBtn.classList.add('text-gray-600')
+                        const svg = otherBtn.querySelector('svg')
+                        if (svg) svg.remove()
+                    }
+                })
+
+                // Update the trigger label text
+                const labelEl = btn.closest('[data-dropdown]')?.querySelector('[data-sort-label]')
+                if (labelEl) {
+                    // Remove the checkmark SVG text content if it got caught in textContent
+                    labelEl.textContent = btn.textContent.trim()
+                }
+
+                // Trigger the AJAX fetch
+                if (desktopSort && desktopSort.value !== val) {
+                    desktopSort.value = val
+                    desktopSort.dispatchEvent(new Event('change'))
+                }
+                
+                closeAllDropdowns()
+            })
+        })
     }
 
     // -----------------------------------------------------------------------

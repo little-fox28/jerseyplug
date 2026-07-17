@@ -18,6 +18,13 @@ if ( ! function_exists( 'jerseyplug_get_products_page_filter_options' ) ) {
 	 * @return array<string, array> Filter groups keyed by slug.
 	 */
 	function jerseyplug_get_products_page_filter_options(): array {
+		$cache_key = 'jerseyplug_products_filter_options';
+		$cached    = get_transient( $cache_key );
+
+		if ( false !== $cached && is_array( $cached ) ) {
+			return $cached;
+		}
+
 		$options = [];
 
 		// --- Competitions (product_cat children of a "competitions" parent, or fallback) ---
@@ -105,6 +112,8 @@ if ( ! function_exists( 'jerseyplug_get_products_page_filter_options' ) ) {
 				[ 'id' => 'p3', 'label' => jerseyplug_pll( 'Above R2000' ),    'min' => 2000, 'max' => 99999 ],
 			]
 		);
+
+		set_transient( $cache_key, $options, DAY_IN_SECONDS );
 
 		return $options;
 	}
@@ -272,17 +281,19 @@ function jerseyplug_filter_shop_price_clauses( array $clauses, WP_Query $query )
 	$min = (float) $min_price;
 	$max = (float) $max_price;
 
-	// Join the postmeta table for _price if not already joined.
-	$price_join = "INNER JOIN {$wpdb->postmeta} AS jp_price ON ({$wpdb->posts}.ID = jp_price.post_id AND jp_price.meta_key = '_price')";
+	// Use WooCommerce's highly optimized and indexed wc_product_meta_lookup table
+	$lookup_table = $wpdb->prefix . 'wc_product_meta_lookup';
+	$price_join   = "INNER JOIN {$lookup_table} AS jp_price ON ({$wpdb->posts}.ID = jp_price.product_id)";
 
 	if ( strpos( $clauses['join'], 'jp_price' ) === false ) {
 		$clauses['join'] .= " {$price_join}";
 	}
 
+	// Match any product that has at least one variation within the selected price range
 	$clauses['where'] .= $wpdb->prepare(
-		' AND CAST(jp_price.meta_value AS DECIMAL(10,2)) >= %f AND CAST(jp_price.meta_value AS DECIMAL(10,2)) <= %f',
-		$min,
-		$max
+		' AND jp_price.min_price <= %f AND jp_price.max_price >= %f',
+		$max,
+		$min
 	);
 
 	return $clauses;

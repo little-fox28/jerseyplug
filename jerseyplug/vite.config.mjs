@@ -13,7 +13,7 @@ export default defineConfig(({ command }) => {
             port: 3000,
             strictPort: true,
             cors: true,
-            origin: localDomain,
+            origin: 'http://localhost:3000',
             hmr: {
                 host: 'localhost',
             }

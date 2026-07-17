@@ -158,6 +158,13 @@ if (! function_exists('get_jerseyplug_mega_menu')) {
 				}
 			}
 
+			$logo_src = $external_logo_url;
+			if ($thumbnail_id > 0 && $logo_url !== '') {
+				$logo_src = $logo_url;
+			} elseif ($logo_src === '') {
+				$logo_src = $logo_url;
+			}
+
 			return [
 				'id'                => (int) $item->ID,
 				'term_id'           => $term_id,
@@ -167,6 +174,7 @@ if (! function_exists('get_jerseyplug_mega_menu')) {
 				'thumbnail_id'      => $thumbnail_id,
 				'logo_url'          => $logo_url,
 				'external_logo_url' => $external_logo_url,
+				'logo_src'          => $logo_src,
 			];
 		};
 
@@ -210,6 +218,24 @@ if (! function_exists('get_jerseyplug_mega_menu')) {
 		return $menu_data;
 	}
 }
+
+/**
+ * Clear the mega menu cache when a menu is updated.
+ */
+function jerseyplug_clear_mega_menu_cache()
+{
+	$cache_version = 5;
+	delete_transient(sprintf('jerseyplug_mega_menu_data_%d_%s', $cache_version, 'default'));
+	
+	if (function_exists('pll_languages_list')) {
+		$langs = pll_languages_list();
+		foreach ($langs as $lang) {
+			delete_transient(sprintf('jerseyplug_mega_menu_data_%d_%s', $cache_version, $lang));
+		}
+	}
+}
+add_action('wp_update_nav_menu', 'jerseyplug_clear_mega_menu_cache');
+add_action('wp_update_nav_menu_item', 'jerseyplug_clear_mega_menu_cache');
 
 /**
  * Capture custom personalization data (name, number) when adding to cart.

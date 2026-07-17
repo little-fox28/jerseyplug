@@ -6,21 +6,9 @@
  * @package JerseyPlug
  */
 
-$args = wp_parse_args(
-	$args ?? [],
-	[
-		'top_5_leagues'  => [],
-		'national_teams' => [],
-		'other_leagues'  => [],
-	]
-);
+$args = wp_parse_args( $args ?? [], [] );
 
-$top_5_leagues  = is_array($args['top_5_leagues']) ? $args['top_5_leagues'] : [];
-$national_teams = is_array($args['national_teams']) ? $args['national_teams'] : [];
-$other_leagues  = is_array($args['other_leagues']) ? $args['other_leagues'] : [];
-
-$shop_url      = get_post_type_archive_link('product') ?: home_url('/shop/');
-$world_cup_url = add_query_arg('competition', 'World Cup 2026', $shop_url);
+$shop_url = get_post_type_archive_link('product') ?: home_url('/shop/');
 
 $logo_field = function_exists('get_field') ? get_field('header_logo', 'option') : null;
 $logo_url   = is_array($logo_field) && ! empty($logo_field['url']) ? $logo_field['url'] : get_theme_file_uri('/resources/images/jerseyplug-logo.svg');
@@ -65,9 +53,6 @@ $translate = static function (string $text): string {
 
 $logo_url   = (string) apply_filters('jerseyplug_header_logo_url', $logo_url);
 $logo_alt   = (string) apply_filters('jerseyplug_header_logo_alt', $logo_alt);
-$world_cup_url = (string) apply_filters('jerseyplug_header_world_cup_url', $world_cup_url);
-
-$world_cup_label = (string) apply_filters('jerseyplug_header_world_cup_label', $translate('World Cup 2026'));
 
 $mega_menu = function_exists('get_jerseyplug_mega_menu') ? get_jerseyplug_mega_menu() : [];
 $mega_menu = is_array($mega_menu) ? $mega_menu : [];
@@ -169,15 +154,7 @@ $mobile_overlay_classes = (string) apply_filters('jerseyplug_header_mobile_overl
 									<?php
 									$child_name     = (string) ($child['name'] ?? '');
 									$child_link     = (string) ($child['link'] ?? '');
-									$child_logo     = (string) ($child['logo_url'] ?? '');
-									$child_external = (string) ($child['external_logo_url'] ?? '');
-									$child_thumb_id = (int) ($child['thumbnail_id'] ?? 0);
-									$child_logo_src = $child_external;
-									if ($child_thumb_id > 0 && $child_logo !== '') {
-										$child_logo_src = $child_logo;
-									} elseif ($child_logo_src === '') {
-										$child_logo_src = $child_logo;
-									}
+									$child_logo_src = (string) ($child['logo_src'] ?? '');
 									$child_label    = (string) apply_filters('jerseyplug_header_mega_menu_group_label', $translate($child_name), $child, $menu_group);
 									$grand_children = is_array($child['children'] ?? null) ? $child['children'] : [];
 									?>
@@ -212,18 +189,10 @@ $mobile_overlay_classes = (string) apply_filters('jerseyplug_header_mobile_overl
 											<ul>
 												<?php foreach ($grand_children as $grandchild) : ?>
 													<?php
-													$grand_name  = (string) ($grandchild['name'] ?? '');
-													$grand_link  = (string) ($grandchild['link'] ?? '');
-													$grand_logo  = (string) ($grandchild['logo_url'] ?? '');
-													$grand_external = (string) ($grandchild['external_logo_url'] ?? '');
-													$grand_thumb_id = (int) ($grandchild['thumbnail_id'] ?? 0);
-													$grand_logo_src = $grand_external;
-													if ($grand_thumb_id > 0 && $grand_logo !== '') {
-														$grand_logo_src = $grand_logo;
-													} elseif ($grand_logo_src === '') {
-														$grand_logo_src = $grand_logo;
-													}
-													$grand_label = (string) apply_filters('jerseyplug_header_mega_menu_item_label', $translate($grand_name), $grandchild, $child, $menu_group);
+													$grand_name     = (string) ($grandchild['name'] ?? '');
+													$grand_link     = (string) ($grandchild['link'] ?? '');
+													$grand_logo_src = (string) ($grandchild['logo_src'] ?? '');
+													$grand_label    = (string) apply_filters('jerseyplug_header_mega_menu_item_label', $translate($grand_name), $grandchild, $child, $menu_group);
 													?>
 													<li class="flex items-center space-x-2 py-1.5">
 														<span class="flex items-center justify-center w-5 h-5 shrink-0">
@@ -513,9 +482,6 @@ $mobile_overlay_classes = (string) apply_filters('jerseyplug_header_mobile_overl
 			</div>
 
 			<nav class="flex flex-col space-y-2" aria-label="<?php echo esc_attr($translate('Primary Navigation')); ?>">
-				<a href="<?php echo esc_url($world_cup_url); ?>" @click="isMobileMenuOpen = false" class="text-white py-3 border-b border-gray-700/50 font-bold hover:opacity-80">
-					<?php echo esc_html($world_cup_label); ?>
-				</a>
 				<?php foreach ($mega_menu as $menu_group) : ?>
 					<?php
 					$root_slug  = sanitize_title((string) ($menu_group['slug'] ?? ''));
@@ -571,18 +537,10 @@ $mobile_overlay_classes = (string) apply_filters('jerseyplug_header_mobile_overl
 											<div class="pl-7 pt-2 space-y-1">
 												<?php foreach ($grand_children as $grandchild) : ?>
 													<?php
-													$grand_name  = (string) ($grandchild['name'] ?? '');
-													$grand_link  = (string) ($grandchild['link'] ?? '');
-													$grand_logo  = (string) ($grandchild['logo_url'] ?? '');
-													$grand_external = (string) ($grandchild['external_logo_url'] ?? '');
-													$grand_thumb_id = (int) ($grandchild['thumbnail_id'] ?? 0);
-													$grand_logo_src = $grand_external;
-													if ($grand_thumb_id > 0 && $grand_logo !== '') {
-														$grand_logo_src = $grand_logo;
-													} elseif ($grand_logo_src === '') {
-														$grand_logo_src = $grand_logo;
-													}
-													$grand_label = (string) apply_filters('jerseyplug_header_mega_menu_item_label', $translate($grand_name), $grandchild, $child, $menu_group);
+													$grand_name     = (string) ($grandchild['name'] ?? '');
+													$grand_link     = (string) ($grandchild['link'] ?? '');
+													$grand_logo_src = (string) ($grandchild['logo_src'] ?? '');
+													$grand_label    = (string) apply_filters('jerseyplug_header_mega_menu_item_label', $translate($grand_name), $grandchild, $child, $menu_group);
 													?>
 													<a href="<?php echo esc_url($grand_link); ?>" @click="isMobileMenuOpen = false" class="flex items-center gap-2 text-gray-300 py-1 text-sm hover:text-white">
 														<img

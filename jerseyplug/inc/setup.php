@@ -232,6 +232,11 @@ function jerseyplug_register_polylang_strings(): void {
 	'Register now',
 	'Already have an account?',
 	'Magic Link',
+	// 404 page strings
+	'Page Not Found',
+	'Sorry, the page you are looking for could not be found.',
+	'Go to Shop',
+	'Go Home',
 	];
 
 	foreach ( $strings as $label ) {

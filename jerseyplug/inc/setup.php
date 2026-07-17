@@ -237,6 +237,8 @@ function jerseyplug_register_polylang_strings(): void {
 	'Sorry, the page you are looking for could not be found.',
 	'Go to Shop',
 	'Go Home',
+	// Footer strings
+	'Footer Description',
 	];
 
 	foreach ( $strings as $label ) {

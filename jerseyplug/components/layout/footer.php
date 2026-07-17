@@ -60,10 +60,6 @@ $get_setting = function ($key, $default = '') {
 $contact_address    = $get_setting('jerseyplug_contact_address', '');
 $contact_phone      = $get_setting('jerseyplug_contact_phone', '');
 $contact_email      = $get_setting('jerseyplug_contact_email', '');
-$facebook_url       = $get_setting('jerseyplug_social_facebook', '');
-$instagram_url      = $get_setting('jerseyplug_social_instagram', '');
-$twitter_url        = $get_setting('jerseyplug_social_twitter', '');
-$youtube_url        = $get_setting('jerseyplug_social_youtube', '');
 ?>
 
 <?php do_action('jerseyplug_before_footer'); ?>
@@ -87,41 +83,8 @@ $youtube_url        = $get_setting('jerseyplug_social_youtube', '');
 				);
 				?>
 				<p class="text-gray-400 text-sm leading-relaxed max-w-xs">
-					<?php echo esc_html(__('Premium football jerseys delivered across South Africa with fast, secure checkout.', 'jerseyplug')); ?>
+					<?php echo esc_html(jerseyplug_pll('Footer Description')); ?>
 				</p>
-				<div class="flex gap-3">
-					<?php if (! empty($facebook_url)) : ?>
-						<a href="<?php echo esc_url($facebook_url); ?>" aria-label="<?php echo esc_attr(__('Facebook', 'jerseyplug')); ?>" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-yellow-400 transition-all duration-300 group">
-						<a href="<?php echo esc_url($facebook_url); ?>" aria-label="<?php echo esc_attr(__('Facebook', 'jerseyplug')); ?>" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-secondary transition-all duration-300 group">
-							<svg class="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
-								<path d="M13.5 9H16V6h-2.2C11.5 6 10 7.5 10 9.7V12H8v3h2v6h3v-6h2.4l.6-3H13V9.8c0-.5.3-.8.8-.8Z" />
-							</svg>
-						</a>
-					<?php endif; ?>
-					<?php if (! empty($instagram_url)) : ?>
-						<a href="<?php echo esc_url($instagram_url); ?>" aria-label="<?php echo esc_attr(__('Instagram', 'jerseyplug')); ?>" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-secondary transition-all duration-300 group">
-							<svg class="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
-								<rect x="3" y="3" width="18" height="18" rx="5"></rect>
-								<circle cx="12" cy="12" r="4"></circle>
-								<circle cx="17" cy="7" r="1.5" fill="currentColor" stroke="none"></circle>
-							</svg>
-						</a>
-					<?php endif; ?>
-					<?php if (! empty($twitter_url)) : ?>
-						<a href="<?php echo esc_url($twitter_url); ?>" aria-label="<?php echo esc_attr(__('Twitter', 'jerseyplug')); ?>" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-secondary transition-all duration-300 group">
-							<svg class="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
-								<path d="M18.9 7.4c.7 6.8-4.8 11.8-11.1 11.8-2.2 0-4.3-.6-6-1.8 2.1.3 4.2-.3 5.8-1.7-1.7 0-3.2-1.1-3.7-2.7.6.1 1.2.1 1.7-.1-1.9-.4-3.1-2.2-2.7-4 .6.4 1.4.7 2.2.8-1.7-1.2-1.9-3.7-.6-5.1 2 2.4 5 4 8.4 4.2-.5-2.1 1.1-4.2 3.3-4.2 1 0 1.9.4 2.6 1.1.8-.2 1.5-.5 2.2-.9-.3.8-.8 1.4-1.5 1.9.7-.1 1.3-.3 1.9-.6-.5.7-1.1 1.3-1.8 1.8Z" />
-							</svg>
-						</a>
-					<?php endif; ?>
-					<?php if (! empty($youtube_url)) : ?>
-						<a href="<?php echo esc_url($youtube_url); ?>" aria-label="<?php echo esc_attr(__('YouTube', 'jerseyplug')); ?>" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-secondary transition-all duration-300 group">
-							<svg class="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
-								<path d="M21.6 7.2c-.2-.8-.8-1.4-1.6-1.6C18.5 5.2 12 5.2 12 5.2s-6.5 0-8 .4c-.8.2-1.4.8-1.6 1.6-.4 1.5-.4 4.8-.4 4.8s0 3.3.4 4.8c.2.8.8 1.4 1.6 1.6 1.5.4 8 .4 8 .4s6.5 0 8-.4c.8-.2 1.4-.8 1.6-1.6.4-1.5.4-4.8.4-4.8s0-3.3-.4-4.8ZM10 15.5v-7l6 3.5-6 3.5Z" />
-							</svg>
-						</a>
-					<?php endif; ?>
-				</div>
 			</div>
 
 			<div>

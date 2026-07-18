@@ -17,6 +17,13 @@ if ( ! isset( $order ) || ! $order ) {
 $notes = $order->get_customer_order_notes();
 ?>
 
+<div class="mb-4">
+    <a href="<?php echo esc_url( wc_get_endpoint_url( 'orders' ) ); ?>" class="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-slate-900 transition-colors">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        <?php echo esc_html( jerseyplug_pll( 'Back to Orders' ) ); ?>
+    </a>
+</div>
+
 <div class="flex justify-between items-center mb-6">
     <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
         <?php printf( esc_html__( 'Order #%s', 'woocommerce' ), $order->get_order_number() ); ?>

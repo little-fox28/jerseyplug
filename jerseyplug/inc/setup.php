@@ -239,6 +239,8 @@ function jerseyplug_register_polylang_strings(): void {
 	'Go Home',
 	// Footer strings
 	'Footer Description',
+	// Order strings
+	'Back to Orders',
 	];
 
 	foreach ( $strings as $label ) {

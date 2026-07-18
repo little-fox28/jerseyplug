@@ -77,10 +77,10 @@ $filters_label = jerseyplug_pll( 'Filters' );
 
 		<!-- Hidden native select for JS state sync -->
 		<select id="mobile-shop-sort" class="hidden">
-			<option value="featured" <?php selected( $active_sort, 'featured' ); ?>>Featured</option>
-			<option value="price_low" <?php selected( $active_sort, 'price_low' ); ?>>Price Low to High</option>
-			<option value="price_high" <?php selected( $active_sort, 'price_high' ); ?>>Price High to Low</option>
-			<option value="newest" <?php selected( $active_sort, 'newest' ); ?>>Newest</option>
+			<option value="featured" <?php selected( $active_sort, 'featured' ); ?>><?php echo esc_html( jerseyplug_pll( 'Featured' ) ); ?></option>
+			<option value="price_low" <?php selected( $active_sort, 'price_low' ); ?>><?php echo esc_html( jerseyplug_pll( 'Price: Low to High' ) ); ?></option>
+			<option value="price_high" <?php selected( $active_sort, 'price_high' ); ?>><?php echo esc_html( jerseyplug_pll( 'Price: High to Low' ) ); ?></option>
+			<option value="newest" <?php selected( $active_sort, 'newest' ); ?>><?php echo esc_html( jerseyplug_pll( 'Newest' ) ); ?></option>
 		</select>
 	</div>
 </div>

@@ -11,7 +11,7 @@ get_header();
 $product = function_exists('wc_get_product') ? wc_get_product(get_the_ID()) : null;
 
 if (! $product instanceof WC_Product) {
-	echo '<div class="container mx-auto py-16 text-center text-gray-500">Product details not available.</div>';
+	echo '<div class="container mx-auto py-16 text-center text-gray-500">' . esc_html( jerseyplug_pll( 'Product details not available.' ) ) . '</div>';
 	get_footer();
 	return;
 }

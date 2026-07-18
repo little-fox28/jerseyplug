@@ -76,7 +76,7 @@ do_action( 'jerseyplug_before_home_testimonials', $testimonials, (int) $args['pa
 							</div>
 							<div class="flex flex-col">
 								<span class="font-bold text-sm md:text-base text-[#163300]"><?php echo esc_html( $name ); ?></span>
-								<span class="text-[11px] md:text-xs text-gray-500 font-medium">Verified Buyer</span>
+								<span class="text-[11px] md:text-xs text-gray-500 font-medium"><?php echo esc_html( jerseyplug_pll( 'Verified Buyer' ) ); ?></span>
 							</div>
 						</div>
 					</div>

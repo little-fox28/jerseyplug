@@ -175,7 +175,7 @@ $review_count = $rating_data['reviews'];
 
 				<div class="grid grid-cols-3 gap-3">
 					<div class="col-span-2">
-						<label class="block text-[10px] font-bold uppercase text-gray-400 mb-1">Name</label>
+						<label class="block text-[10px] font-bold uppercase text-gray-400 mb-1"><?php echo esc_html( jerseyplug_pll( 'Custom Name' ) ); ?></label>
 						<input
 							type="text"
 							name="custom_name"
@@ -185,7 +185,7 @@ $review_count = $rating_data['reviews'];
 							class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-900 placeholder:text-gray-300 focus:border-primary focus:outline-none" />
 					</div>
 					<div>
-						<label class="block text-[10px] font-bold uppercase text-gray-400 mb-1">Number</label>
+						<label class="block text-[10px] font-bold uppercase text-gray-400 mb-1"><?php echo esc_html( jerseyplug_pll( 'Custom Number' ) ); ?></label>
 						<input
 							type="text"
 							name="custom_number"
@@ -199,7 +199,7 @@ $review_count = $rating_data['reviews'];
 				<!-- Patches selector -->
 				<?php if (! empty($patches)) : ?>
 					<div class="space-y-2">
-						<span class="block text-[10px] font-bold uppercase text-gray-400">Patches</span>
+						<span class="block text-[10px] font-bold uppercase text-gray-400"><?php echo esc_html( jerseyplug_pll( 'Patch' ) ); ?></span>
 						<input type="hidden" name="selected_patch" :value="selectedPatch ? JSON.stringify(selectedPatch) : ''" />
 						<div class="grid grid-cols-2 gap-2">
 							<?php foreach ($patches as $patch) : ?>
@@ -264,7 +264,7 @@ $review_count = $rating_data['reviews'];
 		@scroll.window="showBar = (window.scrollY > 400)"
 		:class="showBar ? 'translate-y-0' : 'translate-y-full'">
 		<div class="flex flex-col">
-			<span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total</span>
+			<span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider"><?php echo esc_html( jerseyplug_pll( 'Total' ) ); ?></span>
 			<span class="text-lg font-black text-primary" x-text="formatCurrency(totalCalculatedPrice)"></span>
 		</div>
 		<button

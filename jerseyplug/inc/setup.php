@@ -241,6 +241,14 @@ function jerseyplug_register_polylang_strings(): void {
 	'Footer Description',
 	// Order strings
 	'Back to Orders',
+	'Verified Buyer',
+	// Cart custom strings
+	'Free Delivery',
+	"You've unlocked Free Delivery!",
+	'Guaranteed Safe Checkout',
+	'Total',
+	'Product details not available.',
+	'No content',
 	];
 
 	foreach ( $strings as $label ) {

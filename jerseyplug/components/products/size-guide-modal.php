@@ -27,7 +27,7 @@ $size_guide_content = '';
 if ($size_guide_post instanceof WP_Post) {
 	$size_guide_content = apply_filters('the_content', $size_guide_post->post_content);
 } else {
-	$size_guide_content = '<h3>No content</h3>';
+	$size_guide_content = '<h3>' . esc_html( jerseyplug_pll( 'No content' ) ) . '</h3>';
 }
 ?>
 

@@ -144,7 +144,7 @@ defined('ABSPATH') || exit;
 
 	<!-- Payment Safe Footer -->
 	<div class="mt-8 text-center pt-6 border-t border-gray-200/60">
-		<span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-4">Guaranteed Safe Checkout</span>
+		<span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-4"><?php esc_html_e( 'Guaranteed Safe Checkout', 'jerseyplug' ); ?></span>
 		<div class="flex items-center justify-center gap-2 flex-wrap">
 			<span class="bg-white border border-gray-200 rounded px-2 py-1 text-[10px] font-bold text-[#1434CB]">Visa</span>
 			<span class="bg-white border border-gray-200 rounded px-2 py-1 text-[10px] font-bold text-[#EB001B]">Mastercard</span>

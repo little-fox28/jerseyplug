@@ -79,7 +79,7 @@ $progress_percentage = $shipping_threshold > 0 ? min(100, ($subtotal / $shipping
 									<?php echo wc_price($amount_to_free_shipping); ?>
 								</span>
 								more for
-								<span class="text-[#65cf21] font-bold uppercase">Free Delivery</span>
+								<span class="text-[#65cf21] font-bold uppercase"><?php esc_html_e( 'Free Delivery', 'jerseyplug' ); ?></span>
 							</p>
 						<?php else : ?>
 							<p class="text-sm text-[#163300] font-bold mb-2 flex items-center gap-2">
@@ -90,7 +90,7 @@ $progress_percentage = $shipping_threshold > 0 ? min(100, ($subtotal / $shipping
 									<circle cx="7.5" cy="17.5" r="2.5" />
 									<circle cx="17.5" cy="17.5" r="2.5" />
 								</svg>
-								You've unlocked Free Delivery!
+								<?php esc_html_e( 'You\'ve unlocked Free Delivery!', 'jerseyplug' ); ?>
 							</p>
 						<?php endif; ?>
 						<div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -105,12 +105,12 @@ $progress_percentage = $shipping_threshold > 0 ? min(100, ($subtotal / $shipping
 						<!-- Hide header but keep for WC JS compatibility -->
 						<thead class="sr-only">
 							<tr>
-								<th class="product-remove">Remove</th>
-								<th class="product-thumbnail">Image</th>
-								<th class="product-name">Product</th>
-								<th class="product-price">Price</th>
-								<th class="product-quantity">Quantity</th>
-								<th class="product-subtotal">Subtotal</th>
+								<th class="product-remove"><?php esc_html_e( 'Remove', 'woocommerce' ); ?></th>
+								<th class="product-thumbnail"><?php esc_html_e( 'Image', 'woocommerce' ); ?></th>
+								<th class="product-name"><?php esc_html_e( 'Product', 'woocommerce' ); ?></th>
+								<th class="product-price"><?php esc_html_e( 'Price', 'woocommerce' ); ?></th>
+								<th class="product-quantity"><?php esc_html_e( 'Quantity', 'woocommerce' ); ?></th>
+								<th class="product-subtotal"><?php esc_html_e( 'Subtotal', 'woocommerce' ); ?></th>
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-gray-100">

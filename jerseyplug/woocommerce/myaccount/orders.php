@@ -17,7 +17,7 @@ defined('ABSPATH') || exit;
 do_action('woocommerce_before_account_orders', $has_orders); ?>
 
 <div class="overflow-hidden">
-	<h2 class="text-2xl font-extrabold text-slate-900 tracking-tight mb-6"><?php esc_html_e('Order History', 'woocommerce'); ?></h2>
+	<h2 class="text-2xl font-extrabold text-slate-900 tracking-tight mb-6"><?php echo esc_html( jerseyplug_pll( 'Order History' ) ); ?></h2>
 
 	<?php if ($has_orders) : ?>
 		<div class="overflow-x-auto">
@@ -54,7 +54,7 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 
 									<?php elseif ($is_order_number) : ?>
 										<span class="text-primary group-hover:underline">
-											<?php echo esc_html(_x('#', 'hash before order number', 'woocommerce') . $order->get_order_number()); ?>
+											<?php echo esc_html(jerseyplug_pll( '#' ) . $order->get_order_number()); ?>
 										</span>
 
 									<?php elseif ('order-date' === $column_id) : ?>
@@ -101,11 +101,11 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 		<?php if (1 < $customer_orders->max_num_pages) : ?>
 			<div class="mt-8 flex justify-center gap-2">
 				<?php if (1 !== $current_page) : ?>
-					<a class="px-4 py-2 border border-gray-200 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-50" href="<?php echo esc_url(wc_get_endpoint_url('orders', $current_page - 1)); ?>"><?php esc_html_e('Previous', 'woocommerce'); ?></a>
+					<a class="px-4 py-2 border border-gray-200 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-50" href="<?php echo esc_url(wc_get_endpoint_url('orders', $current_page - 1)); ?>"><?php echo esc_html( jerseyplug_pll( 'Previous' ) ); ?></a>
 				<?php endif; ?>
 
 				<?php if (intval($customer_orders->max_num_pages) !== $current_page) : ?>
-					<a class="px-4 py-2 border border-gray-200 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-50" href="<?php echo esc_url(wc_get_endpoint_url('orders', $current_page + 1)); ?>"><?php esc_html_e('Next', 'woocommerce'); ?></a>
+					<a class="px-4 py-2 border border-gray-200 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-50" href="<?php echo esc_url(wc_get_endpoint_url('orders', $current_page + 1)); ?>"><?php echo esc_html( jerseyplug_pll( 'Next' ) ); ?></a>
 				<?php endif; ?>
 			</div>
 		<?php endif; ?>
@@ -119,9 +119,9 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 					<path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
 				</svg>
 			</div>
-			<h3 class="text-xl font-extrabold text-slate-900 mb-2"><?php esc_html_e('No orders has been made yet.', 'woocommerce'); ?></h3>
-			<p class="text-gray-500 font-medium mb-6"><?php esc_html_e('Browse our latest collection and gear up for the season.', 'jerseyplug'); ?></p>
-			<a href="<?php echo esc_url(apply_filters('woocommerce_return_to_shop_redirect', wc_get_page_permalink('shop'))); ?>" class="inline-block bg-primary text-[#f2c86c] rounded-full py-3 px-8 font-extrabold text-sm uppercase tracking-widest hover:opacity-90 transition-opacity"><?php esc_html_e('Go to shop', 'woocommerce'); ?></a>
+			<h3 class="text-xl font-extrabold text-slate-900 mb-2"><?php echo esc_html( jerseyplug_pll( 'No orders has been made yet.' ) ); ?></h3>
+			<p class="text-gray-500 font-medium mb-6"><?php echo esc_html( jerseyplug_pll( 'Browse our latest collection and gear up for the season.' ) ); ?></p>
+			<a href="<?php echo esc_url(apply_filters('woocommerce_return_to_shop_redirect', wc_get_page_permalink('shop'))); ?>" class="inline-block bg-primary text-[#f2c86c] rounded-full py-3 px-8 font-extrabold text-sm uppercase tracking-widest hover:opacity-90 transition-opacity"><?php echo esc_html( jerseyplug_pll( 'Go to shop' ) ); ?></a>
 		</div>
 
 	<?php endif; ?>

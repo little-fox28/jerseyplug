@@ -31,7 +31,7 @@ wc_clear_notices();
         <!-- PAGE TITLE -->
         <header class="mb-8 md:mb-10">
             <h1 class="text-3xl text-center md:text-5xl font-bold text-primary">
-                <?php esc_html_e('Order Details', 'jerseyplug'); ?>
+                <?php echo esc_html( jerseyplug_pll( 'Order Details' ) ); ?>
             </h1>
         </header>
 
@@ -44,18 +44,18 @@ wc_clear_notices();
                     </svg>
                 </div>
                 <h1 class="text-3xl md:text-4xl font-extrabold text-[#0a2310] tracking-tight mb-3">
-                    <?php esc_html_e('Order Failed', 'woocommerce'); ?>
+                    <?php echo esc_html( jerseyplug_pll( 'Order Failed' ) ); ?>
                 </h1>
                 <p class="text-gray-500 font-medium">
-                    <?php esc_html_e('Unfortunately your order cannot be processed as the originating bank/merchant has declined your transaction. Please attempt your purchase again.', 'woocommerce'); ?>
+                    <?php echo esc_html( jerseyplug_pll( 'Unfortunately your order cannot be processed as the originating bank/merchant has declined your transaction. Please attempt your purchase again.' ) ); ?>
                 </p>
                 <div class="mt-8 flex justify-center gap-4">
                     <a href="<?php echo esc_url($order->get_checkout_payment_url()); ?>" class="inline-flex items-center justify-center bg-[#0a2310] text-white rounded-xl py-4 px-8 font-extrabold text-sm uppercase tracking-widest hover:bg-[#1a3f1a] transition-colors">
-                        <?php esc_html_e('Pay', 'woocommerce'); ?>
+                        <?php echo esc_html( jerseyplug_pll( 'Pay' ) ); ?>
                     </a>
                     <?php if (is_user_logged_in()) : ?>
                         <a href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>" class="inline-flex items-center justify-center bg-gray-100 text-slate-800 rounded-xl py-4 px-8 font-extrabold text-sm uppercase tracking-widest hover:bg-gray-200 transition-colors">
-                            <?php esc_html_e('My account', 'woocommerce'); ?>
+                            <?php echo esc_html( jerseyplug_pll( 'My account' ) ); ?>
                         </a>
                     <?php endif; ?>
                 </div>
@@ -93,14 +93,14 @@ wc_clear_notices();
                             </svg>
                         </div>
                         <h1 class="text-3xl md:text-4xl font-extrabold text-[#0a2310] tracking-tight mb-4">
-                            <?php esc_html_e('Order Confirmed!', 'jerseyplug'); ?>
+                            <?php echo esc_html( jerseyplug_pll( 'Order Confirmed!' ) ); ?>
                         </h1>
                         <p class="text-base text-gray-500 font-medium mb-8">
-                            <?php esc_html_e('Thank you. Your order has been received and is now being processed.', 'woocommerce'); ?>
+                            <?php echo esc_html( jerseyplug_pll( 'Thank you. Your order has been received and is now being processed.' ) ); ?>
                         </p>
 
                         <button @click="showSuccessModal = false" class="w-full inline-flex items-center justify-center bg-[#0a2310] text-white rounded-xl py-4 px-8 font-extrabold text-sm uppercase tracking-widest hover:bg-[#1a3f1a] transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 focus:outline-none">
-                            <?php esc_html_e('View Order Details', 'jerseyplug'); ?>
+                            <?php echo esc_html( jerseyplug_pll( 'View Order Details' ) ); ?>
                         </button>
                     </div>
                 </div>
@@ -111,7 +111,7 @@ wc_clear_notices();
 
                 <!-- PHẦN 1: THÔNG TIN KHÁCH HÀNG (Customer Info) -->
                 <div class="flex flex-col gap-6">
-                    <div class="text-xl font-extrabold text-[#0a2310] uppercase tracking-wide"><?php esc_html_e('Customer Info', 'jerseyplug'); ?></div>
+                    <div class="text-xl font-extrabold text-[#0a2310] uppercase tracking-wide"><?php echo esc_html( jerseyplug_pll( 'Customer Info' ) ); ?></div>
 
                     <div class="bg-white border border-gray-200 rounded-[2rem] p-6 shadow-sm flex flex-col gap-8">
 
@@ -121,7 +121,7 @@ wc_clear_notices();
                                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
                                 </svg>
-                                <div class="font-extrabold text-sm text-[#0a2310] uppercase tracking-wider"><?php esc_html_e('Billing Address', 'woocommerce'); ?></div>
+                                <div class="font-extrabold text-sm text-[#0a2310] uppercase tracking-wider"><?php echo esc_html( jerseyplug_pll( 'Billing Address' ) ); ?></div>
                             </div>
                             <address class="text-sm text-gray-600 font-medium not-italic leading-relaxed">
                                 <div class="flex items-start gap-2">
@@ -131,7 +131,7 @@ wc_clear_notices();
                                     </svg>
                                     <span>
                                         <?php
-                                        $billing_address = $order->get_formatted_billing_address(esc_html__('N/A', 'woocommerce'));
+                                        $billing_address = $order->get_formatted_billing_address(esc_html( jerseyplug_pll( 'N/A' ) ));
                                         echo wp_kses_post(str_replace(array('<br/>', '<br />', '<br>', "\n"), ', ', $billing_address));
                                         ?>
                                     </span>
@@ -170,7 +170,7 @@ wc_clear_notices();
                                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                     </svg>
-                                    <div class="font-extrabold text-sm text-[#0a2310] uppercase tracking-wider"><?php esc_html_e('Shipping Address', 'woocommerce'); ?></div>
+                                    <div class="font-extrabold text-sm text-[#0a2310] uppercase tracking-wider"><?php echo esc_html( jerseyplug_pll( 'Shipping Address' ) ); ?></div>
                                 </div>
                                 <address class="text-sm text-gray-600 font-medium not-italic leading-relaxed">
                                     <div class="flex items-start gap-2">
@@ -180,7 +180,7 @@ wc_clear_notices();
                                         </svg>
                                         <span>
                                             <?php
-                                            $shipping_address = $order->get_formatted_shipping_address(esc_html__('N/A', 'woocommerce'));
+                                            $shipping_address = $order->get_formatted_shipping_address(esc_html( jerseyplug_pll( 'N/A' ) ));
                                             echo wp_kses_post(str_replace(array('<br/>', '<br />', '<br>', "\n"), ', ', $shipping_address));
                                             ?>
                                         </span>
@@ -197,7 +197,7 @@ wc_clear_notices();
                                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                     </svg>
-                                    <div class="font-extrabold text-sm text-[#0a2310] uppercase tracking-wider"><?php esc_html_e('Order Note', 'woocommerce'); ?></div>
+                                    <div class="font-extrabold text-sm text-[#0a2310] uppercase tracking-wider"><?php echo esc_html( jerseyplug_pll( 'Order Note' ) ); ?></div>
                                 </div>
                                 <p class="text-sm font-medium text-gray-600 italic bg-gray-50 p-3 rounded-lg border border-gray-100">
                                     <?php echo wp_kses_post(nl2br(wptexturize($order->get_customer_note()))); ?>
@@ -210,28 +210,28 @@ wc_clear_notices();
 
                 <!-- PHẦN 2: CHI TIẾT SẢN PHẨM & ĐƠN HÀNG (Order Details) -->
                 <div class="flex flex-col gap-6">
-                    <div class="text-xl font-extrabold text-[#0a2310] uppercase tracking-wide"><?php esc_html_e('Order Details', 'woocommerce'); ?></div>
+                    <div class="text-xl font-extrabold text-[#0a2310] uppercase tracking-wide"><?php echo esc_html( jerseyplug_pll( 'Order Details' ) ); ?></div>
 
                     <div class="bg-white border border-gray-200 rounded-[2rem] p-6 shadow-sm">
 
                         <!-- Order Meta (Number, Date, Payment Method) -->
                         <div class="flex flex-wrap gap-6 justify-between mb-8 pb-8 border-b border-gray-100">
                             <div class="flex flex-col gap-1">
-                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest"><?php esc_html_e('Order Number', 'woocommerce'); ?></span>
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest"><?php echo esc_html( jerseyplug_pll( 'Order Number' ) ); ?></span>
                                 <span class="font-extrabold text-[#0a2310] text-lg"><?php echo $order->get_order_number(); ?></span>
                             </div>
                             <div class="flex flex-col gap-1">
-                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest"><?php esc_html_e('Date', 'woocommerce'); ?></span>
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest"><?php echo esc_html( jerseyplug_pll( 'Date' ) ); ?></span>
                                 <span class="font-bold text-slate-800 text-sm"><?php echo wc_format_datetime($order->get_date_created()); ?></span>
                             </div>
                             <?php if (is_user_logged_in() && $order->get_user_id() === get_current_user_id() && $order->get_billing_email()) : ?>
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest"><?php esc_html_e('Email', 'woocommerce'); ?></span>
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest"><?php echo esc_html( jerseyplug_pll( 'Email' ) ); ?></span>
                                     <span class="font-bold text-slate-800 text-sm break-all"><?php echo esc_html($order->get_billing_email()); ?></span>
                                 </div>
                             <?php endif; ?>
                             <div class="flex flex-col gap-1">
-                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest"><?php esc_html_e('Payment Method', 'woocommerce'); ?></span>
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest"><?php echo esc_html( jerseyplug_pll( 'Payment Method' ) ); ?></span>
                                 <span class="font-bold text-slate-800 text-sm"><?php echo wp_kses_post($order->get_payment_method_title()); ?></span>
                             </div>
                         </div>
@@ -270,7 +270,7 @@ wc_clear_notices();
                                                 }
                                             }
                                             ?>
-                                            <span><?php esc_html_e('Qty', 'woocommerce'); ?>: <span class="text-gray-700"><?php echo esc_html($item->get_quantity()); ?></span></span>
+                                            <span><?php echo esc_html( jerseyplug_pll( 'Qty' ) ); ?>: <span class="text-gray-700"><?php echo esc_html($item->get_quantity()); ?></span></span>
                                         </div>
                                     </div>
 
@@ -311,7 +311,7 @@ wc_clear_notices();
                     <!-- Nút bấm -->
                     <div class="mt-4">
                         <a href="<?php echo esc_url(apply_filters('woocommerce_return_to_shop_redirect', wc_get_page_permalink('shop'))); ?>" style="background-color: #163300 !important; color: #f2c86c !important;" class="inline-flex items-center justify-center rounded-xl py-4 px-8 font-extrabold text-sm uppercase tracking-widest shadow-[0_4px_14px_0_rgba(22,51,0,0.39)] hover:shadow-[0_6px_20px_rgba(22,51,0,0.23)] hover:-translate-y-1 transition-all duration-300 w-full sm:w-auto">
-                            <?php esc_html_e('Continue Shopping', 'jerseyplug'); ?>
+                            <?php echo esc_html( jerseyplug_pll( 'Continue Shopping' ) ); ?>
                         </a>
                     </div>
                 </div>
@@ -331,7 +331,7 @@ wc_clear_notices();
     <?php else : ?>
 
         <div class="text-center py-20">
-            <h1 class="text-3xl font-black text-[#0a2310] uppercase mb-4"><?php esc_html_e('Order received', 'jerseyplug'); ?></h1>
+            <h1 class="text-3xl font-black text-[#0a2310] uppercase mb-4"><?php echo esc_html( jerseyplug_pll( 'Order received' ) ); ?></h1>
             <?php wc_get_template('checkout/order-received.php', array('order' => false)); ?>
         </div>
 

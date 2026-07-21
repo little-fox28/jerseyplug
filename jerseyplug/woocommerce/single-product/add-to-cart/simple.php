@@ -34,7 +34,7 @@ if ( $product->is_in_stock() ) : ?>
 					type="button"
 					@click="if (quantity > 1) quantity--"
 					class="w-9 h-9 flex items-center justify-center font-black text-gray-500 hover:text-primary transition-colors rounded-lg hover:bg-gray-50"
-					aria-label="<?php esc_attr_e( 'Decrease quantity', 'jerseyplug' ); ?>">
+					aria-label="<?php echo esc_attr( jerseyplug_pll( 'Decrease quantity' ) ); ?>">
 					&minus;
 				</button>
 				<!-- Hidden native input to sync with form submission -->
@@ -45,12 +45,12 @@ if ( $product->is_in_stock() ) : ?>
 					min="<?php echo apply_filters( 'woocommerce_quantity_input_min', $product->get_min_purchase_quantity(), $product ); ?>"
 					max="<?php echo apply_filters( 'woocommerce_quantity_input_max', $product->get_max_purchase_quantity(), $product ); ?>"
 					class="w-10 text-center text-sm font-black text-gray-900 border-none bg-transparent focus:outline-none"
-					aria-label="<?php esc_attr_e( 'Quantity', 'jerseyplug' ); ?>" />
+					aria-label="<?php echo esc_attr( jerseyplug_pll( 'Quantity' ) ); ?>" />
 				<button
 					type="button"
 					@click="quantity++"
 					class="w-9 h-9 flex items-center justify-center font-black text-gray-500 hover:text-primary transition-colors rounded-lg hover:bg-gray-50"
-					aria-label="<?php esc_attr_e( 'Increase quantity', 'jerseyplug' ); ?>">
+					aria-label="<?php echo esc_attr( jerseyplug_pll( 'Increase quantity' ) ); ?>">
 					&plus;
 				</button>
 			</div>

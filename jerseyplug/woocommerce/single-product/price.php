@@ -35,6 +35,6 @@ $review_count = $rating_data['reviews'];
 			<path d="m10 15.27 5.18 3.13-1.45-5.88L18.5 8.5l-6.06-.48L10 2.5 7.56 8.02 1.5 8.5l4.77 4.02-1.45 5.88L10 15.27Z"></path>
 		</svg>
 		<span class="font-bold text-gray-900 whitespace-nowrap leading-none mt-0.5"><?php echo esc_html($rating); ?></span>
-		<span class="text-gray-400 whitespace-nowrap leading-none mt-0.5">(<?php echo esc_html($review_count); ?> <?php esc_html_e('Reviews', 'jerseyplug'); ?>)</span>
+		<span class="text-gray-400 whitespace-nowrap leading-none mt-0.5">(<?php echo esc_html($review_count); ?> <?php echo esc_html( jerseyplug_pll( 'Reviews' ) ); ?>)</span>
 	</div>
 </div>

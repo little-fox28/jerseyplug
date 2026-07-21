@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
 
 <div class="max-w-7xl mx-auto py-4 sm:py-8 w-full">
     <!-- Tiêu đề trang -->
-    <h1 class="text-3xl font-extrabold text-primary tracking-tight mb-8"><?php esc_html_e( 'My Account', 'woocommerce' ); ?></h1>
+    <h1 class="text-3xl font-extrabold text-primary tracking-tight mb-8"><?php echo esc_html( jerseyplug_pll( 'My Account' ) ); ?></h1>
 
     <style>
         @keyframes tab-fade-in {

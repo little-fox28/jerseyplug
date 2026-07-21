@@ -28,7 +28,7 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 		<?php do_action('woocommerce_before_variations_form'); ?>
 
 		<?php if (empty($available_variations) && false !== $available_variations) : ?>
-			<p class="stock out-of-stock"><?php echo esc_html(apply_filters('woocommerce_out_of_stock_message', __('This product is currently out of stock and unavailable.', 'woocommerce'))); ?></p>
+			<p class="stock out-of-stock"><?php echo esc_html(apply_filters('woocommerce_out_of_stock_message', jerseyplug_pll( 'This product is currently out of stock and unavailable.' ))); ?></p>
 		<?php else : ?>
 
 			<!-- Custom Alpine + Tailwind UI -->
@@ -186,13 +186,13 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 				<!-- Custom Personalization UI -->
 				<div class="rounded-2xl border border-gray-100 bg-zinc-50 p-4 space-y-4">
 					<h3 class="text-xs font-black uppercase tracking-widest text-gray-500">
-						<?php esc_html_e('Personalization Details', 'jerseyplug'); ?>
+						<?php echo esc_html( jerseyplug_pll( 'Personalization Details' ) ); ?>
 					</h3>
 
 					<div class="grid grid-cols-3 gap-3">
 						<div class="col-span-2">
 							<label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5" for="custom_name_display">
-								<?php esc_html_e('Name', 'jerseyplug'); ?>
+								<?php echo esc_html( jerseyplug_pll( 'Name' ) ); ?>
 							</label>
 							<input
 								id="custom_name_display"
@@ -205,7 +205,7 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 						</div>
 						<div>
 							<label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5" for="custom_number_display">
-								<?php esc_html_e('Number', 'jerseyplug'); ?>
+								<?php echo esc_html( jerseyplug_pll( 'Number' ) ); ?>
 							</label>
 							<input
 								id="custom_number_display"
@@ -228,7 +228,7 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 					?>
 						<div class="variation-group pt-4 border-t border-gray-100">
 							<span class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
-								<?php esc_html_e('Patches', 'jerseyplug'); ?>
+								<?php echo esc_html( jerseyplug_pll( 'Patches' ) ); ?>
 							</span>
 							<div class="flex flex-wrap gap-2">
 								<?php

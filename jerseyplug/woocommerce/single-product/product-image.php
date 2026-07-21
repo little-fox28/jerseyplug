@@ -74,20 +74,20 @@ $is_new    = function_exists('jerseyplug_is_new_product') && jerseyplug_is_new_p
 		<div class="absolute left-3 top-3 z-10 flex flex-col gap-1.5">
 			<!-- <?php if (! $in_stock) : ?>
 				<span class="rounded-full bg-red-600 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white shadow-sm">
-					<?php esc_html_e('Out of Stock', 'jerseyplug'); ?>
+					<?php echo esc_html( jerseyplug_pll( 'Out of Stock' ) ); ?>
 				</span>
 			<?php else : ?>
 				<span class="rounded-full bg-emerald-600 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white shadow-sm">
-					<?php esc_html_e('In Stock', 'jerseyplug'); ?>
+					<?php echo esc_html( jerseyplug_pll( 'In Stock' ) ); ?>
 				</span>
 			<?php endif; ?> -->
 			<?php if ($has_sale) : ?>
 				<span class="rounded-full bg-secondary px-3 py-1 text-[10px] font-black uppercase tracking-wider text-primary shadow-sm">
-					<?php esc_html_e('Sale', 'jerseyplug'); ?>
+					<?php echo esc_html( jerseyplug_pll( 'Sale' ) ); ?>
 				</span>
 			<?php elseif ($is_new) : ?>
 				<span class="rounded-full bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white shadow-sm">
-					<?php esc_html_e('New', 'jerseyplug'); ?>
+					<?php echo esc_html( jerseyplug_pll( 'New' ) ); ?>
 				</span>
 			<?php endif; ?>
 		</div>
@@ -114,7 +114,7 @@ $is_new    = function_exists('jerseyplug_is_new_product') && jerseyplug_is_new_p
 				type="button"
 				@click.stop="prev()"
 				class="absolute left-2 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/80 backdrop-blur-sm p-2 opacity-0 group-hover:opacity-100 transition-all hover:bg-white shadow-md"
-				aria-label="<?php esc_attr_e('Previous image', 'jerseyplug'); ?>">
+				aria-label="<?php echo esc_attr( jerseyplug_pll( 'Previous image' ) ); ?>">
 				<svg aria-hidden="true" viewBox="0 0 24 24" class="h-4 w-4 text-gray-700" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
 					<polyline points="15 18 9 12 15 6"></polyline>
 				</svg>
@@ -123,7 +123,7 @@ $is_new    = function_exists('jerseyplug_is_new_product') && jerseyplug_is_new_p
 				type="button"
 				@click.stop="next()"
 				class="absolute right-2 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/80 backdrop-blur-sm p-2 opacity-0 group-hover:opacity-100 transition-all hover:bg-white shadow-md"
-				aria-label="<?php esc_attr_e('Next image', 'jerseyplug'); ?>">
+				aria-label="<?php echo esc_attr( jerseyplug_pll( 'Next image' ) ); ?>">
 				<svg aria-hidden="true" viewBox="0 0 24 24" class="h-4 w-4 text-gray-700" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
 					<polyline points="9 18 15 12 9 6"></polyline>
 				</svg>
@@ -138,7 +138,7 @@ $is_new    = function_exists('jerseyplug_is_new_product') && jerseyplug_is_new_p
 				<button
 					type="button"
 					@click="select(i)"
-					:aria-label="'<?php esc_attr_e('View image', 'jerseyplug'); ?> ' + (i + 1)"
+					:aria-label="'<?php echo esc_attr( jerseyplug_pll( 'View image' ) ); ?> ' + (i + 1)"
 					class="aspect-square overflow-hidden rounded-xl border-2 bg-zinc-100 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
 					:class="activeIndex === i ? 'border-primary shadow-md opacity-100' : 'border-transparent opacity-60 hover:opacity-90'">
 					<img :src="img.src" :alt="img.alt" class="h-full w-full object-cover" loading="lazy" decoding="async" />
@@ -164,7 +164,7 @@ $is_new    = function_exists('jerseyplug_is_new_product') && jerseyplug_is_new_p
 			type="button"
 			@click="lightboxOpen = false"
 			class="absolute top-4 right-4 z-10 p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-			aria-label="<?php esc_attr_e('Close', 'jerseyplug'); ?>">
+			aria-label="<?php echo esc_attr( jerseyplug_pll( 'Close' ) ); ?>">
 			<svg aria-hidden="true" viewBox="0 0 24 24" class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 				<line x1="18" y1="6" x2="6" y2="18"></line>
 				<line x1="6" y1="6" x2="18" y2="18"></line>
@@ -184,7 +184,7 @@ $is_new    = function_exists('jerseyplug_is_new_product') && jerseyplug_is_new_p
 				type="button"
 				@click="prev()"
 				class="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/25 transition-colors"
-				aria-label="<?php esc_attr_e('Previous image', 'jerseyplug'); ?>">
+				aria-label="<?php echo esc_attr( jerseyplug_pll( 'Previous image' ) ); ?>">
 				<svg aria-hidden="true" viewBox="0 0 24 24" class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
 					<polyline points="15 18 9 12 15 6"></polyline>
 				</svg>
@@ -193,7 +193,7 @@ $is_new    = function_exists('jerseyplug_is_new_product') && jerseyplug_is_new_p
 				type="button"
 				@click="next()"
 				class="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/25 transition-colors"
-				aria-label="<?php esc_attr_e('Next image', 'jerseyplug'); ?>">
+				aria-label="<?php echo esc_attr( jerseyplug_pll( 'Next image' ) ); ?>">
 				<svg aria-hidden="true" viewBox="0 0 24 24" class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
 					<polyline points="9 18 15 12 9 6"></polyline>
 				</svg>

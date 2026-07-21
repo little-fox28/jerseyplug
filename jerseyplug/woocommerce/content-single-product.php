@@ -72,7 +72,7 @@ if (post_password_required()) {
 			?>
 				<div class="border-t border-gray-100 pt-8 hidden lg:block">
 					<h2 class="font-black text-sm uppercase tracking-wider text-gray-500 mb-4">
-						<?php esc_html_e('Product Details', 'jerseyplug'); ?>
+						<?php echo esc_html( jerseyplug_pll( 'Product Details' ) ); ?>
 					</h2>
 					<div class="prose prose-sm prose-zinc text-gray-600 leading-relaxed">
 						<?php echo wp_kses_post(str_replace('✅', '<br/>✅', $desc)); ?>
@@ -100,7 +100,7 @@ if (post_password_required()) {
 				<?php if (! empty($desc)) : ?>
 					<div class="border-t border-gray-100 pt-6 mt-8 lg:hidden">
 						<h2 class="font-black text-sm uppercase tracking-wider text-gray-500 mb-4">
-							<?php esc_html_e('Product Details', 'jerseyplug'); ?>
+							<?php echo esc_html( jerseyplug_pll( 'Product Details' ) ); ?>
 						</h2>
 						<div class="prose prose-sm prose-zinc text-gray-600 leading-relaxed">
 							<?php echo wp_kses_post(str_replace('✅', '<br/>✅', $desc)); ?>

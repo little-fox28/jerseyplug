@@ -23,7 +23,7 @@ do_action( 'woocommerce_before_checkout_form', $checkout );
 
 // If checkout registration is disabled and not logged in, the user cannot checkout.
 if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_required() && ! is_user_logged_in() ) {
-	echo esc_html( apply_filters( 'woocommerce_checkout_must_be_logged_in_message', __( 'You must be logged in to checkout.', 'woocommerce' ) ) );
+	echo esc_html( apply_filters( 'woocommerce_checkout_must_be_logged_in_message', jerseyplug_pll( 'You must be logged in to checkout.' ) ) );
 	return;
 }
 
@@ -32,11 +32,11 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 <div class="mb-8">
 	<a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[#163300] transition-colors">
 		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-		<?php esc_html_e('Back to Cart', 'woocommerce'); ?>
+		<?php echo esc_html( jerseyplug_pll( 'Back to Cart' ) ); ?>
 	</a>
 </div>
 
-<form name="checkout" method="post" class="checkout woocommerce-checkout" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data" aria-label="<?php echo esc_attr__( 'Checkout', 'woocommerce' ); ?>">
+<form name="checkout" method="post" class="checkout woocommerce-checkout" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data" aria-label="<?php echo esc_attr( jerseyplug_pll( 'Checkout' ) ); ?>">
 
 	<?php if ( $checkout->get_checkout_fields() ) : ?>
 
@@ -58,7 +58,7 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 	
 	<?php do_action( 'woocommerce_checkout_before_order_review_heading' ); ?>
 	
-	<h3 id="order_review_heading"><?php esc_html_e( 'Your order', 'woocommerce' ); ?></h3>
+	<h3 id="order_review_heading"><?php echo esc_html( jerseyplug_pll( 'Your order' ) ); ?></h3>
 	
 	<?php do_action( 'woocommerce_checkout_before_order_review' ); ?>
 

@@ -25,15 +25,15 @@ defined( 'ABSPATH' ) || exit;
 			</div>
 
 			<h2 class="text-2xl font-black text-[#163300] uppercase tracking-wider mb-4">
-				<?php esc_html_e( 'Email Sent!', 'woocommerce' ); ?>
+				<?php echo esc_html( jerseyplug_pll( 'Email Sent!' ) ); ?>
 			</h2>
 
 			<p class="text-gray-500 text-sm font-medium leading-relaxed mb-8">
-				<?php echo esc_html( apply_filters( 'woocommerce_lost_password_confirmation_message', esc_html__( 'A password reset email has been sent to the email address on file for your account, but may take several minutes to show up in your inbox. Please wait at least 10 minutes before attempting another reset.', 'woocommerce' ) ) ); ?>
+				<?php echo esc_html( apply_filters( 'woocommerce_lost_password_confirmation_message', esc_html( jerseyplug_pll( 'A password reset email has been sent to the email address on file for your account, but may take several minutes to show up in your inbox. Please wait at least 10 minutes before attempting another reset.' ) ) ) ); ?>
 			</p>
 
 			<a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" style="color: #f2c86c !important; text-decoration: none !important;" class="w-full bg-[#163300] hover:bg-[#0f2400] font-black py-4 px-4 rounded-xl shadow-[0_4px_14px_0_rgba(22,51,0,0.39)] hover:shadow-[0_6px_20px_rgba(22,51,0,0.23)] hover:-translate-y-1 transition-all duration-300 uppercase tracking-widest text-sm flex items-center justify-center gap-2">
-				&larr; <?php esc_html_e( 'Return to Login', 'woocommerce' ); ?>
+				&larr; <?php echo esc_html( jerseyplug_pll( 'Return to Login' ) ); ?>
 			</a>
 
 		</div>

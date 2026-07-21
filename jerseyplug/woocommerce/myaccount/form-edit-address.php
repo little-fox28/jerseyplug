@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$page_title = ( 'billing' === $load_address ) ? esc_html__( 'Billing address', 'woocommerce' ) : esc_html__( 'Shipping address', 'woocommerce' );
+$page_title = ( 'billing' === $load_address ) ? esc_html( jerseyplug_pll( 'Billing address' ) ) : esc_html( jerseyplug_pll( 'Shipping address' ) );
 
 do_action( 'woocommerce_before_edit_account_address_form' ); ?>
 
@@ -67,7 +67,7 @@ do_action( 'woocommerce_before_edit_account_address_form' ); ?>
 			<?php do_action( "woocommerce_after_edit_address_form_{$load_address}" ); ?>
 
 			<div class="mt-8 pt-6 border-t border-gray-100">
-				<button type="submit" class="inline-flex items-center justify-center rounded-xl py-4 px-8 font-extrabold text-sm uppercase tracking-widest shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full sm:w-auto text-[#f2c86c] bg-primary" name="save_address" value="<?php esc_attr_e( 'Save address', 'woocommerce' ); ?>"><?php esc_html_e( 'Save address', 'woocommerce' ); ?></button>
+				<button type="submit" class="inline-flex items-center justify-center rounded-xl py-4 px-8 font-extrabold text-sm uppercase tracking-widest shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full sm:w-auto text-[#f2c86c] bg-primary" name="save_address" value="<?php echo esc_attr( jerseyplug_pll( 'Save address' ) ); ?>"><?php echo esc_html( jerseyplug_pll( 'Save address' ) ); ?></button>
 				<?php wp_nonce_field( 'woocommerce-edit_address', 'woocommerce-edit-address-nonce' ); ?>
 				<input type="hidden" name="action" value="edit_address" />
 			</div>

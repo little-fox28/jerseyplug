@@ -63,7 +63,7 @@ do_action('woocommerce_before_account_navigation');
                 <a href="<?php echo esc_url(home_url('/')); ?>"
                     class="flex md:hidden flex-col items-center justify-center gap-1 px-1 py-2 rounded-xl font-bold text-[10px] transition-all text-center flex-1 text-gray-500 hover:bg-gray-100 hover:text-slate-900">
                     <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                    <span class="truncate w-full"><?php esc_html_e('Home', 'jerseyplug'); ?></span>
+                    <span class="truncate w-full"><?php echo esc_html( jerseyplug_pll( 'Home' ) ); ?></span>
                 </a>
             <?php else : ?>
                 <a href="<?php echo esc_url(wc_get_account_endpoint_url($endpoint)); ?>"

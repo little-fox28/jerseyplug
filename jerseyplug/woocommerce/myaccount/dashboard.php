@@ -27,7 +27,7 @@ $current_user = wp_get_current_user();
         <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
             <?php
             /* translators: %s: User display name */
-            printf(esc_html__('Hello, %s!', 'woocommerce'), esc_html($current_user->display_name));
+            printf(esc_html( jerseyplug_pll( 'Hello, %s!' ) ), esc_html($current_user->display_name));
             ?>
         </h2>
         <p class="text-gray-500 font-medium max-w-xl leading-relaxed">
@@ -35,7 +35,7 @@ $current_user = wp_get_current_user();
             printf(
                 wp_kses(
                     /* translators: 1: Orders URL 2: Address URL 3: Account URL. */
-                    __('From your account dashboard you can view your <a href="%1$s" class="text-primary hover:underline font-bold">recent orders</a>, manage your <a href="%2$s" class="text-primary hover:underline font-bold">shipping and billing addresses</a>, and <a href="%3$s" class="text-primary hover:underline font-bold">edit your password and account details</a>.', 'woocommerce'),
+                    jerseyplug_pll( 'From your account dashboard you can view your <a href="%1$s" class="text-primary hover:underline font-bold">recent orders</a>, manage your <a href="%2$s" class="text-primary hover:underline font-bold">shipping and billing addresses</a>, and <a href="%3$s" class="text-primary hover:underline font-bold">edit your password and account details</a>.' ),
                     array(
                         'a' => array(
                             'href' => array(),
@@ -62,8 +62,8 @@ $current_user = wp_get_current_user();
                 </svg>
             </div>
             <div>
-                <h3 class="font-extrabold text-[11px] sm:text-lg text-slate-900 mb-0 sm:mb-1"><?php esc_html_e('Orders', 'woocommerce'); ?></h3>
-                <p class="hidden sm:block text-sm text-gray-500 font-medium"><?php esc_html_e('Check your order status & history.', 'jerseyplug'); ?></p>
+                <h3 class="font-extrabold text-[11px] sm:text-lg text-slate-900 mb-0 sm:mb-1"><?php echo esc_html( jerseyplug_pll( 'Orders' ) ); ?></h3>
+                <p class="hidden sm:block text-sm text-gray-500 font-medium"><?php echo esc_html( jerseyplug_pll( 'Check your order status & history.' ) ); ?></p>
             </div>
         </a>
 
@@ -76,8 +76,8 @@ $current_user = wp_get_current_user();
                 </svg>
             </div>
             <div>
-                <h3 class="font-extrabold text-[11px] sm:text-lg text-slate-900 mb-0 sm:mb-1"><?php esc_html_e('Addresses', 'woocommerce'); ?></h3>
-                <p class="hidden sm:block text-sm text-gray-500 font-medium"><?php esc_html_e('Manage your delivery locations.', 'jerseyplug'); ?></p>
+                <h3 class="font-extrabold text-[11px] sm:text-lg text-slate-900 mb-0 sm:mb-1"><?php echo esc_html( jerseyplug_pll( 'Addresses' ) ); ?></h3>
+                <p class="hidden sm:block text-sm text-gray-500 font-medium"><?php echo esc_html( jerseyplug_pll( 'Manage your delivery locations.' ) ); ?></p>
             </div>
         </a>
 
@@ -89,8 +89,8 @@ $current_user = wp_get_current_user();
                 </svg>
             </div>
             <div>
-                <h3 class="font-extrabold text-[11px] sm:text-lg text-slate-900 mb-0 sm:mb-1"><?php esc_html_e('Details', 'woocommerce'); ?></h3>
-                <p class="hidden sm:block text-sm text-gray-500 font-medium"><?php esc_html_e('Update password & profile info.', 'jerseyplug'); ?></p>
+                <h3 class="font-extrabold text-[11px] sm:text-lg text-slate-900 mb-0 sm:mb-1"><?php echo esc_html( jerseyplug_pll( 'Details' ) ); ?></h3>
+                <p class="hidden sm:block text-sm text-gray-500 font-medium"><?php echo esc_html( jerseyplug_pll( 'Update password & profile info.' ) ); ?></p>
             </div>
         </a>
 

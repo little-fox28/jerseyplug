@@ -95,7 +95,7 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 							</span>
 							<?php if (strtolower($attribute_name) === 'pa_size' || strtolower($attribute_name) === 'size') : ?>
 								<button type="button" @click.prevent="$dispatch('open-size-guide')" class="text-xs font-bold text-primary underline underline-offset-2 hover:text-accent transition-colors">
-									<?php esc_html_e('Size Guide', 'jerseyplug'); ?>
+									<?php echo esc_html(jerseyplug_pll('Size Guide')); ?>
 								</button>
 							<?php endif; ?>
 						</div>

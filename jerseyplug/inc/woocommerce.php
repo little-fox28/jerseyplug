@@ -84,15 +84,19 @@ if (! function_exists('get_jerseyplug_mega_menu')) {
 	 */
 	function get_jerseyplug_mega_menu(): array
 	{
-		$menu_items = wp_get_nav_menu_items('Main Menu');
+		$locations = get_nav_menu_locations();
+		$menu_items = false;
+		
+		if (isset($locations['primary']) && $locations['primary']) {
+			$menu_items = wp_get_nav_menu_items($locations['primary']);
+		}
+		
+		// Fallbacks if no menu is assigned to the 'primary' location
 		if (!$menu_items) {
-			$menu_items = wp_get_nav_menu_items('main-menu');
+			$menu_items = wp_get_nav_menu_items('Main Menu');
 		}
 		if (!$menu_items) {
-			$locations = get_nav_menu_locations();
-			if (isset($locations['primary'])) {
-				$menu_items = wp_get_nav_menu_items($locations['primary']);
-			}
+			$menu_items = wp_get_nav_menu_items('main-menu');
 		}
 
 		if (empty($menu_items)) {
@@ -100,7 +104,7 @@ if (! function_exists('get_jerseyplug_mega_menu')) {
 		}
 
 		$lang          = function_exists('pll_current_language') ? (string) pll_current_language('slug') : 'default';
-		$cache_version = 5;
+		$cache_version = 7;
 		$cache_key     = sprintf('jerseyplug_mega_menu_data_%d_%s', $cache_version, $lang);
 		$cached        = get_transient($cache_key);
 
@@ -165,12 +169,17 @@ if (! function_exists('get_jerseyplug_mega_menu')) {
 				$logo_src = $logo_url;
 			}
 
+			$item_link = $item->url;
+			if (function_exists('jerseyplug_force_lang_prefix')) {
+				$item_link = jerseyplug_force_lang_prefix($item_link);
+			}
+
 			return [
 				'id'                => (int) $item->ID,
 				'term_id'           => $term_id,
 				'slug'              => sanitize_title($item->title),
 				'name'              => $item->title,
-				'link'              => $item->url,
+				'link'              => $item_link,
 				'thumbnail_id'      => $thumbnail_id,
 				'logo_url'          => $logo_url,
 				'external_logo_url' => $external_logo_url,
@@ -224,7 +233,7 @@ if (! function_exists('get_jerseyplug_mega_menu')) {
  */
 function jerseyplug_clear_mega_menu_cache()
 {
-	$cache_version = 5;
+	$cache_version = 6;
 	delete_transient(sprintf('jerseyplug_mega_menu_data_%d_%s', $cache_version, 'default'));
 	
 	if (function_exists('pll_languages_list')) {

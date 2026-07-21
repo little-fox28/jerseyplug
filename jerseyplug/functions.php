@@ -4,6 +4,17 @@ if (is_file(__DIR__ . '/vendor/autoload_packages.php')) {
 	require_once __DIR__ . '/vendor/autoload_packages.php';
 }
 
+if (!defined('JERSEYPLUG_TRUE_LANG')) {
+	$jp_lang = 'en';
+	if (isset($_SERVER['REQUEST_URI'])) {
+		$jp_uri = $_SERVER['REQUEST_URI'];
+		if (strpos($jp_uri, '/af/') === 0 || strpos($jp_uri, '/af?') === 0 || $jp_uri === '/af') {
+			$jp_lang = 'af';
+		}
+	}
+	define('JERSEYPLUG_TRUE_LANG', $jp_lang);
+}
+
 $jerseyplug_require = static function (string $relative_path): void {
 	$path = get_theme_file_path($relative_path);
 	if (is_string($path) && $path !== '' && file_exists($path)) {
@@ -23,6 +34,8 @@ $jerseyplug_require('/inc/security.php');
 if (function_exists('WC') || class_exists('WooCommerce')) {
 	$jerseyplug_require('/inc/woocommerce.php');
 	$jerseyplug_require('/inc/products.php');
+	
+	$jerseyplug_require('/inc/polylang-wc.php');
 }
 
 if (function_exists('get_field') || is_admin()) {

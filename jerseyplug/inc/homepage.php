@@ -10,11 +10,12 @@ if ( ! function_exists( 'jerseyplug_get_homepage_shop_url' ) ) {
 		if ( function_exists( 'wc_get_page_permalink' ) ) {
 			$shop_url = wc_get_page_permalink( 'shop' );
 			if ( is_string( $shop_url ) && $shop_url !== '' ) {
-				return $shop_url;
+				return function_exists('jerseyplug_force_lang_prefix') ? jerseyplug_force_lang_prefix($shop_url) : $shop_url;
 			}
 		}
 
-		return home_url( '/' );
+		$fallback = home_url( '/' );
+		return function_exists('jerseyplug_force_lang_prefix') ? jerseyplug_force_lang_prefix($fallback) : $fallback;
 	}
 }
 
@@ -145,11 +146,15 @@ if ( ! function_exists( 'jerseyplug_get_homepage_featured_categories' ) ) {
 			$term_description = function_exists( 'get_term_field' )
 				? (string) get_term_field( 'description', $term, 'product_cat' )
 				: '';
+			$link_str = is_wp_error( $link ) ? '' : (string) $link;
+			if ( function_exists('jerseyplug_force_lang_prefix') ) {
+				$link_str = jerseyplug_force_lang_prefix( $link_str );
+			}
 			$cards[] = [
 				'term_id'     => (int) $term->term_id,
 				'name'        => (string) $term->name,
 				'description' => wp_trim_words( wp_strip_all_tags( $term_description ), 14, '...' ),
-				'url'         => is_wp_error( $link ) ? '' : (string) $link,
+				'url'         => $link_str,
 				'image'       => jerseyplug_get_homepage_term_logo_url( (int) $term->term_id ),
 				'variant'     => $variants[ $index ] ?? 'small',
 			];
@@ -199,10 +204,14 @@ if ( ! function_exists( 'jerseyplug_get_homepage_featured_leagues' ) ) {
 			}
 
 			$link = get_term_link( $term );
+			$link_str = is_wp_error( $link ) ? '' : (string) $link;
+			if ( function_exists('jerseyplug_force_lang_prefix') ) {
+				$link_str = jerseyplug_force_lang_prefix( $link_str );
+			}
 			$cards[] = [
 				'term_id' => (int) $term->term_id,
 				'name'    => (string) $term->name,
-				'url'     => is_wp_error( $link ) ? '' : (string) $link,
+				'url'     => $link_str,
 				'logo'    => jerseyplug_get_homepage_term_logo_url( (int) $term->term_id ),
 			];
 		}
@@ -272,11 +281,15 @@ if ( ! function_exists( 'jerseyplug_get_homepage_products' ) ) {
 				$category = (string) $terms[0]->name;
 			}
 
+			$product_url = (string) get_permalink( $product->get_id() );
+			if ( function_exists('jerseyplug_force_lang_prefix') ) {
+				$product_url = jerseyplug_force_lang_prefix( $product_url );
+			}
 			$cards[] = [
 				'id'       => (int) $product->get_id(),
 				'slug'     => (string) $product->get_slug(),
 				'name'     => (string) $product->get_name(),
-				'url'      => (string) get_permalink( $product->get_id() ),
+				'url'      => $product_url,
 				'image'    => $image ?: ( function_exists( 'wc_placeholder_img_src' ) ? (string) wc_placeholder_img_src( 'woocommerce_thumbnail' ) : '' ),
 				'image_back'   => $image_back ?: $image,
 				'category' => $category,

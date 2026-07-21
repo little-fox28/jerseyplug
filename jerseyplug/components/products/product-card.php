@@ -19,6 +19,9 @@ $wc_product = $args['product_obj'] ?? null;
 if ($wc_product instanceof WC_Product) {
 	$product_id  = (int) $wc_product->get_id();
 	$url         = (string) get_permalink($product_id);
+	if (function_exists('jerseyplug_force_lang_prefix')) {
+		$url = jerseyplug_force_lang_prefix($url);
+	}
 	$name        = (string) $wc_product->get_name();
 	$price_html  = $wc_product->get_price_html();
 	$image_id    = $wc_product->get_image_id();
@@ -57,6 +60,9 @@ if ($wc_product instanceof WC_Product) {
 
 	$product_id  = (int) ($product['id'] ?? 0);
 	$url         = (string) ($product['url'] ?? '#');
+	if (function_exists('jerseyplug_force_lang_prefix')) {
+		$url = jerseyplug_force_lang_prefix($url);
+	}
 	$name        = (string) ($product['name'] ?? '');
 	$price_html  = $product['price'] ?? '';
 	$image_front = (string) ($product['image'] ?? '');

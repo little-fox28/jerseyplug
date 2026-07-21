@@ -34,6 +34,34 @@ $flag_map = [
 foreach ($raw_languages as &$lang_item) {
 	$slug = strtolower((string) ($lang_item['slug'] ?? ''));
 	$lang_item['flag_url'] = $flag_map[$slug] ?? '';
+	
+	// Fix URL for unmanaged WooCommerce pages (Products, Categories)
+	if (is_singular('product') || is_tax('product_cat') || is_tax('product_tag') || (function_exists('wc_get_attribute_taxonomy_names') && is_tax(wc_get_attribute_taxonomy_names()))) {
+		global $wp;
+		$current_path = $wp->request;
+		if (empty($current_path) && isset($_SERVER['REQUEST_URI'])) {
+			$current_path = ltrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+		}
+		
+		$default_lang = function_exists('pll_default_language') ? pll_default_language('slug') : 'en';
+		$curr_lang = function_exists('pll_current_language') ? pll_current_language('slug') : 'en';
+		
+		// Strip existing language prefix if present
+		if ($curr_lang !== $default_lang && strpos($current_path, $curr_lang . '/') === 0) {
+			$current_path = substr($current_path, strlen($curr_lang . '/'));
+		}
+		
+		if ($slug !== $default_lang) {
+			$lang_item['url'] = home_url('/' . $slug . '/' . ltrim($current_path, '/'));
+		} else {
+			$lang_item['url'] = home_url('/' . ltrim($current_path, '/'));
+		}
+		
+		// Preserve query string
+		if (!empty($_SERVER['QUERY_STRING'])) {
+			$lang_item['url'] .= '?' . $_SERVER['QUERY_STRING'];
+		}
+	}
 }
 unset($lang_item);
 

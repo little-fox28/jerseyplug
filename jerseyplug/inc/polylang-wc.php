@@ -244,3 +244,13 @@ add_filter('woocommerce_product_add_to_cart_text', function ($text, $product) {
 	}
 	return $text;
 }, 10, 2);
+
+/**
+ * 7. Translate WooCommerce Breadcrumb 'Home' text
+ */
+add_filter('woocommerce_breadcrumb_defaults', function ($defaults) {
+	if (function_exists('jerseyplug_pll')) {
+		$defaults['home'] = jerseyplug_pll('Home');
+	}
+	return $defaults;
+});

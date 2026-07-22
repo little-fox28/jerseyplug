@@ -214,6 +214,96 @@ add_action('pre_get_posts', function ($q) {
 	}
 }, 9);
 
+/**
+ * 4.5. Fix Product Taxonomies (Categories/Tags) and Filters on Translated Pages
+ * This ensures that EN products show up in AF category pages and when using category filters on AF pages,
+ * without requiring the user to duplicate all products into AF.
+ */
+add_action('pre_get_posts', function ($q) {
+	if (is_admin() || !function_exists('pll_get_term')) {
+		return;
+	}
+
+	// Apply only for product queries (tax archives or when post_type is product)
+	if ($q->is_main_query() && ($q->is_tax('product_cat') || $q->is_tax('product_tag') || $q->get('post_type') === 'product')) {
+		
+		// 1. Remove Polylang language filter so EN products can be found
+		$tax_query = $q->get('tax_query') ?: [];
+		if (!empty($tax_query)) {
+			foreach ($tax_query as $k => $v) {
+				if (is_array($v) && isset($v['taxonomy']) && $v['taxonomy'] === 'language') {
+					unset($tax_query[$k]);
+				}
+			}
+		}
+		
+		// 2. Expand product_cat and product_tag queries to include ALL translated term IDs
+		// (e.g. if filtering by 'de' (AF), also search for 'germany' (EN) so EN products are found)
+		if (!empty($tax_query)) {
+			foreach ($tax_query as $k => &$v) {
+				if (is_array($v) && isset($v['taxonomy']) && in_array($v['taxonomy'], ['product_cat', 'product_tag'])) {
+					$terms = (array) ($v['terms'] ?? []);
+					if (!empty($terms)) {
+						$expanded_terms = [];
+						foreach ($terms as $term) {
+							// Find the term ID (it could be a slug or ID based on 'field')
+							$field = $v['field'] ?? 'term_id';
+							$term_obj = null;
+							if ($field === 'slug') {
+								$term_obj = get_term_by('slug', $term, $v['taxonomy']);
+							} else {
+								$term_obj = get_term($term, $v['taxonomy']);
+							}
+							
+							if ($term_obj) {
+								// Get all language translations of this term
+								$langs = pll_languages_list();
+								foreach ($langs as $lang) {
+									$trans_id = pll_get_term($term_obj->term_id, $lang);
+									if ($trans_id) {
+										$expanded_terms[] = $field === 'slug' ? get_term($trans_id)->slug : $trans_id;
+									}
+								}
+							}
+							$expanded_terms[] = $term; // Keep original
+						}
+						$v['terms'] = array_unique($expanded_terms);
+					}
+				}
+			}
+			$q->set('tax_query', $tax_query);
+		}
+		
+		// 3. Handle direct query vars (e.g. from URLs like /af/shop/national/de/)
+		foreach (['product_cat', 'product_tag'] as $tax) {
+			$term_slug = $q->get($tax);
+			if (!empty($term_slug) && is_string($term_slug) && strpos($term_slug, ',') === false) {
+				$term_obj = get_term_by('slug', $term_slug, $tax);
+				if ($term_obj) {
+					$expanded_slugs = [$term_slug];
+					$langs = pll_languages_list();
+					foreach ($langs as $lang) {
+						$trans_id = pll_get_term($term_obj->term_id, $lang);
+						if ($trans_id) {
+							$trans_term = get_term($trans_id);
+							if ($trans_term) {
+								$expanded_slugs[] = $trans_term->slug;
+							}
+						}
+					}
+					$expanded_slugs = array_unique($expanded_slugs);
+					if (count($expanded_slugs) > 1) {
+						// WP_Query supports comma-separated slugs for 'IN' relation
+						$q->set($tax, implode(',', $expanded_slugs));
+					}
+				}
+			}
+		}
+
+		$q->set('lang', '');
+	}
+}, 99);
+
 
 /**
  * 5. Route theme translations through Polylang String Translation automatically

@@ -33,7 +33,7 @@ $legal_menu_args = [
 
 $locations = get_nav_menu_locations();
 
-$shop_title = __('Shop', 'jerseyplug');
+$shop_title = jerseyplug_pll('Shop');
 if (! empty($locations['footer_shop'])) {
 	$shop_menu = wp_get_nav_menu_object($locations['footer_shop']);
 	if ($shop_menu instanceof WP_Term && ! empty($shop_menu->name)) {
@@ -41,7 +41,7 @@ if (! empty($locations['footer_shop'])) {
 	}
 }
 
-$support_title = __('Support', 'jerseyplug');
+$support_title = jerseyplug_pll('Support');
 if (! empty($locations['footer_support'])) {
 	$support_menu = wp_get_nav_menu_object($locations['footer_support']);
 	if ($support_menu instanceof WP_Term && ! empty($support_menu->name)) {
@@ -76,7 +76,7 @@ $contact_email      = $get_setting('jerseyplug_contact_email', '');
 						'class'         => 'w-auto !h-20 !md:h-24 lg:!h-28',
 						'img_class'     => 'object-contain transition-all',
 						'wrapper_class' => 'flex items-center group',
-						'aria_label'    => __('JerseyPlug home', 'jerseyplug'),
+						'aria_label'    => jerseyplug_pll('JerseyPlug home'),
 						'loading'       => 'lazy',
 						'decoding'      => 'async',
 					]
@@ -106,7 +106,7 @@ $contact_email      = $get_setting('jerseyplug_contact_email', '');
 			</div>
 
 			<div class="space-y-6">
-				<h4 class="font-bold text-lg mb-4 md:mb-6 text-white"><?php echo esc_html(__('Contact', 'jerseyplug')); ?></h4>
+				<h4 class="font-bold text-lg mb-4 md:mb-6 text-white"><?php echo esc_html(jerseyplug_pll('Contact')); ?></h4>
 				<div class="space-y-4">
 					<div class="flex items-start gap-3 text-gray-400 text-sm group">
 						<svg class="w-4 h-4 text-gray-400 group-hover:text-secondary shrink-0 mt-0.5" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
@@ -137,7 +137,7 @@ $contact_email      = $get_setting('jerseyplug_contact_email', '');
 				</div>
 
 				<div class="pt-6 border-t border-white/10">
-					<p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3"><?php echo esc_html(__('We Accept', 'jerseyplug')); ?></p>
+					<p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3"><?php echo esc_html(jerseyplug_pll('We Accept')); ?></p>
 					<div class="flex flex-wrap gap-2">
 						<span class="inline-flex items-center justify-center px-3 py-1.5 rounded-md text-xs font-black uppercase tracking-wider shadow-sm select-none transition-transform hover:scale-105 bg-[#1A1F71] text-white italic">VISA</span>
 						<span class="inline-flex items-center justify-center px-3 py-1.5 rounded-md text-xs font-black uppercase tracking-wider shadow-sm select-none transition-transform hover:scale-105 bg-gradient-to-r from-[#EB001B] to-[#F79E1B] text-white">MASTERCARD</span>
@@ -158,7 +158,7 @@ $contact_email      = $get_setting('jerseyplug_contact_email', '');
 					echo esc_html(
 						sprintf(
 							/* translators: %d is the current year. */
-							__('© %d JerseyPlug. All rights reserved.', 'jerseyplug'),
+							jerseyplug_pll('© %d JerseyPlug. All rights reserved.'),
 							$current_year
 						)
 					);

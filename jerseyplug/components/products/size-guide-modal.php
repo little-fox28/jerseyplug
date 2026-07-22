@@ -23,6 +23,14 @@ if (!$size_guide_post) {
 	}
 }
 
+// Get the translated version if Polylang is active
+if ($size_guide_post && function_exists('pll_get_post')) {
+	$translated_id = pll_get_post($size_guide_post->ID);
+	if ($translated_id && $translated_id !== $size_guide_post->ID) {
+		$size_guide_post = get_post($translated_id);
+	}
+}
+
 $size_guide_content = '';
 if ($size_guide_post instanceof WP_Post) {
 	$size_guide_content = apply_filters('the_content', $size_guide_post->post_content);

@@ -48,7 +48,7 @@ do_action('woocommerce_before_account_navigation');
             if ('customer-logout' === $endpoint) : ?>
                 <a href="<?php echo esc_url(wc_logout_url(wc_get_page_permalink('myaccount'))); ?>" class="flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-1 md:px-5 py-2 md:py-3.5 rounded-xl font-bold text-[10px] md:text-sm transition-all text-center md:text-left !text-red-500 hover:bg-red-50 hover:text-red-700 md:mt-2 border border-transparent hover:border-red-100 flex-1 md:flex-none">
                     <?php echo $icon; ?>
-                    <span class="truncate w-full"><?php echo esc_html($label); ?></span>
+                    <span class="truncate w-full"><?php echo esc_html( jerseyplug_pll( $label ) ); ?></span>
                 </a>
             <?php elseif ('dashboard' === $endpoint) : ?>
                 <!-- Nút Dashboard trên Desktop -->
@@ -56,7 +56,7 @@ do_action('woocommerce_before_account_navigation');
                     class="hidden md:flex flex-row items-center justify-start gap-3 px-5 py-3.5 rounded-xl font-bold text-sm transition-all text-left flex-none <?php echo $is_active ? 'bg-primary shadow-md' : 'text-gray-500 hover:bg-gray-100 hover:text-slate-900'; ?>"
                     <?php if ($is_active) echo 'style="color: #f2c86c;"'; ?>>
                     <?php echo $icon; ?>
-                    <span class="truncate w-full"><?php echo esc_html($label); ?></span>
+                    <span class="truncate w-full"><?php echo esc_html( jerseyplug_pll( $label ) ); ?></span>
                 </a>
                 
                 <!-- Nút Home trên Mobile -->
@@ -70,7 +70,7 @@ do_action('woocommerce_before_account_navigation');
                     class="flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-1 md:px-5 py-2 md:py-3.5 rounded-xl font-bold text-[10px] md:text-sm transition-all text-center md:text-left flex-1 md:flex-none <?php echo $is_active ? 'bg-primary shadow-md' : 'text-gray-500 hover:bg-gray-100 hover:text-slate-900'; ?>"
                     <?php if ($is_active) echo 'style="color: #f2c86c;"'; ?>>
                     <?php echo $icon; ?>
-                    <span class="truncate w-full"><?php echo esc_html($label); ?></span>
+                    <span class="truncate w-full"><?php echo esc_html( jerseyplug_pll( $label ) ); ?></span>
                 </a>
             <?php endif; ?>
         <?php endforeach; ?>

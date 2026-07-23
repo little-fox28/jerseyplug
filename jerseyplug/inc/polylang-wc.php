@@ -310,7 +310,7 @@ add_action('pre_get_posts', function ($q) {
  * This ensures esc_html_e() and __() use Polylang translations if available.
  */
 add_filter('gettext', function ($translation, $text, $domain) {
-	if ($domain === 'jerseyplug' && function_exists('pll__') && !is_admin()) {
+	if (in_array($domain, ['jerseyplug', 'woocommerce'], true) && function_exists('pll__') && !is_admin()) {
 		$pll_translation = pll__($text);
 		if (!empty($pll_translation)) {
 			return $pll_translation;
@@ -344,3 +344,26 @@ add_filter('woocommerce_breadcrumb_defaults', function ($defaults) {
 	}
 	return $defaults;
 });
+
+/**
+ * 8. Translate WooCommerce My Account Menu Items
+ */
+add_filter('woocommerce_account_menu_items', function ($items) {
+	if (function_exists('jerseyplug_pll') && !is_admin()) {
+		foreach ($items as $key => $label) {
+			$items[$key] = jerseyplug_pll($label);
+		}
+	}
+	return $items;
+});
+
+/**
+ * 9. Translate WooCommerce Order Status Names
+ */
+add_filter('woocommerce_order_status_name', function ($name, $status) {
+	if (function_exists('jerseyplug_pll') && !is_admin()) {
+		$translated = jerseyplug_pll($name);
+		return !empty($translated) ? $translated : $name;
+	}
+	return $name;
+}, 10, 2);

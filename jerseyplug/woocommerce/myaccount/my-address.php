@@ -50,7 +50,7 @@ if ( ! wc_ship_to_billing_address_only() && wc_shipping_enabled() ) {
                 </div>
                 <address class="text-gray-600 not-italic font-medium text-sm leading-relaxed flex-1">
                     <?php
-                        echo $address ? wp_kses_post( str_replace(array('<br/>', '<br />', '<br>', "\n"), ', ', $address) ) : echo esc_html( jerseyplug_pll( 'You have not set up this type of address yet.' ) );
+                        echo $address ? wp_kses_post( str_replace(array('<br/>', '<br />', '<br>', "\n"), ', ', $address) ) : esc_html( jerseyplug_pll( 'You have not set up this type of address yet.' ) );
                         do_action( 'woocommerce_my_account_after_my_address', $name );
                     ?>
                 </address>

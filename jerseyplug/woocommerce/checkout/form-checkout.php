@@ -32,7 +32,7 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 <div class="mb-8">
 	<a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[#163300] transition-colors">
 		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-		<?php echo esc_html( jerseyplug_pll( 'Back to Cart' ) ); ?>
+		<?php echo esc_html( jerseyplug_pll( 'Back to Cart', 'woocommerce' ) ); ?>
 	</a>
 </div>
 

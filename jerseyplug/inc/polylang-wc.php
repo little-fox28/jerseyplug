@@ -323,12 +323,12 @@ add_filter('gettext', function ($translation, $text, $domain) {
  * 6. Route WooCommerce global Add to Cart text through Polylang
  */
 add_filter('woocommerce_product_add_to_cart_text', function ($text, $product) {
-	if (function_exists('pll__') && !is_admin()) {
+	if (function_exists('jerseyplug_pll') && !is_admin()) {
 		if ($product->is_purchasable() && $product->is_in_stock()) {
-			$translated = pll__('Add to Cart');
+			$translated = jerseyplug_pll('Add to Cart');
 			return !empty($translated) ? $translated : $text;
 		} else {
-			$translated = pll__('Read more');
+			$translated = jerseyplug_pll('Read more');
 			return !empty($translated) ? $translated : $text;
 		}
 	}

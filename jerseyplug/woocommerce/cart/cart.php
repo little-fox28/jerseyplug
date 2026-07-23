@@ -59,11 +59,13 @@ $progress_percentage = $shipping_threshold > 0 ? min(100, ($subtotal / $shipping
 			</style>
 			<div class="mb-6">
 				<a href="<?php echo esc_url(apply_filters('woocommerce_return_to_shop_redirect', wc_get_page_permalink('shop'))); ?>" class="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[#163300] transition-colors">
-					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-					<?php echo esc_html( jerseyplug_pll( 'Continue Shopping' ) ); ?>
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+						<path d="m15 18-6-6 6-6" />
+					</svg>
+					<?php echo esc_html(jerseyplug_pll('Continue Shopping')); ?>
 				</a>
 			</div>
-			<h1 class="text-3xl font-bold text-[#163300] mb-8"><?php echo esc_html( jerseyplug_pll( 'Shopping Cart' ) ); ?></h1>
+			<h1 class="text-3xl font-bold text-[#163300] mb-8"><?php echo esc_html(jerseyplug_pll('Shopping Cart')); ?></h1>
 
 			<!-- Cart Table Form -->
 			<form class="woocommerce-cart-form" action="<?php echo esc_url(wc_get_cart_url()); ?>" method="post">
@@ -79,7 +81,7 @@ $progress_percentage = $shipping_threshold > 0 ? min(100, ($subtotal / $shipping
 									<?php echo wc_price($amount_to_free_shipping); ?>
 								</span>
 								more for
-								<span class="text-[#65cf21] font-bold uppercase"><?php echo esc_html( jerseyplug_pll( 'Free Delivery' ) ); ?></span>
+								<span class="text-[#65cf21] font-bold uppercase"><?php echo esc_html(jerseyplug_pll('Free Delivery')); ?></span>
 							</p>
 						<?php else : ?>
 							<p class="text-sm text-[#163300] font-bold mb-2 flex items-center gap-2">
@@ -90,7 +92,7 @@ $progress_percentage = $shipping_threshold > 0 ? min(100, ($subtotal / $shipping
 									<circle cx="7.5" cy="17.5" r="2.5" />
 									<circle cx="17.5" cy="17.5" r="2.5" />
 								</svg>
-								<?php echo esc_html( jerseyplug_pll( 'You\'ve unlocked Free Delivery!' ) ); ?>
+								<?php echo esc_html(jerseyplug_pll('You\'ve unlocked Free Delivery!')); ?>
 							</p>
 						<?php endif; ?>
 						<div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -105,12 +107,12 @@ $progress_percentage = $shipping_threshold > 0 ? min(100, ($subtotal / $shipping
 						<!-- Hide header but keep for WC JS compatibility -->
 						<thead class="sr-only">
 							<tr>
-								<th class="product-remove"><?php echo esc_html( jerseyplug_pll( 'Remove' ) ); ?></th>
-								<th class="product-thumbnail"><?php echo esc_html( jerseyplug_pll( 'Image' ) ); ?></th>
-								<th class="product-name"><?php echo esc_html( jerseyplug_pll( 'Product' ) ); ?></th>
-								<th class="product-price"><?php echo esc_html( jerseyplug_pll( 'Price' ) ); ?></th>
-								<th class="product-quantity"><?php echo esc_html( jerseyplug_pll( 'Quantity' ) ); ?></th>
-								<th class="product-subtotal"><?php echo esc_html( jerseyplug_pll( 'Subtotal' ) ); ?></th>
+								<th class="product-remove"><?php echo esc_html(jerseyplug_pll('Remove')); ?></th>
+								<th class="product-thumbnail"><?php echo esc_html(jerseyplug_pll('Image')); ?></th>
+								<th class="product-name"><?php echo esc_html(jerseyplug_pll('Product')); ?></th>
+								<th class="product-price"><?php echo esc_html(jerseyplug_pll('Price')); ?></th>
+								<th class="product-quantity"><?php echo esc_html(jerseyplug_pll('Quantity')); ?></th>
+								<th class="product-subtotal"><?php echo esc_html(jerseyplug_pll('Subtotal')); ?></th>
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-gray-100">
@@ -145,7 +147,7 @@ $progress_percentage = $shipping_threshold > 0 ? min(100, ($subtotal / $shipping
 										<td class="product-info flex-1 !flex flex-col justify-between !p-0 !border-none !block before:hidden">
 											<div class="flex justify-between items-start gap-4">
 												<!-- Name and Meta -->
-												<div class="product-name" data-title="<?php echo esc_attr( jerseyplug_pll( 'Product' ) ); ?>">
+												<div class="product-name" data-title="<?php echo esc_attr(jerseyplug_pll('Product')); ?>">
 													<?php
 													if (! $product_permalink) {
 														echo wp_kses_post('<span class="font-bold text-[#163300] text-sm sm:text-base leading-snug block">' . $product_name . '</span>');
@@ -156,13 +158,14 @@ $progress_percentage = $shipping_threshold > 0 ? min(100, ($subtotal / $shipping
 													do_action('woocommerce_after_cart_item_name', $cart_item, $cart_item_key);
 
 													// Meta data (Size, Print, etc)
-													echo '<div class="mt-2 text-xs text-gray-500 [&>dl]:m-0 [&>dl]:grid [&>dl]:grid-cols-[max-content_1fr] [&>dl]:gap-x-1.5 [&>dl]:gap-y-1 [&>dl>dt]:font-bold [&>dl>dd>p]:m-0">';
-													echo wc_get_formatted_cart_item_data($cart_item);
+													echo '<div class="mt-2 text-xs text-gray-500 [&>dl]:m-0 [&>dl]:grid [&>dl]:grid-cols-[max-content_1fr] [&>dl]:items-center [&>dl]:gap-x-2 [&>dl]:gap-y-1 [&>dl>dt]:font-bold [&>dl>dd]:!m-0 [&>dl>dt]:!m-0 [&>dl>dt]:self-center [&>dl>dd]:self-center">';
+													$meta_data = wc_get_formatted_cart_item_data($cart_item);
+													echo str_replace(['<p>', '</p>'], '', $meta_data);
 													echo '</div>';
 
 													// Backorder
 													if ($_product->backorders_require_notification() && $_product->is_on_backorder($cart_item['quantity'])) {
-														echo wp_kses_post(apply_filters('woocommerce_cart_item_backorder_notification', '<p class="backorder_notification text-xs text-orange-500 mt-1">' . esc_html( jerseyplug_pll( 'Available on backorder' ) ) . '</p>', $product_id));
+														echo wp_kses_post(apply_filters('woocommerce_cart_item_backorder_notification', '<p class="backorder_notification text-xs text-orange-500 mt-1">' . esc_html(jerseyplug_pll('Available on backorder')) . '</p>', $product_id));
 													}
 													?>
 												</div>
@@ -175,7 +178,7 @@ $progress_percentage = $shipping_threshold > 0 ? min(100, ($subtotal / $shipping
 														sprintf(
 															'<a href="%s" class="remove !inline-flex !items-center !justify-center !w-8 !h-8 !rounded-full text-gray-300 hover:!text-red-500 hover:!bg-red-50 transition-colors" aria-label="%s" data-product_id="%s" data-product_sku="%s"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></a>',
 															esc_url(wc_get_cart_remove_url($cart_item_key)),
-															esc_attr(sprintf(jerseyplug_pll( 'Remove %s from cart' ), wp_strip_all_tags($product_name))),
+															esc_attr(sprintf(jerseyplug_pll('Remove %s from cart'), wp_strip_all_tags($product_name))),
 															esc_attr($product_id),
 															esc_attr($_product->get_sku())
 														),
@@ -188,7 +191,7 @@ $progress_percentage = $shipping_threshold > 0 ? min(100, ($subtotal / $shipping
 											<!-- Quantity & Price -->
 											<div class="flex justify-between items-end mt-4">
 												<!-- Quantity -->
-												<div class="product-quantity" data-title="<?php echo esc_attr( jerseyplug_pll( 'Quantity' ) ); ?>">
+												<div class="product-quantity" data-title="<?php echo esc_attr(jerseyplug_pll('Quantity')); ?>">
 													<?php
 													if ($_product->is_sold_individually()) {
 														$min_quantity = 1;
@@ -218,7 +221,7 @@ $progress_percentage = $shipping_threshold > 0 ? min(100, ($subtotal / $shipping
 												</div>
 
 												<!-- Subtotal -->
-												<div class="product-subtotal font-black text-lg text-[#163300]" data-title="<?php echo esc_attr( jerseyplug_pll( 'Subtotal' ) ); ?>">
+												<div class="product-subtotal font-black text-lg text-[#163300]" data-title="<?php echo esc_attr(jerseyplug_pll('Subtotal')); ?>">
 													<?php
 													echo apply_filters('woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal($_product, $cart_item['quantity']), $cart_item, $cart_item_key);
 													?>
@@ -226,7 +229,7 @@ $progress_percentage = $shipping_threshold > 0 ? min(100, ($subtotal / $shipping
 											</div>
 
 											<!-- Hidden price cell to keep WC happy -->
-											<div class="product-price hidden" data-title="<?php echo esc_attr( jerseyplug_pll( 'Price' ) ); ?>">
+											<div class="product-price hidden" data-title="<?php echo esc_attr(jerseyplug_pll('Price')); ?>">
 												<?php echo apply_filters('woocommerce_cart_item_price', WC()->cart->get_product_price($_product), $cart_item, $cart_item_key); ?>
 											</div>
 										</td>
@@ -247,7 +250,7 @@ $progress_percentage = $shipping_threshold > 0 ? min(100, ($subtotal / $shipping
 												display: none !important;
 											}
 										</style>
-										<button type="submit" class="button !w-full sm:!w-auto h-11 px-6 !rounded-xl !border border-gray-200 !bg-white text-sm font-bold !text-[#163300] transition-colors hover:!border-[#65cf21]" name="update_cart" value="<?php echo esc_attr( jerseyplug_pll( 'Update cart' ) ); ?>" disabled><?php echo esc_html( jerseyplug_pll( 'Update cart' ) ); ?></button>
+										<button type="submit" class="button !w-full sm:!w-auto h-11 px-6 !rounded-xl !border border-gray-200 !bg-white text-sm font-bold !text-[#163300] transition-colors hover:!border-[#65cf21]" name="update_cart" value="<?php echo esc_attr(jerseyplug_pll('Update cart')); ?>" disabled><?php echo esc_html(jerseyplug_pll('Update cart')); ?></button>
 									</div>
 
 									<?php do_action('woocommerce_cart_actions'); ?>
@@ -260,25 +263,24 @@ $progress_percentage = $shipping_threshold > 0 ? min(100, ($subtotal / $shipping
 					</table>
 				</div>
 				<?php do_action('woocommerce_after_cart_table'); ?>
-			</form>
-		</div>
+			</div>
 
-		<!-- Right Column: Cart Totals -->
-		<div class="lg:col-span-6 xl:col-span-5">
-			<div class="cart-collaterals lg:sticky lg:top-24">
-				<?php
-				/**
-				 * Cart collaterals hook.
-				 *
-				 * @hooked woocommerce_cross_sell_display
-				 * @hooked woocommerce_cart_totals - 10
-				 */
-				do_action('woocommerce_cart_collaterals');
-				?>
+			<!-- Right Column: Cart Totals -->
+			<div class="lg:col-span-6 xl:col-span-5">
+				<div class="cart-collaterals lg:sticky lg:top-24">
+					<?php
+					/**
+					 * Cart collaterals hook.
+					 *
+					 * @hooked woocommerce_cross_sell_display
+					 * @hooked woocommerce_cart_totals - 10
+					 */
+					do_action('woocommerce_cart_collaterals');
+					?>
+				</div>
 			</div>
 		</div>
-	</div>
-
+	</form>
 </div>
 
 <?php do_action('woocommerce_after_cart'); ?>

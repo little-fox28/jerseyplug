@@ -9,16 +9,22 @@ if ( ! function_exists( 'jerseyplug_pll' ) ) {
 	/**
 	 * Polylang-safe translation helper.
 	 */
-	function jerseyplug_pll( string $text ): string {
+	function jerseyplug_pll( string $text, string $domain = 'jerseyplug' ): string {
+		$pll_translated = $text;
+		
 		if ( defined( 'JERSEYPLUG_TRUE_LANG' ) && function_exists( 'pll_translate_string' ) ) {
-			return (string) pll_translate_string( $text, JERSEYPLUG_TRUE_LANG );
+			$pll_translated = (string) pll_translate_string( $text, JERSEYPLUG_TRUE_LANG );
+		} elseif ( function_exists( 'pll__' ) ) {
+			$pll_translated = (string) pll__( $text );
 		}
 
-		if ( function_exists( 'pll__' ) ) {
-			return (string) pll__( $text );
+		// If Polylang returned a different string, it means it has a translation.
+		if ( $pll_translated !== $text ) {
+			return $pll_translated;
 		}
 
-		return (string) __( $text, 'jerseyplug' );
+		// Fallback to standard WordPress translation (.po/.mo files via Loco Translate)
+		return (string) __( $text, $domain );
 	}
 }
 

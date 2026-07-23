@@ -19,6 +19,31 @@
 <?php get_template_part('components/ui/floating-socials'); ?>
 
 <!-- Alpine Toast Notification System -->
+<!-- Inline toastSystem so it's available before Alpine.js deferred script initializes -->
+<script>
+	window.toastSystem = function() {
+		return {
+			toasts: [],
+			addToast(message, type) {
+				if (type === undefined) type = 'success';
+				var id = Date.now() + Math.floor(Math.random() * 1000);
+				this.toasts.push({ id: id, message: message, type: type, visible: true });
+				var self = this;
+				setTimeout(function() { self.removeToast(id); }, 3500);
+			},
+			removeToast(id) {
+				var index = this.toasts.findIndex(function(t) { return t.id === id; });
+				if (index !== -1) {
+					this.toasts[index].visible = false;
+					var self = this;
+					setTimeout(function() {
+						self.toasts = self.toasts.filter(function(t) { return t.id !== id; });
+					}, 300);
+				}
+			}
+		};
+	};
+</script>
 <div
 	x-data="toastSystem()"
 	@notify.window="addToast($event.detail.message, $event.detail.type)"

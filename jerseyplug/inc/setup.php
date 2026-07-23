@@ -275,6 +275,7 @@ function jerseyplug_register_polylang_strings(): void
 		'Price: High to Low',
 		'Price: Low to High',
 		'Pro Tip',
+		'Proceed to Checkout',
 		'Product',
 		'Product Categories',
 		'Product Details',

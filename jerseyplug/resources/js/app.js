@@ -131,29 +131,6 @@ window.addEventListener('load', function () {
     jerseyplugInitHomeSlider()
 })
 
-document.addEventListener('alpine:init', () => {
-    Alpine.data('toastSystem', () => ({
-        toasts: [],
-        addToast(message, type = 'success') {
-            const id = Date.now() + Math.floor(Math.random() * 1000);
-            this.toasts.push({ id, message, type, visible: true });
-
-            setTimeout(() => {
-                this.removeToast(id);
-            }, 3500);
-        },
-        removeToast(id) {
-            const index = this.toasts.findIndex(t => t.id === id);
-            if (index !== -1) {
-                this.toasts[index].visible = false;
-                setTimeout(() => {
-                    this.toasts = this.toasts.filter(t => t.id !== id);
-                }, 300);
-            }
-        }
-    }));
-});
-
 // WooCommerce AJAX Listeners
 if (typeof jQuery !== 'undefined') {
     jQuery(document.body).on('added_to_cart', function(event, fragments, cart_hash, $button) {
@@ -184,5 +161,47 @@ if (typeof jQuery !== 'undefined') {
         window.dispatchEvent(new CustomEvent('notify', {
             detail: { message: 'There was an error processing your checkout. Please check the form.', type: 'error' }
         }));
+    });
+
+    // Custom Coupon Handler for Cart Page
+    jQuery(document.body).on('click', 'button[name="apply_coupon"]', function(e) {
+        e.preventDefault();
+        var $button = jQuery(this);
+        var $couponInput = jQuery('#coupon_code');
+        var couponCode = $couponInput.val().trim();
+
+        if (!couponCode) return;
+
+        $button.prop('disabled', true).addClass('opacity-50');
+
+        var ajaxUrl = (typeof wc_cart_params !== 'undefined' && wc_cart_params.wc_ajax_url) 
+            ? wc_cart_params.wc_ajax_url.replace('%%endpoint%%', 'apply_coupon') 
+            : '/?wc-ajax=apply_coupon';
+
+        var nonce = (typeof wc_cart_params !== 'undefined') ? wc_cart_params.apply_coupon_nonce : '';
+
+        jQuery.ajax({
+            type: 'POST',
+            url: ajaxUrl,
+            data: {
+                security: nonce,
+                coupon_code: couponCode
+            },
+            dataType: 'html',
+            success: function(response) {
+                // Reload page so all totals, notices, and session states update perfectly
+                window.location.reload();
+            },
+            error: function() {
+                window.location.reload();
+            }
+        });
+    });
+
+    jQuery(document.body).on('keydown', '#coupon_code', function(e) {
+        if (e.which === 13 || e.keyCode === 13) {
+            e.preventDefault();
+            jQuery('button[name="apply_coupon"]').trigger('click');
+        }
     });
 }

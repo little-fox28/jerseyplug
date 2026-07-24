@@ -124,6 +124,23 @@ if (post_password_required()) {
 	do_action('woocommerce_after_single_product_summary');
 	?>
 
+	<!-- Sticky Mobile Bar -->
+	<div
+		class="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-100 p-4 shadow-xl flex items-center justify-between lg:hidden transition-transform duration-300"
+		x-show="showStickyBar"
+		x-cloak
+		:class="showStickyBar ? 'translate-y-0' : 'translate-y-full'">
+		<div class="flex flex-col">
+			<span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider"><?php echo esc_html( jerseyplug_pll( 'Total' ) ); ?></span>
+			<span class="text-lg font-black text-primary" x-text="formatCurrency(totalCalculatedPrice)"></span>
+		</div>
+		<button
+			type="button"
+			@click="submitForm()"
+			class="bg-primary text-white text-[11px] font-black uppercase tracking-wider px-6 py-3 rounded-xl shadow-lg hover:bg-accent hover:text-primary transition-colors">
+			<?php echo esc_html(jerseyplug_pll('Add to Cart')); ?>
+		</button>
+	</div>
 
 </div>
 

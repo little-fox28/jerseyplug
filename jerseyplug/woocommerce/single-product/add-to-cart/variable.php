@@ -211,6 +211,7 @@ do_action('woocommerce_before_add_to_cart_form'); ?>
 								id="custom_number_display"
 								type="text"
 								x-model="customNumber"
+								@input="customNumber = customNumber.replace(/\D/g, '')"
 								maxlength="2"
 								placeholder="10"
 								autocomplete="off"

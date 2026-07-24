@@ -1,24 +1,18 @@
+/**
+ * Editor Style — JerseyPlug
+ *
+ * Loaded inside the Block Editor (Gutenberg / Lazy Blocks preview).
+ * Uses Tailwind CSS so Lazy Blocks can preview with utility classes.
+ *
+ * NOTE: This file is intentionally NOT imported via Vite's HMR pipeline.
+ * It is served as a static build artifact (dist/) to avoid CSS jumping
+ * caused by Vite HMR re-injecting the stylesheet into the editor iframe.
+ */
 @import 'tailwindcss';
 @import './theme.css';
-@import './custom.css';
-
-h1 {
-    @apply text-3xl mb-8;
-    font-family: var(--font-sans);
-}
-
-.entry-content,
-.block-editor-block-list__layout {
-    font-family: var(--font-sans);
-}
 
 /*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
+  Compatibility: keep border colors consistent with Tailwind v3 defaults.
 */
 @layer base {
   *,
@@ -28,4 +22,15 @@ h1 {
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
+}
+
+/* ── Scoped to the editor content wrapper ──────────────────────── */
+h1 {
+    @apply text-3xl mb-8;
+    font-family: var(--font-sans);
+}
+
+.entry-content,
+.block-editor-block-list__layout {
+    font-family: var(--font-sans);
 }

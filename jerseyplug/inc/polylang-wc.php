@@ -367,3 +367,25 @@ add_filter('woocommerce_order_status_name', function ($name, $status) {
 	}
 	return $name;
 }, 10, 2);
+
+/**
+ * 10. Translate WooCommerce Shipping Package Name & Method Labels
+ */
+add_filter('woocommerce_shipping_package_name', function ($package_name, $i, $package) {
+	if (function_exists('jerseyplug_pll') && !is_admin()) {
+		$translated = jerseyplug_pll($package_name);
+		return !empty($translated) ? $translated : $package_name;
+	}
+	return $package_name;
+}, 10, 3);
+
+add_filter('woocommerce_cart_shipping_method_full_label', function ($label, $method) {
+	if (function_exists('jerseyplug_pll') && !is_admin()) {
+		$method_title = $method->get_label();
+		$translated_title = jerseyplug_pll($method_title);
+		if ($translated_title !== $method_title) {
+			$label = str_replace($method_title, $translated_title, $label);
+		}
+	}
+	return $label;
+}, 10, 2);

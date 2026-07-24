@@ -24,7 +24,46 @@ if ( ! function_exists( 'jerseyplug_pll' ) ) {
 		}
 
 		// Fallback to standard WordPress translation (.po/.mo files via Loco Translate)
-		return (string) __( $text, $domain );
+		$wp_translated = (string) __( $text, $domain );
+		if ( $wp_translated !== $text ) {
+			return $wp_translated;
+		}
+
+		// Hardcoded fallback translations for common strings in AF if no .po/Polylang entry exists
+		$current_lang = defined( 'JERSEYPLUG_TRUE_LANG' ) ? JERSEYPLUG_TRUE_LANG : ( strpos( get_locale(), 'af' ) === 0 ? 'af' : 'en' );
+		if ( 'af' === $current_lang ) {
+			$af_defaults = [
+				'Log out'         => 'Teken uit',
+				'Logout'          => 'Teken uit',
+				'Log in'          => 'Teken in',
+				'Login'           => 'Teken in',
+				'Shipment'        => 'Versending',
+				'Shipping'        => 'Versending',
+				'Shipping to %s.' => 'Versending na %s.',
+				'Change address'  => 'Verander adres',
+				'Flat rate'       => 'Vaste tarief',
+				'Flat rate:'      => 'Vaste tarief:',
+				'Enter a different address' => 'Voer \'n ander adres in',
+				'Order Confirmed!' => 'Bestelling Bevestig!',
+				'Thank you. Your order has been received and is now being processed.' => 'Dankie. Jou bestelling is ontvang en word nou verwerk.',
+				'View Order Details' => 'Bekyk bestellingbesonderhede',
+				'Order Details' => 'Bestellingbesonderhede',
+				'Order Failed'  => 'Bestelling het misluk',
+				'Customer Info' => 'Kliënt inligting',
+				'Billing Address'  => 'Faktuurasres',
+				'Billing address'  => 'Faktuurasres',
+				'Shipping Address' => 'Afleweringsadres',
+				'Shipping address' => 'Afleweringsadres',
+				'Order Note'    => 'Bestelling nota',
+				'Order Summary' => 'Bestelling opsomming',
+				'Pay'           => 'Betaal',
+			];
+			if ( isset( $af_defaults[ $text ] ) ) {
+				return $af_defaults[ $text ];
+			}
+		}
+
+		return $text;
 	}
 }
 

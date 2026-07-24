@@ -36,6 +36,45 @@ function jerseyplug_register_all_assets(): void
 add_action('wp', 'jerseyplug_register_all_assets');
 
 /**
+ * Fix CSS jumping in Block Editor caused by Vite HMR.
+ *
+ * When the Vite dev server is running, TailPress's default behavior is to inject
+ * editor-style.css via a WebSocket-connected Vite module URL into the editor iframe.
+ * This causes the editor styles to reload on every HMR event, making the editor "jump".
+ *
+ * Solution: Always serve the BUILT editor-style.css from dist/ (bypassing HMR),
+ * while still allowing Vite to rebuild it when the source changes on next build/refresh.
+ */
+add_action('after_setup_theme', function () {
+	// Force remove whatever URL TailPress's ViteCompiler registered (may be a Vite HMR URL)
+	add_action('admin_init', function () {
+		$manifest_path = get_template_directory() . '/dist/.vite/manifest.json';
+		$editor_css_uri = null;
+
+		if (file_exists($manifest_path)) {
+			$manifest = json_decode(file_get_contents($manifest_path), true);
+			$file = $manifest['resources/css/editor-style.css']['file'] ?? null;
+			if ($file) {
+				$editor_css_uri = get_template_directory_uri() . '/dist/' . $file;
+			}
+		}
+
+		if (!$editor_css_uri) {
+			// Fallback: serve directly from source (no Tailwind compile, but safe)
+			$src_path = get_template_directory() . '/resources/css/editor-style.css';
+			$editor_css_uri = get_template_directory_uri() . '/resources/css/editor-style.css'
+				. '?v=' . (file_exists($src_path) ? filemtime($src_path) : '1');
+		}
+
+		// Remove all existing registered editor stylesheets and re-register only ours
+		global $editor_styles;
+		$editor_styles = [];
+		add_theme_support('editor-styles');
+		add_editor_style($editor_css_uri);
+	}, 20);
+});
+
+/**
  * Add 'defer' attribute to all TailPress scripts to ensure DOM is ready.
  */
 add_filter('script_loader_tag', function ($tag, $handle, $src) {

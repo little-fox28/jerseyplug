@@ -184,3 +184,5 @@
 .product-description-content {
   line-height: 1.8;
 }
+
+[x-cloak] { display: none !important; }

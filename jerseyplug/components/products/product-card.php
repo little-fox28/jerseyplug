@@ -87,9 +87,9 @@ if ($wc_product instanceof WC_Product) {
 	}
 }
 
-// LCP optimization: first 4 images get eager loading.
+// Strictly follow NFR-SA1a: All product images must have loading="lazy"
 $is_above_fold = $index < 4;
-$loading_attr  = $is_above_fold ? 'eager' : 'lazy';
+$loading_attr  = 'lazy';
 $priority_attr = $is_above_fold ? 'high' : 'auto';
 ?>
 

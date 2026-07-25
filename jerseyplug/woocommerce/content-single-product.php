@@ -246,4 +246,7 @@ if (post_password_required()) {
 <!-- Size Guide Modal -->
 <?php get_template_part('components/products/size-guide-modal'); ?>
 
+<!-- Sticky Add to Cart (Mobile) -->
+<?php get_template_part('components/products/sticky-add-to-cart'); ?>
+
 <?php do_action('woocommerce_after_single_product'); ?>
